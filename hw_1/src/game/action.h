@@ -5,7 +5,7 @@
 #ifndef ACTION_H
 #define ACTION_H
 
-enum class Action {
+enum Action {
     FORWARD,
     BACKWARD,
     ROTATE_45_LEFT,
