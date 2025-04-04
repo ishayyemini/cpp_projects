@@ -2,10 +2,21 @@
 #define WALL_H
 #include "board_element.h"
 
-class Wall : public BoardElement {
-    int max_health;
+static constexpr int max_health = 3;
+
+class Wall final : public BoardElement {
     int health = max_health;
-    public:
+
+public:
+    char getSymbol() const override { return '#'; }
+
+    void takeDamage(int amount){
+        health -= amount;
+    }
+
+    bool isDestroyed() const {
+        return health <= 0;
+    }
 
 };
 
