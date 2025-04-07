@@ -8,16 +8,17 @@ class Wall final : public BoardElement {
     int health = max_health;
 
 public:
+    Wall() = default;
+
     char getSymbol() const override { return '#'; }
 
-    void takeDamage(int amount){
+    void takeDamage(int amount) {
         health -= amount;
     }
 
     bool isDestroyed() const {
         return health <= 0;
     }
-
 };
 
 #endif //WALL_H

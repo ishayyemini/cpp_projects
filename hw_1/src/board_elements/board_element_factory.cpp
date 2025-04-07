@@ -1,9 +1,11 @@
+#include <ostream>
 
 #include "board_element_factory.h"
 #include "wall.h"
 #include "mine.h"
 #include "tank.h"
 #include "empty_cell.h"
+
 
 std::unique_ptr<BoardElement> BoardElementFactory::create(char symbol) {
     switch (symbol) {

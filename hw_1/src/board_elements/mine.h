@@ -5,9 +5,10 @@
 #ifndef MINE_H
 #define MINE_H
 
-class Mine final: public BoardElement {
+class Mine : public BoardElement {
 public:
-    Mine()= default;
+    Mine() = default;
+
     char getSymbol() const override { return '@'; }
 };
 

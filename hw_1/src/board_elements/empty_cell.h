@@ -5,9 +5,9 @@
 #ifndef EMPTY_CELL_H
 #define EMPTY_CELL_H
 
-class EmptyCell final: public BoardElement {
+class EmptyCell final : public BoardElement {
 public:
-    char getSymbol() const override { return '@'; }
+    char getSymbol() const override { return ' '; }
 };
 
 #endif //EMPTY_CELL_H

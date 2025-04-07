@@ -6,8 +6,7 @@ class BoardElement {
 public:
     virtual ~BoardElement() = default;
 
-private:
-    virtual char getSymbol() const = 0;
+    [[nodiscard]] virtual char getSymbol() const = 0;
 };
 
 #endif //BOARD_ELEMENT_H

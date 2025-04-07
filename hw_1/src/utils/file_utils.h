@@ -6,7 +6,7 @@
 #define FILEUTILS_H
 #include <string>
 
-class FilesUtils {
+class file_utils {
 public:
     static int loadBoard(const std::string& fileName);
 };

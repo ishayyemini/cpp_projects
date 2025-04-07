@@ -4,7 +4,7 @@
 #include "board_elements/board_element_factory.h"
 
 GameBoard::GameBoard(int width, int height)
-    : height(height), width(width), board(height, std::vector<std::unique_ptr<BoardElement> >(width)) {
+    : height(height), width(width), board(std::vector<std::vector<std::unique_ptr<BoardElement> > >(height)) {
 }
 
 int GameBoard::getHeight() const { return height; }
@@ -20,17 +20,18 @@ const BoardElement &GameBoard::getBoardElement(int row, int col) const {
 
 bool GameBoard::updateBoardElement(int row, int col, char symbol) {
     if (row < 0 || row >= height || col < 0 || col >= width) {
-        std::cout << "Invalid board position";
+        std::cerr << "Invalid board position" << std::endl;
         return false;
     }
-    board[row][col] = BoardElementFactory::create(symbol); //if not a valid symbol we leave it empty as default!
+    //if not a valid symbol we leave it empty as default!
+    board[row].push_back(std::move(BoardElementFactory::create(symbol)));
     return true;
 }
 
 // TODO: change so board_element overrides the << operator
 void GameBoard::displayBoard() const {
-    for (const auto& row : board) {
-        for (const auto& cell : row) {
+    for (const auto &row: board) {
+        for (const auto &cell: row) {
             std::cout << cell->getSymbol();
         }
         std::cout << '\n';

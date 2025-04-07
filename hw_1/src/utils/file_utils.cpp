@@ -1,10 +1,8 @@
-#include "FilesUtils.h"
 #include <fstream>
 #include <iostream>
-#include <vector>
 
 #include "board/game_board.h"
-#include "board_elements/board_element.h"
+#include "file_utils.h"
 
 
 //define helper functions in unnamed namespace
@@ -15,7 +13,7 @@ namespace {
 }
 
 
-int FilesUtils::loadBoard(const std::string &fileName) {
+int file_utils::loadBoard(const std::string &fileName) {
     std::ifstream inFile(fileName); // open file for reading
 
     // check if file opened successfully
