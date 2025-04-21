@@ -13,7 +13,6 @@ add_executable(tanks_game src/main.cpp
         src/board_elements/board_element_factory.h
         src/board_elements/board_element_factory.cpp
         src/board_elements/board_element.h
-        src/board_elements/empty_cell.h
         src/board_elements/mine.h
         src/board_elements/tank.h
         src/board_elements/tank.cpp

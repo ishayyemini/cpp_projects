@@ -5,7 +5,7 @@
 
 class BoardElementFactory {
 public:
-    static std::unique_ptr<BoardElement> create(char symbol);
+    static std::unique_ptr<BoardElement> create(char symbol) noexcept;
 };
 
 

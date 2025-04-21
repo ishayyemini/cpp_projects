@@ -5,11 +5,11 @@
 #ifndef MINE_H
 #define MINE_H
 
-class Mine : public BoardElement {
+class Mine final : public BoardElement {
 public:
     Mine() = default;
 
-    char getSymbol() const override { return '@'; }
+    [[nodiscard]] std::string getSymbol() const override { return "💣"; }
 };
 
 #endif //MINE_H

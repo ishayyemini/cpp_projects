@@ -4,12 +4,11 @@
 
 
 class Tank final : public BoardElement {
-private:
     int id;
 
 public:
     explicit Tank(int id); //we want to prevent bugs
-    char getSymbol() const override;
+    [[nodiscard]] std::string getSymbol() const override;
 };
 
 

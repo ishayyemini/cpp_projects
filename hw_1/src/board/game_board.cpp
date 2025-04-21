@@ -3,7 +3,7 @@
 
 #include "board_elements/board_element_factory.h"
 
-GameBoard::GameBoard(int width, int height)
+GameBoard::GameBoard(const int width, const int height)
     : height(height), width(width), board(std::vector<std::vector<std::unique_ptr<BoardElement> > >(height)) {
 }
 
@@ -23,8 +23,8 @@ bool GameBoard::updateBoardElement(int row, int col, char symbol) {
         std::cerr << "Invalid board position" << std::endl;
         return false;
     }
-    //if not a valid symbol we leave it empty as default!
-    board[row].push_back(std::move(BoardElementFactory::create(symbol)));
+    // if not a valid symbol we leave it empty as default!
+    board[row].push_back(BoardElementFactory::create(symbol));
     return true;
 }
 
@@ -32,7 +32,11 @@ bool GameBoard::updateBoardElement(int row, int col, char symbol) {
 void GameBoard::displayBoard() const {
     for (const auto &row: board) {
         for (const auto &cell: row) {
-            std::cout << cell->getSymbol();
+            if (cell != nullptr) {
+                std::cout << cell->getSymbol();
+            } else {
+                std::cout << "◼️️";
+            }
         }
         std::cout << '\n';
     }

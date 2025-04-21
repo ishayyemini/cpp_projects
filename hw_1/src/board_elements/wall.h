@@ -10,13 +10,13 @@ class Wall final : public BoardElement {
 public:
     Wall() = default;
 
-    char getSymbol() const override { return '#'; }
+    [[nodiscard]] std::string getSymbol() const override { return "⛔"; }
 
-    void takeDamage(int amount) {
+    void takeDamage(const int amount) {
         health -= amount;
     }
 
-    bool isDestroyed() const {
+    [[nodiscard]] bool isDestroyed() const {
         return health <= 0;
     }
 };

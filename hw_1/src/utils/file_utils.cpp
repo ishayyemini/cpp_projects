@@ -61,15 +61,15 @@ namespace {
                 return false;
             }
 
-            if (static_cast<int>(line.length()) < width) {
-                std::cerr << "Error: Line " << row + 1 << " is too short (expected " << width << ", got " << line.
-                        length() << ").\n";
-                //todo: maybe is possible to adjust this by adding additional empty rows
-                return false;
-            }
+            // if (static_cast<int>(line.length()) < width) {
+            //     std::cerr << "Error: Line " << row + 1 << " is too short (expected " << width << ", got " << line.
+            //             length() << ").\n";
+            //     //todo: maybe is possible to adjust this by adding additional empty rows
+            //     return false;
+            // }
 
             for (int col = 0; col < width; ++col) {
-                char symbol = line[col];
+                char symbol = col < line.length() ? line[col] : ' ';
                 //todo: this should never happen, maybe we can delete this validation
                 if (!board.updateBoardElement(row, col, symbol)) {
                     return false;;
