@@ -29,9 +29,9 @@ public:
 
     [[nodiscard]] int getPlayerId() const { return player_id; }
 
-    bool canGoBack();
+    int getBackwardsCounter() const { return backwards_counter; }
 
-    void resetBackwards();
+    void setBackwardsCounter(const int cnt) { backwards_counter = cnt; };
 
     int decreaseShell();
 };

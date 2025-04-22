@@ -27,18 +27,6 @@ int Tank::getRemainingShell() const {
     return shell;
 }
 
-bool Tank::canGoBack() {
-    if (backwards_counter == 0) {
-        return true;
-    }
-    backwards_counter--;
-    return false;
-}
-
-void Tank::resetBackwards() {
-    backwards_counter = 2;
-}
-
 int Tank::decreaseShell() {
     shell--;
     return shell;
