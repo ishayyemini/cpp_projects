@@ -25,7 +25,7 @@ bool GameManager::moveForward(const int player_id, const int tank_id) {
         return false;
     }
 
-    if (tank->getBackwardsCounter() != 2 || tank->getBackwardsCounter() != 0) {
+    if (tank->getBackwardsCounter() != 2 && tank->getBackwardsCounter() != 0) {
         tank->setBackwardsCounter(2);
         return false;
     }
@@ -61,4 +61,27 @@ bool GameManager::moveBackward(const int player_id, const int tank_id) {
         return false;
     }
     return board.moveBoardElement(tank->getPosition(), new_position);
+}
+
+bool GameManager::rotate(const int player_id, const int tank_id, const int turn) {
+    Tank *tank = board.getPlayerTank(player_id, tank_id);
+    if (tank == nullptr) {
+        std::cerr << "Can't get tank " << tank_id << " of player " << player_id << std::endl;
+        return false;
+    }
+    if (turn != 45 && turn != 90 && turn != -45 && turn != -90) {
+        std::cerr << "Got bad direction: " << turn << std::endl;
+        return false;
+    }
+    if (tank->getBackwardsCounter() != 2) {
+        tank->setBackwardsCounter(tank->getBackwardsCounter() - 1);
+        return false;
+    }
+    if (tank->getBackwardsCounter() == 0) {
+        tank->setBackwardsCounter(2);
+    }
+
+    int new_direction = tank->getCannonDirection() + turn;
+    tank->setCannonDirection(static_cast<Direction::DirectionType>(new_direction));
+    return true;
 }

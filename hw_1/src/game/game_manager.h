@@ -25,8 +25,7 @@ class GameManager {
 
     bool moveBackward(int player_id, int tank_id);
 
-    void rotate(Direction direction); //should call tank.rotate
-
+    bool rotate(int player_id, int tank_id, int turn);
 
 public:
     explicit GameManager(const std::string &input_file_path);

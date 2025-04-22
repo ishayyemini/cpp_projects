@@ -7,18 +7,18 @@
 class Direction {
 public:
     enum DirectionType {
-        UP,
-        UP_RIGHT,
-        RIGHT,
-        DOWN_RIGHT,
-        DOWN,
-        DOWN_LEFT,
-        LEFT,
-        UP_LEFT,
+        UP = 0,
+        UP_RIGHT = 45,
+        RIGHT = 90,
+        DOWN_RIGHT = 135,
+        DOWN = 180,
+        DOWN_LEFT = 225,
+        LEFT = 270,
+        UP_LEFT = 315,
     };
 
-    static constexpr std::pair<int, int> getOffset(DirectionType dir) {
-        return directionOffsets[static_cast<std::size_t>(dir)];
+    static constexpr std::pair<int, int> getOffset(const DirectionType dir) {
+        return directionOffsets[static_cast<std::size_t>(dir) / 45];
     }
 
 private:
