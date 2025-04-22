@@ -11,6 +11,7 @@ class Tank final : public BoardElement {
     int player_id;
     const int tank_id;
     Direction::DirectionType cannon_direction;
+    int backwards_counter = 2;
     int shell = MAX_SHELL;
 
 public:
@@ -26,7 +27,11 @@ public:
 
     [[nodiscard]] int getRemainingShell() const;
 
-    [[nodiscard]] int getPlayerId() const { return player_id; };
+    [[nodiscard]] int getPlayerId() const { return player_id; }
+
+    bool canGoBack();
+
+    void resetBackwards();
 
     int decreaseShell();
 };

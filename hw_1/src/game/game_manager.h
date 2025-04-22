@@ -23,7 +23,7 @@ class GameManager {
 
     bool moveForward(int player_id, int tank_id);
 
-    bool moveBackward();
+    bool moveBackward(int player_id, int tank_id);
 
     void rotate(Direction direction); //should call tank.rotate
 
