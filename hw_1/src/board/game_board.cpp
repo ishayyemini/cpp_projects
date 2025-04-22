@@ -58,26 +58,23 @@ bool GameBoard::pushSymbol(const int row, const int col, const char symbol) {
 }
 
 bool GameBoard::moveBoardElement(const std::pair<int, int> &old_pos, const std::pair<int, int> &new_pos) {
-    if (new_pos.first < 0 || new_pos.first >= height || new_pos.second < 0 || new_pos.second >= width) {
-        std::cerr << "Invalid board position" << std::endl;
-        return false;
-    }
-    if (board[new_pos.first][new_pos.second] != nullptr) {
+    const std::pair mod_pos = {new_pos.first % height, new_pos.second % width};
+    if (board[mod_pos.first][mod_pos.second] != nullptr) {
         std::cerr << "Can't move to non-empty space" << std::endl;
         return false;
     }
 
-    board[new_pos.first][new_pos.second] = std::move(board[old_pos.first][old_pos.second]);
+    board[mod_pos.first][mod_pos.second] = std::move(board[old_pos.first][old_pos.second]);
 
     if (const auto t = dynamic_cast<Tank *>(getBoardElement(new_pos))) {
         if (t->getPlayerId() == 1) {
-            player_1_tank_pos[t->getTankId()] = {new_pos.first, new_pos.second};
+            player_1_tank_pos[t->getTankId()] = {mod_pos.first, mod_pos.second};
         } else {
-            player_2_tank_pos[t->getTankId()] = {new_pos.first, new_pos.second};
+            player_2_tank_pos[t->getTankId()] = {mod_pos.first, mod_pos.second};
         }
     }
 
-    board[new_pos.first][new_pos.second].get()->setPosition(new_pos);
+    board[mod_pos.first][mod_pos.second].get()->setPosition(mod_pos);
     return true;
 }
 
