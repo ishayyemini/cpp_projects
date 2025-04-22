@@ -2,7 +2,7 @@
 #include <iostream>
 
 #include "board/game_board.h"
-#include "file_utils.h"
+#include "utils/file_utils.h"
 
 
 //define helper functions in unnamed namespace
@@ -13,7 +13,7 @@ namespace {
 }
 
 
-int file_utils::loadBoard(const std::string &fileName) {
+int file_utils::loadBoard(GameBoard &board, const std::string &fileName) {
     std::ifstream inFile(fileName); // open file for reading
 
     // check if file opened successfully
@@ -29,7 +29,7 @@ int file_utils::loadBoard(const std::string &fileName) {
     }
 
     //create GameBoard object of size width x height
-    GameBoard board(width, height);
+    board = GameBoard(width, height);
     if (!populateBoard(inFile, board, width, height)) {
         return -1;
     }
@@ -71,8 +71,8 @@ namespace {
             for (int col = 0; col < width; ++col) {
                 char symbol = col < line.length() ? line[col] : ' ';
                 //todo: this should never happen, maybe we can delete this validation
-                if (!board.updateBoardElement(row, col, symbol)) {
-                    return false;;
+                if (!board.pushSymbol(row, col, symbol)) {
+                    return false;
                 }
             }
         }

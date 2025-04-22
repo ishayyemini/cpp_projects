@@ -1,14 +1,15 @@
 #ifndef WALL_H
 #define WALL_H
-#include "board_element.h"
+#include "board_elements/board_element.h"
 
 static constexpr int max_health = 3;
 
 class Wall final : public BoardElement {
+    std::pair<int, int> position;
     int health = max_health;
 
 public:
-    Wall() = default;
+    explicit Wall(const std::pair<int, int> &position);
 
     [[nodiscard]] std::string getSymbol() const override { return "⛔"; }
 

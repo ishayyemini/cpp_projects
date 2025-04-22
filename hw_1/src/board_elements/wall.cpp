@@ -1,11 +1,5 @@
-#include "wall.h"
+#include "board_elements/wall.h"
 
-Wall::Wall() = default;
-
-char Wall::getSymbol() const {
-    return '#';
+Wall::Wall(const std::pair<int, int> &position): position(position) {
 }
 
-ElementType Wall::getType() const {
-    return ElementType::Wall;
-}

@@ -5,7 +5,7 @@
 #ifndef GAME_MANAGER_H
 #define GAME_MANAGER_H
 #include "board/direction.h"
-#include "board/position.h"
+#include "board/game_board.h"
 #include "board_elements/tank.h"
 
 enum Winner {
@@ -19,22 +19,19 @@ class GameManager {
     int game_step = 0;
     bool game_over = false;
     Winner winner = NONE;
+    GameBoard board;
 
-    bool moveForward(Tank tank, Position position);
+    bool moveForward(int player_id, int tank_id);
+
     bool moveBackward();
+
     void rotate(Direction direction); //should call tank.rotate
 
 
-    public:
-    GameManager();
+public:
+    explicit GameManager(const std::string &input_file_path);
+
     Winner start_game();
-
-
-
-
-
-
-
 };
 
 #endif //GAME_MANAGER_H

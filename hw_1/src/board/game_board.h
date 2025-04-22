@@ -4,26 +4,40 @@
 
 #ifndef GAME_BOARD_H
 #define GAME_BOARD_H
+
+#include <map>
 #include <memory>
 #include <vector>
+
 #include "board_elements/board_element.h"
+#include "board_elements/tank.h"
 
 
 class GameBoard {
     int height;
     int width;
     std::vector<std::vector<std::unique_ptr<BoardElement> > > board;
+    std::map<int, std::pair<int, int> > player_1_tank_pos;
+    std::map<int, std::pair<int, int> > player_2_tank_pos;
 
 public:
+    GameBoard();
+
     GameBoard(int width, int height);
 
     [[nodiscard]] int getHeight() const;
 
     [[nodiscard]] int getWidth() const;
 
-    [[nodiscard]] const BoardElement &getBoardElement(int row, int col) const;
+    [[nodiscard]] const Tank *getPlayerTank(int player_id, int tank_id) const;
 
-    bool updateBoardElement(int row, int col, char symbol);
+    [[nodiscard]] BoardElement *getBoardElement(int row, int col) const noexcept;
+
+    [[nodiscard]] BoardElement *getBoardElement(const std::pair<int, int> &pos) const noexcept;
+
+    bool pushSymbol(int row, int col, char symbol);
+
+    [[nodiscard]] bool moveBoardElement(const std::pair<int, int> &old_pos, const std::pair<int, int> &new_pos);
 
     void displayBoard() const;
 };
