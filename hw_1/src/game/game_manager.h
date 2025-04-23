@@ -27,6 +27,8 @@ class GameManager {
 
     bool rotate(int player_id, int tank_id, int turn);
 
+    bool shoot(int player_id, int tank_id);
+
 public:
     explicit GameManager(const std::string &input_file_path);
 

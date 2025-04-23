@@ -12,6 +12,7 @@ class Tank final : public BoardElement {
     const int tank_id;
     Direction::DirectionType cannon_direction;
     int backwards_counter = 2;
+    int shooting_cooldown = 0;
     int shell = MAX_SHELL;
 
 public:
@@ -32,6 +33,12 @@ public:
     int getBackwardsCounter() const { return backwards_counter; }
 
     void setBackwardsCounter(const int cnt) { backwards_counter = cnt; };
+
+    [[nodiscard]] int getShootingCooldown() const { return shooting_cooldown; }
+
+    void decreaseShootingCooldown() { if (shooting_cooldown > 0) shooting_cooldown--; }
+
+    void shoot() { shooting_cooldown = 4; }
 
     int decreaseShell();
 };

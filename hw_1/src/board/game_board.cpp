@@ -91,3 +91,8 @@ void GameBoard::displayBoard() const {
         std::cout << '\n';
     }
 }
+
+void GameBoard::addShell(std::unique_ptr<Shell> shell) {
+    shells.push_back(std::move(shell));
+}
+

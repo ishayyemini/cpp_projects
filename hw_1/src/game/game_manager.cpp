@@ -85,3 +85,21 @@ bool GameManager::rotate(const int player_id, const int tank_id, const int turn)
     tank->setCannonDirection(static_cast<Direction::DirectionType>(new_direction));
     return true;
 }
+
+bool GameManager::shoot(int player_id, int tank_id) {
+    Tank *tank = board.getPlayerTank(player_id, tank_id);
+    if (tank == nullptr) {
+        std::cerr << "Can't get tank " << tank_id << " of player " << player_id << std::endl;
+        return false;
+    }
+
+    if (tank->getShootingCooldown() == 0) {
+        tank->shoot();
+        auto [fst, snd] = Direction::getOffset(tank->getCannonDirection());
+        const std::pair new_position = {tank->getPosition().first + fst, tank->getPosition().second + snd};
+        board.addShell(std::make_unique<Shell>(new_position));
+        return true;
+    }
+
+    return false;
+}

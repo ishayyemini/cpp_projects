@@ -40,6 +40,8 @@ public:
     [[nodiscard]] bool moveBoardElement(const std::pair<int, int> &old_pos, const std::pair<int, int> &new_pos);
 
     void displayBoard() const;
+
+    void addShell(std::unique_ptr<Shell> shell);
 };
 
 #endif //GAME_BOARD_H
