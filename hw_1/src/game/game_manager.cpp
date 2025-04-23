@@ -97,7 +97,7 @@ bool GameManager::shoot(int player_id, int tank_id) {
         tank->shoot();
         auto [fst, snd] = Direction::getOffset(tank->getCannonDirection());
         const std::pair new_position = {tank->getPosition().first + fst, tank->getPosition().second + snd};
-        board.addShell(std::make_unique<Shell>(new_position));
+        board.addShell(std::make_unique<Shell>(new_position, tank->getCannonDirection()));
         return true;
     }
 

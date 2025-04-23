@@ -21,4 +21,8 @@ add_executable(tanks_game src/main.cpp
         src/game/action.h
         src/game/game_manager.h
         src/game/game_manager.cpp
+        src/algo/algorithm.h
+        src/algo/player1_algo.h
+        src/algo/player2_algo.h
+        src/algo/player2_algo.cpp
 )

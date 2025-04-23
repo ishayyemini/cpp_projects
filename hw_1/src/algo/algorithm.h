@@ -4,9 +4,11 @@
 #include "game/action.h"
 
 class Algorithm {
-    virtual Action getNextAction();
-
+public:
     virtual ~Algorithm() = default;
+
+private:
+    virtual Action getNextAction() { return NONE; }
 };
 
 
