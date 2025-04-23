@@ -2,10 +2,19 @@
 #define ALGO_H
 
 #include "game/action.h"
+#include "board/game_board.h"
 
 class Algorithm {
-    virtual Action getNextAction();
+protected:
+    GameBoard* board;
 
+public:
+    explicit Algorithm(GameBoard* board) : board(board) {
+       if (!board) {
+        throw std::invalid_argument("Algorithm constructor received nullptr GameBoard");
+    	}
+    }
+    virtual Action getNextAction() = 0;
     virtual ~Algorithm() = default;
 };
 

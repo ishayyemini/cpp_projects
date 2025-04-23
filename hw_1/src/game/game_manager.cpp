@@ -15,8 +15,6 @@ Winner GameManager::start_game() {
 bool GameManager::moveForward(Tank tank, Position position) {
     //we assume the algo_will give legal moves
     Direction direction = tank.getCannonDirection();
-    switch (direction) {
 
-    }
 
 }

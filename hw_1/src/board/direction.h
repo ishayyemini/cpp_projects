@@ -15,10 +15,24 @@ public:
         DOWN_LEFT,
         LEFT,
         UP_LEFT,
+        COUNT
     };
 
-    static constexpr std::pair<int, int> getOffset(DirectionType dir) {
-        return directionOffsets[static_cast<std::size_t>(dir)];
+    static constexpr std::pair<int, int> getOffset(DirectionType direction) {
+        return directionOffsets[static_cast<std::size_t>(direction)];
+    }
+
+    static constexpr std::pair<int, int> getOffset(int direction_index) {
+        return directionOffsets[direction_index];
+    }
+
+    static constexpr int getDirectionSize() {
+        return static_cast<int>(COUNT);
+    }
+
+    static constexpr DirectionType getDirectionType(int index) {
+        //assuming index in valid
+        return static_cast<DirectionType>(index);
     }
 
 private:

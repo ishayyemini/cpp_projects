@@ -17,4 +17,8 @@ add_executable(tanks_game src/main.cpp
         src/board_elements/tank.h
         src/board_elements/tank.cpp
         src/board_elements/wall.h
+        src/game/game_manager.cpp
+        src/algo/player1_algo.cpp
+        src/algo/bfs_utils.h
+        src/algo/bfs_utils.cpp
 )
