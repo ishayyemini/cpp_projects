@@ -4,21 +4,19 @@
 
 #ifndef GAME_MANAGER_H
 #define GAME_MANAGER_H
-#include "board/direction.h"
 #include "board/game_board.h"
-#include "board_elements/tank.h"
 
 enum Winner {
     TIE,
     PLAYER_1,
     PLAYER_2,
-    NONE
+    NO_WINNER
 };
 
 class GameManager {
     int game_step = 0;
     bool game_over = false;
-    Winner winner = NONE;
+    Winner winner = NO_WINNER;
     GameBoard board;
 
     bool moveForward(int player_id, int tank_id);
