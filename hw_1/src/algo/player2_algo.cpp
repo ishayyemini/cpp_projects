@@ -24,7 +24,7 @@ Player2Algo::calcNextPos(const std::pair<int, int> &pos, const Direction::Direct
 
 Action Player2Algo::getNextAction() {
     const auto &player2_tank = board.getPlayerTank(2, 0);
-    const auto &player1_tank = board.getPlayerTank(1, 0);
+    const auto &player1_tank = board.getPlayerTank(1, 1);
 
     if (!player2_tank || !player1_tank) {
         return NONE;

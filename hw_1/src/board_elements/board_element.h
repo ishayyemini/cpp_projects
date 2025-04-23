@@ -12,9 +12,9 @@ public:
 
     [[nodiscard]] virtual std::string getSymbol() const { return ""; }
 
-    [[nodiscard]] std::pair<int, int> getPosition() const { return position; }
+    [[nodiscard]] virtual std::pair<int, int> getPosition() const { return position; }
 
-    void setPosition(const std::pair<int, int> &pos) { position = pos; }
+    virtual void setPosition(const std::pair<int, int> &pos) { position = pos; }
 };
 
 #endif //BOARD_ELEMENT_H

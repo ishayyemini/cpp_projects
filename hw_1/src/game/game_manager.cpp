@@ -1,8 +1,13 @@
 #include "game/game_manager.h"
 
 #include <iostream>
+#include <thread>
+#include <chrono>
 #include <utility>
 
+#include "algo/algorithm.h"
+#include "algo/player1_algo.h"
+#include "algo/player2_algo.h"
 #include "utils/file_utils.h"
 
 GameManager::GameManager(const std::string &input_file_path) {
@@ -10,11 +15,46 @@ GameManager::GameManager(const std::string &input_file_path) {
 }
 
 Winner GameManager::start_game() {
-    moveForward(2, 0);
-    board.displayBoard();
+    using namespace std::chrono_literals;
 
-    moveForward(2, 0);
-    board.displayBoard();
+    Player2Algo p2_algo(board);
+
+    while (true) {
+        Action action = p2_algo.getNextAction();
+        std::cout << action << std::endl;
+
+        switch (action) {
+            case FORWARD:
+                moveForward(2, 0);
+                break;
+            case BACKWARD:
+                moveBackward(2, 0);
+                break;
+            case ROTATE_45_LEFT:
+                rotate(2, 0, -45);
+                break;
+            case ROTATE_45_RIGHT:
+                rotate(2, 0, 45);
+                break;
+            case ROTATE_90_LEFT:
+                rotate(2, 0, -90);
+                break;
+            case ROTATE_90_RIGHT:
+                rotate(2, 0, 90);
+                break;
+            case SHOOT:
+                shoot(2, 0);
+                break;
+            default: ;
+        }
+
+        moveForward(1, 1);
+
+        std::this_thread::sleep_for(1000ms);
+
+        board.displayBoard();
+    }
+
     return winner;
 }
 
