@@ -91,74 +91,65 @@ bool GameBoard::moveBoardElement(const std::pair<int, int> &old_pos, const std::
     return true;
 }
 
-// TODO: change so board_element overrides the << operator
-void GameBoard::displayBoard() const {
-    for (const auto &row: board) {
-        for (const auto &cell: row) {
-            std::cout << cell;
-        }
-        std::cout << '\n';
+bool GameBoard::moveShell(const int shell_index, const std::pair<int, int> &new_pos) {
+    const std::pair mod_pos = {(new_pos.first % height + height) % height, (new_pos.second % width + width) % width};
+    // if (board[mod_pos.first][mod_pos.second] != nullptr) {
+    //     std::cerr << "Can't move to non-empty space" << std::endl;
+    //     return false;
+    // }
+    if (shell_index < 0 || shell_index >= shells.size()) {
+        std::cerr << "Bad shell index" << std::endl;
+        return false;
     }
+    Shell *shell = getShell(shell_index);
+    if (shell == nullptr) {
+        std::cerr << "Bad shell index" << std::endl;
+        return false;
+    }
+
+    if (!shells_pos.contains(shell->getPosition())) {
+        std::cerr << "Can't find shell position" << std::endl;
+        return false;
+    }
+
+    shells_pos.erase(shell->getPosition());
+    shells_pos[mod_pos] = shell_index;
+    shell->setPosition(mod_pos);
+
+    return true;
 }
 
-std::ostream &operator<<(std::ostream &os, BoardElement *element) {
-    if (element == nullptr) {
-        os << "[     ]";
-        return os;
+void GameBoard::displayBoard() const {
+    for (int i = 0; i < height; ++i) {
+        for (int j = 0; j < width; ++j) {
+            if (Shell *shell = getShell({i, j})) {
+                std::cout << *shell;
+            } else if (board[i][j] != nullptr) {
+                std::cout << *board[i][j];
+            } else {
+                std::cout << "[     ]";
+            }
+        }
+        std::cout << std::endl;
     }
-
-    std::string dir_string = "";
-    switch (element->getDirection()) {
-        case Direction::UP:
-            dir_string = "⬆️";
-            break;
-        case Direction::UP_RIGHT:
-            dir_string = "↗️";
-            break;
-        case Direction::RIGHT:
-            dir_string = "➡️";
-            break;
-        case Direction::DOWN_RIGHT:
-            dir_string = "↘️";
-            break;
-        case Direction::DOWN:
-            dir_string = "⬇️";
-            break;
-        case Direction::DOWN_LEFT:
-            dir_string = "↙️";
-            break;
-        case Direction::LEFT:
-            dir_string = "⬅️";
-            break;
-        case Direction::UP_LEFT:
-            dir_string = "↖️";
-            break;
-    }
-
-
-    switch (element->getSymbol()) {
-        case '1':
-            os << "[" << dir_string << "🚘1]";
-            break;
-        case '2':
-            os << "[" << dir_string << "🚘2]";
-            break;
-        case '*':
-            os << "[" << dir_string << "☄️ ]";
-            break;
-        case '#':
-            os << "[  🧱 ]";
-            break;
-        case '@':
-            os << "[  💣 ]";
-            break;
-        default: ;
-    }
-
-    return os;
+    std::cout << std::endl;
 }
 
 void GameBoard::addShell(std::unique_ptr<Shell> shell) {
+    shells_pos[shell->getPosition()] = shells.size();
     shells.push_back(std::move(shell));
 }
 
+Shell *GameBoard::getShell(const int i) const {
+    if (i >= shells.size()) {
+        return nullptr;
+    }
+    return shells[i].get();
+}
+
+Shell *GameBoard::getShell(const std::pair<int, int> &pos) const {
+    if (!shells_pos.contains(pos)) {
+        return nullptr;
+    }
+    return getShell(shells_pos.at(pos));
+}

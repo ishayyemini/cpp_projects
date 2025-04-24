@@ -21,6 +21,7 @@ class GameBoard {
     std::map<int, std::pair<int, int> > player_1_tank_pos;
     std::map<int, std::pair<int, int> > player_2_tank_pos;
     std::vector<std::unique_ptr<Shell> > shells;
+    std::map<std::pair<int, int>, int> shells_pos;
 
 public:
     GameBoard();
@@ -41,13 +42,17 @@ public:
 
     bool pushSymbol(int row, int col, char symbol);
 
-    [[nodiscard]] bool moveBoardElement(const std::pair<int, int> &old_pos, const std::pair<int, int> &new_pos);
+    bool moveBoardElement(const std::pair<int, int> &old_pos, const std::pair<int, int> &new_pos);
+
+    bool moveShell(int shell_index, const std::pair<int, int> &new_pos);
 
     void displayBoard() const;
 
     void addShell(std::unique_ptr<Shell> shell);
 
-    [[nodiscard]] Shell getShells(int i) const { return *shells[i]; }
+    [[nodiscard]] Shell *getShell(int i) const;
+
+    [[nodiscard]] Shell *getShell(const std::pair<int, int> &pos) const;
 };
 
 #endif //GAME_BOARD_H

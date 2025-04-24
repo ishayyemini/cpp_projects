@@ -84,5 +84,5 @@ Action Player2Algo::getNextAction() {
     //     }
     // }
 
-    return NONE;
+    return SHOOT;
 }

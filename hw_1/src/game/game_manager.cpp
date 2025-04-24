@@ -136,6 +136,15 @@ void GameManager::tanksTurn(Player1Algo &algo1, Player2Algo &algo2) {
 }
 
 void GameManager::shellsTurn() {
+    const Shell *shell = board.getShell(0);
+    for (int i = 0; shell != nullptr; i++) {
+        const std::pair new_position = calcNextPos(shell->getPosition(), shell->getDirection());
+        if (board.getBoardElement(new_position) != nullptr) {
+            // TODO bomb!
+        }
+        board.moveShell(i, new_position);
+        shell = board.getShell(i + 1);
+    }
 }
 
 Winner GameManager::checkDeaths() const {

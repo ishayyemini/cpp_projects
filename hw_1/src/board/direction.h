@@ -3,6 +3,7 @@
 
 #include <utility>
 #include <array>
+#include <ostream>
 
 class Direction {
 public:
@@ -19,6 +20,38 @@ public:
 
     static constexpr std::pair<int, int> getOffset(const DirectionType dir) {
         return directionOffsets[static_cast<std::size_t>(dir) / 45];
+    }
+
+    friend std::ostream &operator<<(std::ostream &os, const DirectionType dir) {
+        std::string dir_string = "";
+        switch (dir) {
+            case UP:
+                dir_string = "⬆️";
+                break;
+            case UP_RIGHT:
+                dir_string = "↗️";
+                break;
+            case RIGHT:
+                dir_string = "➡️";
+                break;
+            case DOWN_RIGHT:
+                dir_string = "↘️";
+                break;
+            case DOWN:
+                dir_string = "⬇️";
+                break;
+            case DOWN_LEFT:
+                dir_string = "↙️";
+                break;
+            case LEFT:
+                dir_string = "⬅️";
+                break;
+            case UP_LEFT:
+                dir_string = "↖️";
+                break;
+        }
+        os << dir_string;
+        return os;
     }
 
 private:

@@ -1,6 +1,5 @@
 #ifndef BOARD_ELEMENT_H
 #define BOARD_ELEMENT_H
-#include <string>
 
 #include "board/direction.h"
 
@@ -35,6 +34,28 @@ public:
     virtual void setDestroyed() { destroyed = true; }
 
     [[nodiscard]] virtual bool isDestroyed() const { return destroyed; }
+
+    friend std::ostream &operator<<(std::ostream &os, const BoardElement &element) {
+        switch (element.getSymbol()) {
+            case '1':
+                os << "[" << element.getDirection() << "🚘1]";
+                break;
+            case '2':
+                os << "[" << element.getDirection() << "🚘2]";
+                break;
+            case '*':
+                os << "[" << element.getDirection() << "☄️ ]";
+                break;
+            case '#':
+                os << "[  🧱 ]";
+                break;
+            case '@':
+                os << "[  💣 ]";
+                break;
+            default: ;
+        }
+        return os;
+    }
 };
 
 #endif //BOARD_ELEMENT_H
