@@ -21,7 +21,7 @@ GameManager::calcNextPos(const std::pair<int, int> &pos, const Direction::Direct
 
 std::pair<int, int>
 GameManager::calcNextPos(const std::pair<int, int> &pos, const int dir_i) const {
-    const auto dir = static_cast<Direction::DirectionType>(dir_i % 360);
+    const auto dir = Direction::getDirection(dir_i);
     return calcNextPos(pos, dir);
 }
 
@@ -30,6 +30,9 @@ Winner GameManager::startGame() {
 
     Player1Algo p1_algo(board);
     Player2Algo p2_algo(board);
+
+    board.displayBoard();
+    std::this_thread::sleep_for(1000ms);
 
     int i = 0;
     while (true) {
@@ -149,8 +152,8 @@ void GameManager::shellsTurn() {
 
 Winner GameManager::checkDeaths() const {
     // Check if tanks are both destroyed
-    const bool firstDead = board.getPlayerTank(0) == nullptr || board.getPlayerTank(0)->isDestroyed();
-    const bool secondDead = board.getPlayerTank(1) == nullptr || board.getPlayerTank(1)->isDestroyed();
+    const bool firstDead = board.getPlayerTank(1) == nullptr || board.getPlayerTank(1)->isDestroyed();
+    const bool secondDead = board.getPlayerTank(2) == nullptr || board.getPlayerTank(2)->isDestroyed();
     if (firstDead && secondDead) {
         return TIE;
     }
@@ -165,28 +168,17 @@ Winner GameManager::checkDeaths() const {
 
 bool GameManager::moveForward(Tank &tank) {
     const std::pair new_position = calcNextPos(tank.getPosition(), tank.getDirection());
-    if (board.getBoardElement(new_position) != nullptr) {
-        return false;
-    }
-    return board.moveBoardElement(tank.getPosition(), new_position);
+    return board.moveTank(tank.getPosition(), new_position);
 }
 
 bool GameManager::moveBackward(Tank &tank) {
     const std::pair new_position = calcNextPos(tank.getPosition(), tank.getDirection() + 180);
-    if (board.getBoardElement(new_position) != nullptr) {
-        return false;
-    }
-    return board.moveBoardElement(tank.getPosition(), new_position);
+    return board.moveTank(tank.getPosition(), new_position);
 }
 
 bool GameManager::rotate(Tank &tank, const int turn) {
-    if (turn != 45 && turn != 90 && turn != -45 && turn != -90) {
-        std::cerr << "Got bad direction: " << turn << std::endl;
-        return false;
-    }
-
-    int new_direction = tank.getDirection() + turn;
-    tank.setDirection(static_cast<Direction::DirectionType>(new_direction));
+    const int new_direction = tank.getDirection() + turn;
+    tank.setDirection(Direction::getDirection(new_direction));
     return true;
 }
 

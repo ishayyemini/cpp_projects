@@ -11,6 +11,8 @@ class Player1Algo final : public Algorithm {
 public:
     explicit Player1Algo(GameBoard &board): Algorithm(board) {
     }
+
+    Action getNextAction() override { return FORWARD; }
 };
 
 #endif //PLAYER1_ALGO_H

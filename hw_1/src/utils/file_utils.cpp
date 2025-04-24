@@ -34,7 +34,6 @@ int file_utils::loadBoard(GameBoard &board, const std::string &fileName) {
         return -1;
     }
     std::cout << "Board loaded from '" << fileName << "':\n";
-    board.displayBoard();
     inFile.close();
     return 0;
 }

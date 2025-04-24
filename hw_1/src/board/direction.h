@@ -19,7 +19,13 @@ public:
     };
 
     static constexpr std::pair<int, int> getOffset(const DirectionType dir) {
-        return directionOffsets[static_cast<std::size_t>(dir) / 45];
+        return directionOffsets[dir / 45];
+    }
+
+    static constexpr DirectionType getDirection(const int dir) {
+        int mod_dir = (dir % 360 + 360) % 360;
+        if (mod_dir % 45 != 0) return UP;
+        return static_cast<DirectionType>((dir % 360 + 360) % 360);
     }
 
     friend std::ostream &operator<<(std::ostream &os, const DirectionType dir) {

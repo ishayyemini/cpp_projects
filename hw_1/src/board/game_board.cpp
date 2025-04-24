@@ -73,21 +73,54 @@ bool GameBoard::pushSymbol(const int row, const int col, const char symbol) {
     return true;
 }
 
-bool GameBoard::moveBoardElement(const std::pair<int, int> &old_pos, const std::pair<int, int> &new_pos) {
+bool GameBoard::moveTank(const std::pair<int, int> &old_pos, const std::pair<int, int> &new_pos) {
     const std::pair mod_pos = {(new_pos.first % height + height) % height, (new_pos.second % width + width) % width};
-    if (board[mod_pos.first][mod_pos.second] != nullptr) {
-        std::cerr << "Can't move to non-empty space" << std::endl;
-        return false;
+    const auto tank = dynamic_cast<Tank *>(getBoardElement(old_pos));
+    if (tank == nullptr) return false;
+
+    if (BoardElement *collision = board[mod_pos.first][mod_pos.second].get()) {
+        if (dynamic_cast<Mine *>(collision)) {
+            // Mine? We explode!
+            tank->setDestroyed();
+            if (tank->getPlayerId() == 1) {
+                player_1_tank_pos.erase(tank->getTankId());
+            } else {
+                player_2_tank_pos.erase(tank->getTankId());
+            }
+            board[tank->getPosition().first][tank->getPosition().second] = nullptr;
+            board[mod_pos.first][mod_pos.second] = nullptr;
+            return true;
+        }
+        if (dynamic_cast<Wall *>(collision) != nullptr) {
+            // Wall? Ignore.
+            return false;
+        }
+        if (const auto other_tank = dynamic_cast<Tank *>(collision)) {
+            // Tank? Two tanks colliding... Boom!
+            tank->setDestroyed();
+            if (tank->getPlayerId() == 1) {
+                player_1_tank_pos.erase(tank->getTankId());
+            } else {
+                player_2_tank_pos.erase(tank->getTankId());
+            }
+            board[tank->getPosition().first][tank->getPosition().second] = nullptr;
+            other_tank->setDestroyed();
+            if (other_tank->getPlayerId() == 1) {
+                player_1_tank_pos.erase(other_tank->getTankId());
+            } else {
+                player_2_tank_pos.erase(other_tank->getTankId());
+            }
+            board[other_tank->getPosition().first][other_tank->getPosition().second] = nullptr;
+            return true;
+        }
     }
 
     board[mod_pos.first][mod_pos.second] = std::move(board[old_pos.first][old_pos.second]);
 
-    if (const auto t = dynamic_cast<Tank *>(getBoardElement(mod_pos))) {
-        if (t->getPlayerId() == 1) {
-            player_1_tank_pos[t->getTankId()] = {mod_pos.first, mod_pos.second};
-        } else {
-            player_2_tank_pos[t->getTankId()] = {mod_pos.first, mod_pos.second};
-        }
+    if (tank->getPlayerId() == 1) {
+        player_1_tank_pos[tank->getTankId()] = {mod_pos.first, mod_pos.second};
+    } else {
+        player_2_tank_pos[tank->getTankId()] = {mod_pos.first, mod_pos.second};
     }
 
     board[mod_pos.first][mod_pos.second].get()->setPosition(mod_pos);

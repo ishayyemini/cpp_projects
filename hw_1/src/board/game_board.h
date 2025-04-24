@@ -42,7 +42,7 @@ public:
 
     bool pushSymbol(int row, int col, char symbol);
 
-    bool moveBoardElement(const std::pair<int, int> &old_pos, const std::pair<int, int> &new_pos);
+    bool moveTank(const std::pair<int, int> &old_pos, const std::pair<int, int> &new_pos);
 
     bool moveShell(int shell_index, const std::pair<int, int> &new_pos);
 
