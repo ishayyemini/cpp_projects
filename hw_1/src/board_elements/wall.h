@@ -2,10 +2,9 @@
 #define WALL_H
 #include "board_elements/board_element.h"
 
-static constexpr int max_health = 3;
+static constexpr int max_health = 2;
 
 class Wall final : public BoardElement {
-    std::pair<int, int> position;
     int health = max_health;
 
 public:
@@ -13,13 +12,13 @@ public:
 
     [[nodiscard]] char getSymbol() const override { return '#'; }
 
-    void takeDamage(const int amount) {
+    void takeDamage(const int amount = 1) {
+        if (destroyed) return;
         health -= amount;
+        if (health == 0) destroyed = true;
     }
 
-    [[nodiscard]] bool isDestroyed() const override {
-        return health <= 0;
-    }
+    int getHealth() const { return health; }
 };
 
 #endif //WALL_H

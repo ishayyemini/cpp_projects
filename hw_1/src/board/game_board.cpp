@@ -2,6 +2,8 @@
 
 #include "board/game_board.h"
 #include "board_elements/board_element_factory.h"
+#include "board_elements/mine.h"
+#include "board_elements/wall.h"
 
 GameBoard::GameBoard() : height(0), width(0) {
 }
@@ -38,6 +40,7 @@ Tank *GameBoard::getPlayerTank(const int player_id) const {
     } else {
         pos = player_2_tank_pos;
     }
+    if (pos.empty()) return nullptr;
     BoardElement *b = getBoardElement(pos.begin()->second);
     if (const auto t = dynamic_cast<Tank *>(b)) return t;
     return nullptr;
@@ -93,10 +96,6 @@ bool GameBoard::moveBoardElement(const std::pair<int, int> &old_pos, const std::
 
 bool GameBoard::moveShell(const int shell_index, const std::pair<int, int> &new_pos) {
     const std::pair mod_pos = {(new_pos.first % height + height) % height, (new_pos.second % width + width) % width};
-    // if (board[mod_pos.first][mod_pos.second] != nullptr) {
-    //     std::cerr << "Can't move to non-empty space" << std::endl;
-    //     return false;
-    // }
     if (shell_index < 0 || shell_index >= shells.size()) {
         std::cerr << "Bad shell index" << std::endl;
         return false;
@@ -110,6 +109,35 @@ bool GameBoard::moveShell(const int shell_index, const std::pair<int, int> &new_
     if (!shells_pos.contains(shell->getPosition())) {
         std::cerr << "Can't find shell position" << std::endl;
         return false;
+    }
+
+    if (BoardElement *collision = board[mod_pos.first][mod_pos.second].get()) {
+        if (dynamic_cast<Mine *>(collision)) {
+            // Mine? we don't care.
+        }
+        if (const auto wall = dynamic_cast<Wall *>(collision)) {
+            // Wall? Weaken it and destroy the shell.
+            wall->takeDamage();
+            if (wall->getHealth() == 0) {
+                board[wall->getPosition().first][wall->getPosition().second] = nullptr;
+            }
+            shells_pos.erase(shell->getPosition());
+            shells.erase(shells.begin() + shell_index);
+            return true;
+        }
+        if (const auto tank = dynamic_cast<Tank *>(collision)) {
+            // Tank? This is AFTER the tanks moved for this step. So let's handle it!
+            tank->setDestroyed();
+            if (tank->getPlayerId() == 1) {
+                player_1_tank_pos.erase(tank->getTankId());
+            } else {
+                player_2_tank_pos.erase(tank->getTankId());
+            }
+            board[tank->getPosition().first][tank->getPosition().second] = nullptr;
+            shells_pos.erase(shell->getPosition());
+            shells.erase(shells.begin() + shell_index);
+            return true;
+        }
     }
 
     shells_pos.erase(shell->getPosition());

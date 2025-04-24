@@ -23,11 +23,3 @@ int Tank::decreaseShell() {
     return shell;
 }
 
-void Tank::destroy() {
-    destroyed = true;
-}
-
-bool Tank::getDestroyed() const {
-    return destroyed;
-}
-

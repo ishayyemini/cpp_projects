@@ -149,8 +149,8 @@ void GameManager::shellsTurn() {
 
 Winner GameManager::checkDeaths() const {
     // Check if tanks are both destroyed
-    const bool firstDead = board.getPlayerTank(0)->getDestroyed();
-    const bool secondDead = board.getPlayerTank(1)->getDestroyed();
+    const bool firstDead = board.getPlayerTank(0) == nullptr || board.getPlayerTank(0)->isDestroyed();
+    const bool secondDead = board.getPlayerTank(1) == nullptr || board.getPlayerTank(1)->isDestroyed();
     if (firstDead && secondDead) {
         return TIE;
     }
@@ -162,7 +162,6 @@ Winner GameManager::checkDeaths() const {
     }
     return NO_WINNER;
 }
-
 
 bool GameManager::moveForward(Tank &tank) {
     const std::pair new_position = calcNextPos(tank.getPosition(), tank.getDirection());
