@@ -113,7 +113,7 @@ bool GameBoard::moveShell(const int shell_index, const std::pair<int, int> &new_
 
     if (BoardElement *collision = board[mod_pos.first][mod_pos.second].get()) {
         if (dynamic_cast<Mine *>(collision)) {
-            // Mine? we don't care.
+            // Mine? We don't care.
         }
         if (const auto wall = dynamic_cast<Wall *>(collision)) {
             // Wall? Weaken it and destroy the shell.
@@ -138,6 +138,16 @@ bool GameBoard::moveShell(const int shell_index, const std::pair<int, int> &new_
             shells.erase(shells.begin() + shell_index);
             return true;
         }
+    }
+
+    if (shells_pos.contains(mod_pos)) {
+        // Shell? We delete both of them
+        shells_pos.erase(shell->getPosition());
+        shells.erase(shells.begin() + shell_index);
+        const int other_shell_index = shells_pos[mod_pos];
+        shells_pos.erase(mod_pos);
+        shells.erase(shells.begin() + other_shell_index - 1);
+        return true;
     }
 
     shells_pos.erase(shell->getPosition());
