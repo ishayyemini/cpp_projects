@@ -30,6 +30,21 @@ Tank *GameBoard::getPlayerTank(const int player_id, const int tank_id) const {
     return nullptr;
 }
 
+// This takes into account there being only one tank per player
+Tank *GameBoard::getPlayerTank(const int player_id) const {
+    std::map<int, std::pair<int, int> > pos;
+    if (player_id == 1) {
+        pos = player_1_tank_pos;
+    } else {
+        pos = player_2_tank_pos;
+    }
+    BoardElement *b = getBoardElement(pos.begin()->second);
+    if (const auto t = dynamic_cast<Tank *>(b)) {
+        return t;
+    }
+    return nullptr;
+}
+
 BoardElement *GameBoard::getBoardElement(const int row, const int col) const noexcept {
     if (row < 0 || row >= height || col < 0 || col >= width) {
         return nullptr;

@@ -20,6 +20,10 @@ Winner GameManager::start_game() {
     Player2Algo p2_algo(board);
 
     while (true) {
+        if (empty_countdown == 0) {
+            return TIE;
+        }
+
         Action action = p2_algo.getNextAction();
         std::cout << action << std::endl;
 
@@ -53,6 +57,15 @@ Winner GameManager::start_game() {
         std::this_thread::sleep_for(1000ms);
 
         board.displayBoard();
+
+        // Check if both tanks used their shells
+        if (empty_countdown == -1 && board.getPlayerTank(0)->getRemainingShell() == 0 &&
+            board.getPlayerTank(1)->getRemainingShell() == 0) {
+            empty_countdown = 40;
+        }
+        if (empty_countdown != 1) {
+            empty_countdown--;
+        }
     }
 
     return winner;

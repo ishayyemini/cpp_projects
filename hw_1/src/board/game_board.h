@@ -33,6 +33,8 @@ public:
 
     [[nodiscard]] Tank *getPlayerTank(int player_id, int tank_id) const;
 
+    [[nodiscard]] Tank *getPlayerTank(int player_id) const;
+
     [[nodiscard]] BoardElement *getBoardElement(int row, int col) const noexcept;
 
     [[nodiscard]] BoardElement *getBoardElement(const std::pair<int, int> &pos) const noexcept;

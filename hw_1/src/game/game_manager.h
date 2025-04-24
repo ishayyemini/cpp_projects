@@ -18,6 +18,7 @@ class GameManager {
     bool game_over = false;
     Winner winner = NO_WINNER;
     GameBoard board;
+    int empty_countdown = -1;
 
     bool moveForward(int player_id, int tank_id);
 
