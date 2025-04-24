@@ -2,20 +2,35 @@
 #define BOARD_ELEMENT_H
 #include <string>
 
+#include "board/direction.h"
+
 
 class BoardElement {
 protected:
     std::pair<int, int> position;
+    Direction::DirectionType direction = Direction::UP;
     bool destroyed = false;
 
 public:
+    explicit BoardElement(const std::pair<int, int> &position,
+                          const Direction::DirectionType direction): position(position),
+                                                                     direction(direction) {
+    }
+
+    explicit BoardElement(const std::pair<int, int> &position): position(position) {
+    }
+
     virtual ~BoardElement() = default;
 
-    [[nodiscard]] virtual std::string getSymbol() const { return ""; }
+    [[nodiscard]] virtual char getSymbol() const { return ' '; }
 
     [[nodiscard]] virtual std::pair<int, int> getPosition() const { return position; }
 
     virtual void setPosition(const std::pair<int, int> &pos) { position = pos; }
+
+    [[nodiscard]] virtual Direction::DirectionType getDirection() const { return direction; }
+
+    virtual void setDirection(const Direction::DirectionType &dir) { direction = dir; }
 
     virtual void setDestroyed() { destroyed = true; }
 

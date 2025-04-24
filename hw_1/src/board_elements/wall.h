@@ -11,13 +11,13 @@ class Wall final : public BoardElement {
 public:
     explicit Wall(const std::pair<int, int> &position);
 
-    [[nodiscard]] std::string getSymbol() const override { return "⛔"; }
+    [[nodiscard]] char getSymbol() const override { return '#'; }
 
     void takeDamage(const int amount) {
         health -= amount;
     }
 
-    [[nodiscard]] bool isDestroyed() const {
+    [[nodiscard]] bool isDestroyed() const override {
         return health <= 0;
     }
 };

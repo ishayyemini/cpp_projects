@@ -156,7 +156,7 @@ Winner GameManager::checkDeaths() const {
 
 
 bool GameManager::moveForward(Tank &tank) {
-    const std::pair new_position = calcNextPos(tank.getPosition(), tank.getCannonDirection());
+    const std::pair new_position = calcNextPos(tank.getPosition(), tank.getDirection());
     if (board.getBoardElement(new_position) != nullptr) {
         return false;
     }
@@ -164,7 +164,7 @@ bool GameManager::moveForward(Tank &tank) {
 }
 
 bool GameManager::moveBackward(Tank &tank) {
-    const std::pair new_position = calcNextPos(tank.getPosition(), tank.getCannonDirection() + 180);
+    const std::pair new_position = calcNextPos(tank.getPosition(), tank.getDirection() + 180);
     if (board.getBoardElement(new_position) != nullptr) {
         return false;
     }
@@ -177,15 +177,15 @@ bool GameManager::rotate(Tank &tank, const int turn) {
         return false;
     }
 
-    int new_direction = tank.getCannonDirection() + turn;
-    tank.setCannonDirection(static_cast<Direction::DirectionType>(new_direction));
+    int new_direction = tank.getDirection() + turn;
+    tank.setDirection(static_cast<Direction::DirectionType>(new_direction));
     return true;
 }
 
 bool GameManager::shoot(Tank &tank) {
     if (tank.getShootingCooldown() == 0) {
         tank.shoot();
-        board.addShell(std::make_unique<Shell>(tank.getPosition(), tank.getCannonDirection()));
+        board.addShell(std::make_unique<Shell>(tank.getPosition(), tank.getDirection()));
         return true;
     }
     return false;

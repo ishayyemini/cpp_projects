@@ -31,7 +31,7 @@ Action Player2Algo::getNextAction() {
 
     const int curr_dist = calcDistance(player1_pos, player2_pos);
     if (curr_dist <= 2) {
-        const std::pair forward_pos = calcNextPos(player2_pos, player2_tank->getCannonDirection());
+        const std::pair forward_pos = calcNextPos(player2_pos, player2_tank->getDirection());
         if (board.getBoardElement(forward_pos) == nullptr && calcDistance(player1_pos, forward_pos) > curr_dist) {
             return FORWARD;
         }
@@ -40,7 +40,7 @@ Action Player2Algo::getNextAction() {
                  {-90, ROTATE_90_LEFT}, {-45, ROTATE_45_LEFT}, {45, ROTATE_45_RIGHT}, {90, ROTATE_90_RIGHT}
              }) {
             const auto next_direction = static_cast<Direction::DirectionType>(
-                player2_tank->getCannonDirection() + turn.first);
+                player2_tank->getDirection() + turn.first);
             const std::pair<int, int> next_pos = calcNextPos(player2_pos, next_direction);
             if (board.getBoardElement(next_pos) == nullptr && calcDistance(player1_pos, next_pos) > curr_dist) {
                 return turn.second;

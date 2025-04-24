@@ -1,6 +1,6 @@
-#include "board/game_board.h"
 #include <iostream>
 
+#include "board/game_board.h"
 #include "board_elements/board_element_factory.h"
 
 GameBoard::GameBoard() : height(0), width(0) {
@@ -95,14 +95,67 @@ bool GameBoard::moveBoardElement(const std::pair<int, int> &old_pos, const std::
 void GameBoard::displayBoard() const {
     for (const auto &row: board) {
         for (const auto &cell: row) {
-            if (cell != nullptr) {
-                std::cout << cell->getSymbol();
-            } else {
-                std::cout << "◼️️";
-            }
+            std::cout << cell;
         }
         std::cout << '\n';
     }
+}
+
+std::ostream &operator<<(std::ostream &os, BoardElement *element) {
+    if (element == nullptr) {
+        os << "[     ]";
+        return os;
+    }
+
+    std::string dir_string = "";
+    switch (element->getDirection()) {
+        case Direction::UP:
+            dir_string = "⬆️";
+            break;
+        case Direction::UP_RIGHT:
+            dir_string = "↗️";
+            break;
+        case Direction::RIGHT:
+            dir_string = "➡️";
+            break;
+        case Direction::DOWN_RIGHT:
+            dir_string = "↘️";
+            break;
+        case Direction::DOWN:
+            dir_string = "⬇️";
+            break;
+        case Direction::DOWN_LEFT:
+            dir_string = "↙️";
+            break;
+        case Direction::LEFT:
+            dir_string = "⬅️";
+            break;
+        case Direction::UP_LEFT:
+            dir_string = "↖️";
+            break;
+    }
+
+
+    switch (element->getSymbol()) {
+        case '1':
+            os << "[" << dir_string << "🚘1]";
+            break;
+        case '2':
+            os << "[" << dir_string << "🚘2]";
+            break;
+        case '*':
+            os << "[" << dir_string << "☄️ ]";
+            break;
+        case '#':
+            os << "[  🧱 ]";
+            break;
+        case '@':
+            os << "[  💣 ]";
+            break;
+        default: ;
+    }
+
+    return os;
 }
 
 void GameBoard::addShell(std::unique_ptr<Shell> shell) {

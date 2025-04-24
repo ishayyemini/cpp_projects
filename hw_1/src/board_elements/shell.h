@@ -5,19 +5,15 @@
 #ifndef SHELL_H
 #define SHELL_H
 #include "board/direction.h"
+#include "board_elements/board_element.h"
 
 class Shell final : public BoardElement {
-    std::pair<int, int> position;
-    Direction::DirectionType direction;
-
 public:
-    explicit Shell(const std::pair<int, int> &position, Direction::DirectionType direction): position(position),
-        direction(direction) {
+    explicit Shell(const std::pair<int, int> &position, Direction::DirectionType direction): BoardElement(
+        position, direction) {
     }
 
-    [[nodiscard]] std::string getSymbol() const override { return "☄️"; }
-
-    [[nodiscard]] Direction::DirectionType getDirection() const { return direction; }
+    [[nodiscard]] char getSymbol() const override { return '*'; }
 };
 
 #endif //SHELL_H
