@@ -14,6 +14,7 @@ class Tank final : public BoardElement {
     int backwards_counter = 2;
     int shooting_cooldown = 0;
     int shell = MAX_SHELL;
+    bool destroyed = false;
 
 public:
     explicit Tank(int player_id, Direction::DirectionType cannon_direction, const std::pair<int, int> &position);
@@ -45,6 +46,10 @@ public:
     void shoot() { shooting_cooldown = 4; }
 
     int decreaseShell();
+
+    void destroy();
+
+    bool getDestroyed() const;
 };
 
 

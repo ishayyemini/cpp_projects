@@ -66,6 +66,19 @@ Winner GameManager::start_game() {
         if (empty_countdown != 1) {
             empty_countdown--;
         }
+
+        // Check if tanks are both destroyed
+        const bool firstDead = board.getPlayerTank(0)->getDestroyed();
+        const bool secondDead = board.getPlayerTank(1)->getDestroyed();
+        if (firstDead && secondDead) {
+            return TIE;
+        }
+        if (firstDead) {
+            return PLAYER_2;
+        }
+        if (secondDead) {
+            return PLAYER_1;
+        }
     }
 
     return winner;
