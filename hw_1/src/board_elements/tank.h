@@ -11,7 +11,7 @@ class Tank final : public BoardElement {
     int player_id;
     const int tank_id;
     Direction::DirectionType cannon_direction;
-    int backwards_counter = 2;
+    int backwards_counter = 3;
     int shooting_cooldown = 0;
     int shell = MAX_SHELL;
     bool destroyed = false;

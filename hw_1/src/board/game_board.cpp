@@ -39,9 +39,7 @@ Tank *GameBoard::getPlayerTank(const int player_id) const {
         pos = player_2_tank_pos;
     }
     BoardElement *b = getBoardElement(pos.begin()->second);
-    if (const auto t = dynamic_cast<Tank *>(b)) {
-        return t;
-    }
+    if (const auto t = dynamic_cast<Tank *>(b)) return t;
     return nullptr;
 }
 

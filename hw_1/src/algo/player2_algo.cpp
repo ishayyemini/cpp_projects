@@ -3,10 +3,6 @@
 //
 
 #include "algo/player2_algo.h"
-#include "game/game_manager.h"
-
-Player2Algo::Player2Algo(GameBoard &board): board(board) {
-}
 
 int Player2Algo::calcDistance(const std::pair<int, int> &pos1, const std::pair<int, int> &pos2) {
     return std::max(std::abs(pos2.first - pos1.first),

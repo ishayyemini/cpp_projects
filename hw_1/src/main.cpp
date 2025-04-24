@@ -13,6 +13,6 @@ int main() {
     // } else {
     //     std::cerr << "Failed to load map." << std::endl;
     GameManager gm(path);
-    gm.start_game();
+    gm.startGame();
 }
 

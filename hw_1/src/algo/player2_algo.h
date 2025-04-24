@@ -9,10 +9,9 @@
 #include "board/game_board.h"
 
 class Player2Algo final : public Algorithm {
-    GameBoard &board;
-
 public:
-    explicit Player2Algo(GameBoard &board);
+    explicit Player2Algo(GameBoard &board): Algorithm(board) {
+    }
 
     Action getNextAction() override;
 

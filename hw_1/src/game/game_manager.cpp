@@ -5,167 +5,188 @@
 #include <chrono>
 #include <utility>
 
-#include "algo/algorithm.h"
-#include "algo/player1_algo.h"
-#include "algo/player2_algo.h"
 #include "utils/file_utils.h"
 
 GameManager::GameManager(const std::string &input_file_path) {
     file_utils::loadBoard(board, input_file_path);
 }
 
-Winner GameManager::start_game() {
+std::pair<int, int>
+GameManager::calcNextPos(const std::pair<int, int> &pos, const Direction::DirectionType &dir) const {
+    auto [dx, dy] = Direction::getOffset(dir);
+    const int height = board.getHeight();
+    const int width = board.getWidth();
+    return {((pos.first + dx) % height + height) % height, ((pos.second + dy) % width + width) % width};
+}
+
+std::pair<int, int>
+GameManager::calcNextPos(const std::pair<int, int> &pos, const int dir_i) const {
+    const auto dir = static_cast<Direction::DirectionType>(dir_i % 360);
+    return calcNextPos(pos, dir);
+}
+
+Winner GameManager::startGame() {
     using namespace std::chrono_literals;
 
+    Player1Algo p1_algo(board);
     Player2Algo p2_algo(board);
 
+    int i = 0;
     while (true) {
         if (empty_countdown == 0) {
             return TIE;
         }
 
-        Action action = p2_algo.getNextAction();
-        std::cout << action << std::endl;
-
-        switch (action) {
-            case FORWARD:
-                moveForward(2, 0);
-                break;
-            case BACKWARD:
-                moveBackward(2, 0);
-                break;
-            case ROTATE_45_LEFT:
-                rotate(2, 0, -45);
-                break;
-            case ROTATE_45_RIGHT:
-                rotate(2, 0, 45);
-                break;
-            case ROTATE_90_LEFT:
-                rotate(2, 0, -90);
-                break;
-            case ROTATE_90_RIGHT:
-                rotate(2, 0, 90);
-                break;
-            case SHOOT:
-                shoot(2, 0);
-                break;
-            default: ;
-        }
-
-        moveForward(1, 1);
-
-        std::this_thread::sleep_for(1000ms);
-
+        if (i % 2 == 0) tanksTurn(p1_algo, p2_algo);
+        shellsTurn();
         board.displayBoard();
 
-        // Check if both tanks used their shells
-        if (empty_countdown == -1 && board.getPlayerTank(0)->getRemainingShell() == 0 &&
-            board.getPlayerTank(1)->getRemainingShell() == 0) {
-            empty_countdown = 40;
-        }
-        if (empty_countdown != 1) {
-            empty_countdown--;
+        if (const Winner winner = checkDeaths(); winner != NO_WINNER) {
+            return winner;
         }
 
-        // Check if tanks are both destroyed
-        const bool firstDead = board.getPlayerTank(0)->getDestroyed();
-        const bool secondDead = board.getPlayerTank(1)->getDestroyed();
-        if (firstDead && secondDead) {
-            return TIE;
-        }
-        if (firstDead) {
-            return PLAYER_2;
-        }
-        if (secondDead) {
-            return PLAYER_1;
-        }
+        std::this_thread::sleep_for(500ms);
+        i++;
     }
 
     return winner;
 }
 
-bool GameManager::moveForward(const int player_id, const int tank_id) {
-    Tank *tank = board.getPlayerTank(player_id, tank_id);
-    if (tank == nullptr) {
-        std::cerr << "Can't get tank " << tank_id << " of player " << player_id << std::endl;
-        return false;
+void GameManager::tankAction(Tank &tank, const Action action) {
+    const int back_counter = tank.getBackwardsCounter();
+
+    /* 3 -> "regular". Here, any action will perform normally, except for back, which will just dec the counter.
+     * 2 -> "waiting". Don't move. If FORWARD, reset counter. Else, dec counter.
+     * 1 -> "almost moved". If FORWARD, reset counter. Else, move back and dec counter.
+     * 0 -> "moved". If back, move back. Else, perform regular action and reset counter.
+     */
+
+    if (back_counter == 2) {
+        if (action == FORWARD) {
+            tank.setBackwardsCounter(3);
+        } else {
+            tank.setBackwardsCounter(back_counter - 1);
+        }
     }
 
-    if (tank->getBackwardsCounter() != 2 && tank->getBackwardsCounter() != 0) {
-        tank->setBackwardsCounter(2);
-        return false;
-    }
-    if (tank->getBackwardsCounter() == 0) {
-        tank->setBackwardsCounter(2);
+    if (back_counter == 1) {
+        if (action == FORWARD) {
+            tank.setBackwardsCounter(3);
+        } else {
+            moveBackward(tank);
+            tank.setBackwardsCounter(back_counter - 1);
+        }
     }
 
-    const Direction::DirectionType direction = tank->getCannonDirection();
-    auto [x_offset, y_offset] = Direction::getOffset(direction);
-    const std::pair new_position = {tank->getPosition().first + x_offset, tank->getPosition().second + y_offset};
+    switch (action) {
+        case FORWARD:
+            moveForward(tank);
+            if (back_counter == 0) tank.setBackwardsCounter(3);
+            break;
+        case BACKWARD:
+            if (back_counter == 0) {
+                moveBackward(tank);
+            } else {
+                tank.setBackwardsCounter(back_counter - 1);
+            }
+            break;
+        case ROTATE_45_LEFT:
+            rotate(tank, -45);
+            break;
+        case ROTATE_45_RIGHT:
+            rotate(tank, 45);
+            break;
+        case ROTATE_90_LEFT:
+            rotate(tank, -90);
+            break;
+        case ROTATE_90_RIGHT:
+            rotate(tank, 90);
+            break;
+        case SHOOT:
+            shoot(tank);
+            break;
+        default: ;
+    }
+
+    tank.decreaseShootingCooldown();
+}
+
+void GameManager::tanksTurn(Player1Algo &algo1, Player2Algo &algo2) {
+    Tank *t1 = board.getPlayerTank(1);
+    if (t1 == nullptr) return;
+    const Action a1 = algo1.getNextAction();
+    std::cout << a1 << std::endl;
+
+    Tank *t2 = board.getPlayerTank(2);
+    if (t2 == nullptr) return;
+    const Action a2 = algo2.getNextAction();
+    std::cout << a2 << std::endl;
+
+    tankAction(*t1, a1);
+    tankAction(*t2, a2);
+
+    // Check if both tanks used their shells
+    if (empty_countdown == -1 && board.getPlayerTank(0)->getRemainingShell() == 0 &&
+        board.getPlayerTank(1)->getRemainingShell() == 0) {
+        empty_countdown = 40;
+    }
+    if (empty_countdown != 1) {
+        empty_countdown--;
+    }
+}
+
+void GameManager::shellsTurn() {
+}
+
+Winner GameManager::checkDeaths() const {
+    // Check if tanks are both destroyed
+    const bool firstDead = board.getPlayerTank(0)->getDestroyed();
+    const bool secondDead = board.getPlayerTank(1)->getDestroyed();
+    if (firstDead && secondDead) {
+        return TIE;
+    }
+    if (firstDead) {
+        return PLAYER_2;
+    }
+    if (secondDead) {
+        return PLAYER_1;
+    }
+    return NO_WINNER;
+}
+
+
+bool GameManager::moveForward(Tank &tank) {
+    const std::pair new_position = calcNextPos(tank.getPosition(), tank.getCannonDirection());
     if (board.getBoardElement(new_position) != nullptr) {
         return false;
     }
-    return board.moveBoardElement(tank->getPosition(), new_position);
+    return board.moveBoardElement(tank.getPosition(), new_position);
 }
 
-bool GameManager::moveBackward(const int player_id, const int tank_id) {
-    Tank *tank = board.getPlayerTank(player_id, tank_id);
-    if (tank == nullptr) {
-        std::cerr << "Can't get tank " << tank_id << " of player " << player_id << std::endl;
-        return false;
-    }
-
-    if (tank->getBackwardsCounter() != 0) {
-        tank->setBackwardsCounter(tank->getBackwardsCounter() - 1);
-        return false;
-    }
-
-    const Direction::DirectionType direction = tank->getCannonDirection();
-    auto [x_offset, y_offset] = Direction::getOffset(direction);
-    const std::pair new_position = {tank->getPosition().first - x_offset, tank->getPosition().second - y_offset};
+bool GameManager::moveBackward(Tank &tank) {
+    const std::pair new_position = calcNextPos(tank.getPosition(), tank.getCannonDirection() + 180);
     if (board.getBoardElement(new_position) != nullptr) {
         return false;
     }
-    return board.moveBoardElement(tank->getPosition(), new_position);
+    return board.moveBoardElement(tank.getPosition(), new_position);
 }
 
-bool GameManager::rotate(const int player_id, const int tank_id, const int turn) {
-    Tank *tank = board.getPlayerTank(player_id, tank_id);
-    if (tank == nullptr) {
-        std::cerr << "Can't get tank " << tank_id << " of player " << player_id << std::endl;
-        return false;
-    }
+bool GameManager::rotate(Tank &tank, const int turn) {
     if (turn != 45 && turn != 90 && turn != -45 && turn != -90) {
         std::cerr << "Got bad direction: " << turn << std::endl;
         return false;
     }
-    if (tank->getBackwardsCounter() != 2) {
-        tank->setBackwardsCounter(tank->getBackwardsCounter() - 1);
-        return false;
-    }
-    if (tank->getBackwardsCounter() == 0) {
-        tank->setBackwardsCounter(2);
-    }
 
-    int new_direction = tank->getCannonDirection() + turn;
-    tank->setCannonDirection(static_cast<Direction::DirectionType>(new_direction));
+    int new_direction = tank.getCannonDirection() + turn;
+    tank.setCannonDirection(static_cast<Direction::DirectionType>(new_direction));
     return true;
 }
 
-bool GameManager::shoot(int player_id, int tank_id) {
-    Tank *tank = board.getPlayerTank(player_id, tank_id);
-    if (tank == nullptr) {
-        std::cerr << "Can't get tank " << tank_id << " of player " << player_id << std::endl;
-        return false;
-    }
-
-    if (tank->getShootingCooldown() == 0) {
-        tank->shoot();
-        auto [fst, snd] = Direction::getOffset(tank->getCannonDirection());
-        const std::pair new_position = {tank->getPosition().first + fst, tank->getPosition().second + snd};
-        board.addShell(std::make_unique<Shell>(new_position, tank->getCannonDirection()));
+bool GameManager::shoot(Tank &tank) {
+    if (tank.getShootingCooldown() == 0) {
+        tank.shoot();
+        board.addShell(std::make_unique<Shell>(tank.getPosition(), tank.getCannonDirection()));
         return true;
     }
-
     return false;
 }

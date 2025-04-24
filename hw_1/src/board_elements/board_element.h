@@ -6,6 +6,7 @@
 class BoardElement {
 protected:
     std::pair<int, int> position;
+    bool destroyed = false;
 
 public:
     virtual ~BoardElement() = default;
@@ -15,6 +16,10 @@ public:
     [[nodiscard]] virtual std::pair<int, int> getPosition() const { return position; }
 
     virtual void setPosition(const std::pair<int, int> &pos) { position = pos; }
+
+    virtual void setDestroyed() { destroyed = true; }
+
+    [[nodiscard]] virtual bool isDestroyed() const { return destroyed; }
 };
 
 #endif //BOARD_ELEMENT_H
