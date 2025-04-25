@@ -16,14 +16,6 @@ bool Algorithm::exists_threatening_shells(const std::pair<int, int> &tank_positi
     return false;
 }
 
-bool Algorithm::isTankThreaten(const std::pair<int, int> &tank_position) {
-    if (exists_threatening_shells(tank_position) || is_enemy_tank_threatening(tank_position)) {
-        return true;
-    }
-    return false;
-}
-
-
 bool Algorithm::isShellDangerous(const std::pair<int, int> &tank_position) {
     //todo: implement this
     return false;
@@ -32,10 +24,6 @@ bool Algorithm::isShellDangerous(const std::pair<int, int> &tank_position) {
 bool Algorithm::isActionValid() {
     // TODO: Validate the last suggested action (use board state, position, etc.)
     return true;
-}
-
-bool Algorithm::is_enemy_tank_threatening(const std::pair<int, int> &tank_position) {
-    return false;
 }
 
 std::pair<int, int>

@@ -4,14 +4,12 @@
 #include "utils/file_utils.h"
 
 
-int main() {
-    //todo: change it so we get it from user
-    const std::string path = "../input/map.txt";
+int main(const int argc, char *argv[]) {
+    if (argc != 2) {
+        std::cerr << "Usage: " << argv[0] << " <game-file>" << std::endl;
+    }
 
-    // if (const int status = file_utils::loadBoard(gb, path); status == 0) {
-    //     std::cout << "Map loaded successfully." << std::endl;
-    // } else {
-    //     std::cerr << "Failed to load map." << std::endl;
+    const std::string path = argv[1];
     GameManager gm(path);
     const Winner winner = gm.startGame();
 

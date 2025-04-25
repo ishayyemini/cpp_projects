@@ -23,6 +23,8 @@ public:
 
 private:
     BoardGraph board_graph;
+    std::pair<int, int> last_enemy_pos = {-1, -1};
+    Direction::DirectionType cached_direction = Direction::UP;
 
     Action escape();
 
@@ -31,6 +33,12 @@ private:
 
     Direction::DirectionType bfsToOpponent(const std::pair<int, int> &tankPos,
                                            const std::pair<int, int> &targetPos) const;
+
+    bool hasLineOfSightToEnemy() const;
+
+    bool canShootWall() const;
+
+    bool isTankThreaten(const std::pair<int, int> &tank_position) const;
 };
 
 

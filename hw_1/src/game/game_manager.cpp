@@ -123,6 +123,8 @@ void GameManager::tanksTurn(Player1Algo &algo1, Player2Algo &algo2) {
     if (t2 == nullptr) return;
     const Action a2 = algo2.getNextAction();
 
+    std::cout << a1 << " " << a2 << std::endl;
+
     tankAction(*t1, a1);
     tankAction(*t2, a2);
 

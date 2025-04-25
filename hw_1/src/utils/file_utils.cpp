@@ -30,9 +30,7 @@ int file_utils::loadBoard(GameBoard &board, const std::string &fileName) {
 
     //create GameBoard object of size width x height
     board = GameBoard(width, height);
-    if (!populateBoard(inFile, board, width, height)) {
-        return -1;
-    }
+    populateBoard(inFile, board, width, height);
     std::cout << "Board loaded from '" << fileName << "':\n";
     inFile.close();
     return 0;
@@ -56,23 +54,12 @@ namespace {
         for (int row = 0; row < height; ++row) {
             if (!std::getline(inFile, line)) {
                 std::cerr << "Error: Missing row " << row + 1 << " in file.\n";
-                //todo: maybe is possible to adjust this by adding additional empty rows
-                return false;
+                line = " ";
             }
 
-            // if (static_cast<int>(line.length()) < width) {
-            //     std::cerr << "Error: Line " << row + 1 << " is too short (expected " << width << ", got " << line.
-            //             length() << ").\n";
-            //     //todo: maybe is possible to adjust this by adding additional empty rows
-            //     return false;
-            // }
-
             for (int col = 0; col < width; ++col) {
-                char symbol = col < line.length() ? line[col] : ' ';
-                //todo: this should never happen, maybe we can delete this validation
-                if (!board.pushSymbol(row, col, symbol)) {
-                    return false;
-                }
+                const char symbol = col < line.length() ? line[col] : ' ';
+                board.pushSymbol(row, col, symbol);
             }
         }
 

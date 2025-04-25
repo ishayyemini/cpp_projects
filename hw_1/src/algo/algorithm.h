@@ -17,13 +17,10 @@ public:
     virtual ~Algorithm() = default;
 
     bool isActionValid(); //todo: maybe delete this - i don't think we will need this
-    bool isTankThreaten(const std::pair<int, int> &tank_position);
 
     bool isShellDangerous(const std::pair<int, int> &tank_position);
 
     bool exists_threatening_shells(const std::pair<int, int> &tank_position);
-
-    bool is_enemy_tank_threatening(const std::pair<int, int> &tank_position);
 
     std::pair<int, int> calcNextPos(const std::pair<int, int> &pos, const Direction::DirectionType &dir) const;
 
