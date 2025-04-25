@@ -24,6 +24,10 @@ public:
     bool exists_threatening_shells(const std::pair<int, int> &tank_position);
 
     bool is_enemy_tank_threatening(const std::pair<int, int> &tank_position);
+
+    std::pair<int, int> calcNextPos(const std::pair<int, int> &pos, const Direction::DirectionType &dir) const;
+
+    std::pair<int, int> calcNextPos(const std::pair<int, int> &pos, int dir_i) const;
 };
 
 

@@ -9,16 +9,9 @@ int Player2Algo::calcDistance(const std::pair<int, int> &pos1, const std::pair<i
                     std::abs(pos2.second - pos1.second));
 }
 
-std::pair<int, int>
-Player2Algo::calcNextPos(const std::pair<int, int> &pos, const Direction::DirectionType &dir) const {
-    auto [dx, dy] = Direction::getOffset(dir);
-    int height = board.getHeight();
-    int width = board.getWidth();
-    return {((pos.first + dx) % height + height) % height, ((pos.second + dy) % width + width) % width};
-}
-
-
 Action Player2Algo::getNextAction() {
+    return NONE;
+
     const auto &player2_tank = board.getPlayerTank(2, 0);
     const auto &player1_tank = board.getPlayerTank(1, 1);
 

@@ -1,7 +1,10 @@
 #include "board_graph.h"
 #include "board/game_board.h"
+#include "board_elements/mine.h"
+#include "board_elements/wall.h"
 
-BoardGraph::BoardGraph(const GameBoard &board): board_size(board.getHeight(), board.getWidth()),
+BoardGraph::BoardGraph(const GameBoard &board): board(board),
+                                                board_size(board.getHeight(), board.getWidth()),
                                                 nodes(std::map<std::pair<int, int>, std::unique_ptr<
                                                     BoardNode> >()),
                                                 graph(std::map<std::pair<int, int>, std::vector<
@@ -40,6 +43,22 @@ void BoardGraph::addEdges() {
     }
 }
 
+bool BoardGraph::isValidCell(const std::pair<int, int> &pos) const {
+    // Check if the cell is traversable
+    const BoardElement *element = board.getBoardElement(pos);
+    if (element == nullptr) {
+        return true;
+    }
+
+    if (dynamic_cast<const Wall *>(element) != nullptr) {
+        return false; // Walls are not traversable
+    }
+    if (dynamic_cast<const Mine *>(element) != nullptr) {
+        return false; // Mines are not traversable
+    }
+
+    return true; // The cell is valid and traversable
+}
 
 //todo: add bfs logic + update the graph to be steps graph.
 //todo: add update graph so we don't need to init it from the beggining each time

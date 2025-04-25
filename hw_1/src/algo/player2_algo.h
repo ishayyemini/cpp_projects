@@ -16,9 +16,6 @@ public:
     Action getNextAction();
 
     static int calcDistance(const std::pair<int, int> &pos1, const std::pair<int, int> &pos2);
-
-    [[nodiscard]] std::pair<int, int> calcNextPos(const std::pair<int, int> &pos,
-                                                  const Direction::DirectionType &dir) const;
 };
 
 #endif //PLAYER2_ALGO_H

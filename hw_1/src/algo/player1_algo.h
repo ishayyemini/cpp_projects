@@ -9,6 +9,11 @@
 
 
 class Player1Algo final : public Algorithm {
+    struct Cell {
+        std::pair<int, int> position;
+        Direction::DirectionType parentDir;
+    };
+
 public:
     explicit Player1Algo(GameBoard &board);
 
@@ -24,7 +29,8 @@ private:
     Action chase(); //todo: add tankid as param
     Action suicide_mission();
 
-    Action calcActionBFS(const std::pair<int, int> &tank_position);
+    Direction::DirectionType bfsToOpponent(const std::pair<int, int> &tankPos,
+                                           const std::pair<int, int> &targetPos) const;
 };
 
 

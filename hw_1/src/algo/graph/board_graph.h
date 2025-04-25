@@ -13,10 +13,12 @@ class BoardGraph {
 public:
     explicit BoardGraph(const GameBoard &board);
 
+    bool isValidCell(const std::pair<int, int> &pos) const;
 
     // BoardNode* getNode(const std::pair<int, int>& pos) const;
 
 private:
+    const GameBoard &board;
     std::pair<int, int> board_size;
     std::map<std::pair<int, int>, std::unique_ptr<BoardNode> > nodes;
     std::map<std::pair<int, int>, std::vector<std::unique_ptr<BoardNode> > > graph;

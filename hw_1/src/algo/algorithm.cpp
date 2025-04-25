@@ -37,3 +37,17 @@ bool Algorithm::isActionValid() {
 bool Algorithm::is_enemy_tank_threatening(const std::pair<int, int> &tank_position) {
     return false;
 }
+
+std::pair<int, int>
+Algorithm::calcNextPos(const std::pair<int, int> &pos, const Direction::DirectionType &dir) const {
+    auto [dx, dy] = Direction::getOffset(dir);
+    const int height = board.getHeight();
+    const int width = board.getWidth();
+    return {((pos.first + dx) % height + height) % height, ((pos.second + dy) % width + width) % width};
+}
+
+std::pair<int, int>
+Algorithm::calcNextPos(const std::pair<int, int> &pos, const int dir_i) const {
+    const auto dir = Direction::getDirection(dir_i);
+    return calcNextPos(pos, dir);
+}
