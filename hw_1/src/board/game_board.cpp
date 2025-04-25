@@ -14,12 +14,8 @@ int GameBoard::getHeight() const { return height; }
 int GameBoard::getWidth() const { return width; }
 
 Tank *GameBoard::getPlayerTank(const int player_id, const int tank_id) const {
-    std::map<int, std::pair<int, int> > pos;
-    if (player_id == 1) {
-        pos = player_1_tank_pos;
-    } else {
-        pos = player_2_tank_pos;
-    }
+    std::map<int, std::pair<int, int> > pos = (player_id == 1)? player_1_tank_pos : pos = player_2_tank_pos;
+
     if (!pos.contains(tank_id)) {
         return nullptr;
     }

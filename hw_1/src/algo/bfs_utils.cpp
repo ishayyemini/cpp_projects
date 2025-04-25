@@ -29,11 +29,12 @@ namespace bfs_utils {
                 int nx = current_cell.position.first + direction.first;
                 int ny = current_cell.position.second + direction.second;
 
-
-                //todo: check boundaries
-                if (visited[nx][ny]) continue;
-
-                char cell = board[nx][ny];
+                //todo: check boundaries + fix using tunnel
+                if (visited[nx][ny]) {
+                    continue;
+                }
+                //didn't visited it yet
+                BoardElement element = board.getBoardElement(nx, ny);
                 if (cell == '#' || cell == '@') continue;
 
                 visited[nx][ny] = true;

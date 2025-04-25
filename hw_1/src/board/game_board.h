@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 #include <vector>
+#include <board_elements/shell.h>
 
 #include "board_elements/board_element.h"
 #include "board_elements/tank.h"
