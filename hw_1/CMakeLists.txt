@@ -25,4 +25,9 @@ add_executable(tanks_game src/main.cpp
         src/algo/player1_algo.cpp
         src/algo/bfs_utils.h
         src/algo/bfs_utils.cpp
+        src/algo/graph/graph_node.h
+        src/algo/graph/board_graph.h
+        src/algo/graph/board_graph.cpp
+        src/algo/algorithm.cpp
+        src/algo/graph/graph_node.cpp
 )
