@@ -3,6 +3,7 @@
 
 #include <utility>
 #include <array>
+#include <ostream>
 
 class Direction {
 public:
@@ -17,21 +18,50 @@ public:
         UP_LEFT = 315,
     };
 
-    static constexpr std::pair<int, int> getOffset(DirectionType direction) {
-        return directionOffsets[static_cast<std::size_t>(direction)/45];
+    static constexpr std::pair<int, int> getOffset(const DirectionType dir) {
+        return directionOffsets[dir / 45];
     }
 
-    static constexpr std::pair<int, int> getOffset(int direction_index) {
-        return directionOffsets[direction_index];
+    static constexpr DirectionType getDirection(const int dir) {
+        int mod_dir = (dir % 360 + 360) % 360;
+        if (mod_dir % 45 != 0) return UP;
+        return static_cast<DirectionType>((dir % 360 + 360) % 360);
     }
 
     static constexpr int getDirectionSize() {
         return kDirectionCount;
     }
 
-    static constexpr DirectionType getDirectionType(int index) {
-        //assuming index in valid
-        return static_cast<DirectionType>(index);
+    friend std::ostream &operator<<(std::ostream &os, const DirectionType dir) {
+        std::string dir_string = "";
+        switch (dir) {
+            case UP:
+                dir_string = "⬆️";
+                break;
+            case UP_RIGHT:
+                dir_string = "↗️";
+                break;
+            case RIGHT:
+                dir_string = "➡️";
+                break;
+            case DOWN_RIGHT:
+                dir_string = "↘️";
+                break;
+            case DOWN:
+                dir_string = "⬇️";
+                break;
+            case DOWN_LEFT:
+                dir_string = "↙️";
+                break;
+            case LEFT:
+                dir_string = "⬅️";
+                break;
+            case UP_LEFT:
+                dir_string = "↖️";
+                break;
+        }
+        os << dir_string;
+        return os;
     }
 
 private:

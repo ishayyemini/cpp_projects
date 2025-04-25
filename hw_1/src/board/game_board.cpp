@@ -1,7 +1,9 @@
-#include "board/game_board.h"
 #include <iostream>
 
+#include "board/game_board.h"
 #include "board_elements/board_element_factory.h"
+#include "board_elements/mine.h"
+#include "board_elements/wall.h"
 
 GameBoard::GameBoard() : height(0), width(0) {
 }
@@ -23,6 +25,20 @@ Tank *GameBoard::getPlayerTank(const int player_id, const int tank_id) const {
     if (const auto t = dynamic_cast<Tank *>(b)) {
         return t;
     }
+    return nullptr;
+}
+
+// This takes into account there being only one tank per player
+Tank *GameBoard::getPlayerTank(const int player_id) const {
+    std::map<int, std::pair<int, int> > pos;
+    if (player_id == 1) {
+        pos = player_1_tank_pos;
+    } else {
+        pos = player_2_tank_pos;
+    }
+    if (pos.empty()) return nullptr;
+    BoardElement *b = getBoardElement(pos.begin()->second);
+    if (const auto t = dynamic_cast<Tank *>(b)) return t;
     return nullptr;
 }
 
@@ -53,42 +69,154 @@ bool GameBoard::pushSymbol(const int row, const int col, const char symbol) {
     return true;
 }
 
-bool GameBoard::moveBoardElement(const std::pair<int, int> &old_pos, const std::pair<int, int> &new_pos) {
+bool GameBoard::moveTank(const std::pair<int, int> &old_pos, const std::pair<int, int> &new_pos) {
     const std::pair mod_pos = {(new_pos.first % height + height) % height, (new_pos.second % width + width) % width};
-    if (board[mod_pos.first][mod_pos.second] != nullptr) {
-        std::cerr << "Can't move to non-empty space" << std::endl;
-        return false;
+    const auto tank = dynamic_cast<Tank *>(getBoardElement(old_pos));
+    if (tank == nullptr) return false;
+
+    if (BoardElement *collision = board[mod_pos.first][mod_pos.second].get()) {
+        if (dynamic_cast<Mine *>(collision)) {
+            // Mine? We explode!
+            tank->setDestroyed();
+            if (tank->getPlayerId() == 1) {
+                player_1_tank_pos.erase(tank->getTankId());
+            } else {
+                player_2_tank_pos.erase(tank->getTankId());
+            }
+            board[tank->getPosition().first][tank->getPosition().second] = nullptr;
+            board[mod_pos.first][mod_pos.second] = nullptr;
+            return true;
+        }
+        if (dynamic_cast<Wall *>(collision) != nullptr) {
+            // Wall? Ignore.
+            return false;
+        }
+        if (const auto other_tank = dynamic_cast<Tank *>(collision)) {
+            // Tank? Two tanks colliding... Boom!
+            tank->setDestroyed();
+            if (tank->getPlayerId() == 1) {
+                player_1_tank_pos.erase(tank->getTankId());
+            } else {
+                player_2_tank_pos.erase(tank->getTankId());
+            }
+            board[tank->getPosition().first][tank->getPosition().second] = nullptr;
+            other_tank->setDestroyed();
+            if (other_tank->getPlayerId() == 1) {
+                player_1_tank_pos.erase(other_tank->getTankId());
+            } else {
+                player_2_tank_pos.erase(other_tank->getTankId());
+            }
+            board[other_tank->getPosition().first][other_tank->getPosition().second] = nullptr;
+            return true;
+        }
     }
 
     board[mod_pos.first][mod_pos.second] = std::move(board[old_pos.first][old_pos.second]);
 
-    if (const auto t = dynamic_cast<Tank *>(getBoardElement(mod_pos))) {
-        if (t->getPlayerId() == 1) {
-            player_1_tank_pos[t->getTankId()] = {mod_pos.first, mod_pos.second};
-        } else {
-            player_2_tank_pos[t->getTankId()] = {mod_pos.first, mod_pos.second};
-        }
+    if (tank->getPlayerId() == 1) {
+        player_1_tank_pos[tank->getTankId()] = {mod_pos.first, mod_pos.second};
+    } else {
+        player_2_tank_pos[tank->getTankId()] = {mod_pos.first, mod_pos.second};
     }
 
     board[mod_pos.first][mod_pos.second].get()->setPosition(mod_pos);
     return true;
 }
 
-// TODO: change so board_element overrides the << operator
-void GameBoard::displayBoard() const {
-    for (const auto &row: board) {
-        for (const auto &cell: row) {
-            if (cell != nullptr) {
-                std::cout << cell->getSymbol();
+bool GameBoard::moveShell(const int shell_index, const std::pair<int, int> &new_pos) {
+    const std::pair mod_pos = {(new_pos.first % height + height) % height, (new_pos.second % width + width) % width};
+    if (shell_index < 0 || shell_index >= shells.size()) {
+        std::cerr << "Bad shell index" << std::endl;
+        return false;
+    }
+    Shell *shell = getShell(shell_index);
+    if (shell == nullptr) {
+        std::cerr << "Bad shell index" << std::endl;
+        return false;
+    }
+
+    if (!shells_pos.contains(shell->getPosition())) {
+        std::cerr << "Can't find shell position" << std::endl;
+        return false;
+    }
+
+    if (BoardElement *collision = board[mod_pos.first][mod_pos.second].get()) {
+        if (dynamic_cast<Mine *>(collision)) {
+            // Mine? We don't care.
+        }
+        if (const auto wall = dynamic_cast<Wall *>(collision)) {
+            // Wall? Weaken it and destroy the shell.
+            wall->takeDamage();
+            if (wall->getHealth() == 0) {
+                board[wall->getPosition().first][wall->getPosition().second] = nullptr;
+            }
+            shells_pos.erase(shell->getPosition());
+            shells.erase(shells.begin() + shell_index);
+            return true;
+        }
+        if (const auto tank = dynamic_cast<Tank *>(collision)) {
+            // Tank? This is AFTER the tanks moved for this step. So let's handle it!
+            tank->setDestroyed();
+            if (tank->getPlayerId() == 1) {
+                player_1_tank_pos.erase(tank->getTankId());
             } else {
-                std::cout << "◼️️";
+                player_2_tank_pos.erase(tank->getTankId());
+            }
+            board[tank->getPosition().first][tank->getPosition().second] = nullptr;
+            shells_pos.erase(shell->getPosition());
+            shells.erase(shells.begin() + shell_index);
+            return true;
+        }
+    }
+
+    if (shells_pos.contains(mod_pos)) {
+        // Shell? We delete both of them
+        shells_pos.erase(shell->getPosition());
+        shells.erase(shells.begin() + shell_index);
+        const int other_shell_index = shells_pos[mod_pos];
+        shells_pos.erase(mod_pos);
+        shells.erase(shells.begin() + other_shell_index - 1);
+        return true;
+    }
+
+    shells_pos.erase(shell->getPosition());
+    shells_pos[mod_pos] = shell_index;
+    shell->setPosition(mod_pos);
+
+    return true;
+}
+
+void GameBoard::displayBoard() const {
+    for (int i = 0; i < height; ++i) {
+        for (int j = 0; j < width; ++j) {
+            if (Shell *shell = getShell({i, j})) {
+                std::cout << *shell;
+            } else if (board[i][j] != nullptr) {
+                std::cout << *board[i][j];
+            } else {
+                std::cout << "[     ]";
             }
         }
-        std::cout << '\n';
+        std::cout << std::endl;
     }
+    std::cout << std::endl;
 }
 
 void GameBoard::addShell(std::unique_ptr<Shell> shell) {
+    shells_pos[shell->getPosition()] = shells.size();
     shells.push_back(std::move(shell));
 }
 
+Shell *GameBoard::getShell(const int i) const {
+    if (i >= shells.size()) {
+        return nullptr;
+    }
+    return shells[i].get();
+}
+
+Shell *GameBoard::getShell(const std::pair<int, int> &pos) const {
+    if (!shells_pos.contains(pos)) {
+        return nullptr;
+    }
+    return getShell(shells_pos.at(pos));
+}

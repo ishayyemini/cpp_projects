@@ -1,15 +1,16 @@
+
 #ifndef PLAYER1_ALGO_H
 #define PLAYER1_ALGO_H
 
-#include "algorithm.h"
+#include "algo/algorithm.h"
 #include "game/action.h"
 #include "board/game_board.h"
 #include "graph/board_graph.h"
 
 
-class Player1Algo: public Algorithm {
+class Player1Algo final: public Algorithm {
 public:
-    explicit Player1Algo(GameBoard* board);
+    explicit Player1Algo(GameBoard& board);
 
     Action getNextAction(std::pair<int, int> tank_position) override;
 

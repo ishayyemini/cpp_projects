@@ -7,26 +7,16 @@ constexpr int MAX_SHELL = 16;
 static int tank_count = 0;
 
 class Tank final : public BoardElement {
-    std::pair<int, int> position;
     int player_id;
     const int tank_id;
-    Direction::DirectionType cannon_direction;
-    int backwards_counter = 2;
+    int backwards_counter = 3;
     int shooting_cooldown = 0;
     int shell = MAX_SHELL;
 
 public:
-    explicit Tank(int player_id, Direction::DirectionType cannon_direction, const std::pair<int, int> &position);
+    explicit Tank(int player_id, Direction::DirectionType direction, const std::pair<int, int> &position);
 
-    [[nodiscard]] std::string getSymbol() const override;
-
-    [[nodiscard]] std::pair<int, int> getPosition() const override { return position; }
-
-    void setPosition(const std::pair<int, int> &pos) override { position = pos; }
-
-    void setCannonDirection(Direction::DirectionType cannonDirection);
-
-    [[nodiscard]] Direction::DirectionType getCannonDirection() const;
+    [[nodiscard]] char getSymbol() const override;
 
     [[nodiscard]] int getTankId() const;
 

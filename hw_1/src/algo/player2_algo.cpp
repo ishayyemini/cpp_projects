@@ -3,10 +3,6 @@
 //
 
 #include "algo/player2_algo.h"
-#include "game/game_manager.h"
-
-Player2Algo::Player2Algo(GameBoard &board): board(board) {
-}
 
 int Player2Algo::calcDistance(const std::pair<int, int> &pos1, const std::pair<int, int> &pos2) {
     return std::max(std::abs(pos2.first - pos1.first),
@@ -35,7 +31,7 @@ Action Player2Algo::getNextAction() {
 
     const int curr_dist = calcDistance(player1_pos, player2_pos);
     if (curr_dist <= 2) {
-        const std::pair forward_pos = calcNextPos(player2_pos, player2_tank->getCannonDirection());
+        const std::pair forward_pos = calcNextPos(player2_pos, player2_tank->getDirection());
         if (board.getBoardElement(forward_pos) == nullptr && calcDistance(player1_pos, forward_pos) > curr_dist) {
             return FORWARD;
         }
@@ -43,8 +39,7 @@ Action Player2Algo::getNextAction() {
         for (const std::pair<int, Action> &turn: std::initializer_list<std::pair<int, Action> >{
                  {-90, ROTATE_90_LEFT}, {-45, ROTATE_45_LEFT}, {45, ROTATE_45_RIGHT}, {90, ROTATE_90_RIGHT}
              }) {
-            const auto next_direction = static_cast<Direction::DirectionType>(
-                player2_tank->getCannonDirection() + turn.first);
+            const auto next_direction = Direction::getDirection(player2_tank->getDirection() + turn.first);
             const std::pair<int, int> next_pos = calcNextPos(player2_pos, next_direction);
             if (board.getBoardElement(next_pos) == nullptr && calcDistance(player1_pos, next_pos) > curr_dist) {
                 return turn.second;
@@ -88,5 +83,5 @@ Action Player2Algo::getNextAction() {
     //     }
     // }
 
-    return NONE;
+    return FORWARD;
 }

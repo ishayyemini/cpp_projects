@@ -34,4 +34,5 @@ add_executable(tanks_game src/main.cpp
         src/algo/graph/board_graph.cpp
         src/algo/algorithm.cpp
         src/algo/graph/graph_node.cpp
+        src/board_elements/board_element.cpp
 )

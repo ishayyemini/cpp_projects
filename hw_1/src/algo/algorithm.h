@@ -6,13 +6,10 @@
 
 class Algorithm {
 protected:
-    GameBoard* board;
+    GameBoard& board;
 
 public:
-    explicit Algorithm(GameBoard* board) : board(board) {
-       if (!board) {
-        throw std::invalid_argument("Algorithm constructor received nullptr GameBoard");
-    	}
+    explicit Algorithm(GameBoard& board) : board(board) {
     }
     virtual Action getNextAction(std::pair<int, int> tank_position) = 0;
     virtual ~Algorithm() = default;
