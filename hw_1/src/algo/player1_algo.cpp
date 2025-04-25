@@ -79,42 +79,72 @@ Action Player1Algo::suicide_mission() {
 Direction::DirectionType Player1Algo::bfsToOpponent(const std::pair<int, int> &tankPos,
                                                     const std::pair<int, int> &targetPos) const {
     if (tankPos == targetPos) {
-        return Direction::UP;
+        return Direction::UP; // Already at target
     }
 
-    // Define the BFS queue and visited set
-    std::queue<std::pair<std::pair<int, int>, int> > queue;
-    std::vector<std::pair<int, int> > visited;
+    const auto &player1_tank = board.getPlayerTank(1, 1);
+    Direction::DirectionType currentTankDirection = player1_tank->getDirection();
 
-    // Initialize the BFS with the starting position
-    queue.emplace(tankPos, -1);
-    visited.push_back(tankPos);
+    // State for search algorithm
+    struct State {
+        std::pair<int, int> pos;
+        Direction::DirectionType dir;
+        int cost;
+        Direction::DirectionType initialDir;
 
-    while (!queue.empty()) {
-        auto [currentPos, initialDir] = queue.front();
-        queue.pop();
-
+        bool operator>(const State &other) const {
+            return cost > other.cost;
+        }
+    };
+    // Priority queue for Dijkstra's algorithm
+    std::priority_queue<State, std::vector<State>, std::greater<> > pq;
+    // Track visited states with their costs
+    std::map<std::pair<std::pair<int, int>, Direction::DirectionType>, int> visited;
+    // Calculate rotation cost between two directions
+    auto getRotationCost = [](Direction::DirectionType from, Direction::DirectionType to) {
+        if (from == to) return 0;
+        int diff = abs(from - to);
+        if (diff > 180) diff = 360 - diff;
+        // Based on rotation requirements
+        return diff > 0 ? 2 : 0; // Any rotation takes 2 game turns
+    };
+    // Try all possible initial directions
+    for (int i = 0; i < Direction::getDirectionSize(); ++i) {
+        Direction::DirectionType initialDir = Direction::getDirection(i * 45);
+        int rotationCost = getRotationCost(currentTankDirection, initialDir);
+        std::pair<int, int> nextPos = calcNextPos(tankPos, initialDir);
+        if (!board_graph.isValidCell(nextPos)) {
+            continue;
+        }
+        pq.push({nextPos, initialDir, rotationCost + 1, initialDir});
+        visited[{nextPos, initialDir}] = rotationCost + 1;
+    }
+    while (!pq.empty()) {
+        State current = pq.top();
+        pq.pop();
+        if (visited[{current.pos, current.dir}] < current.cost) {
+            continue;
+        }
+        if (current.pos == targetPos) {
+            return current.initialDir;
+        }
         for (int i = 0; i < Direction::getDirectionSize(); ++i) {
-            Direction::DirectionType dir = Direction::getDirection(i * 45);
-            std::pair<int, int> neighbor = calcNextPos(currentPos, dir);
-
-            if (std::ranges::find(visited, neighbor) != visited.end()
-                || !board_graph.isValidCell(neighbor)) {
+            Direction::DirectionType newDir = Direction::getDirection(i * 45);
+            const int rotationCost = getRotationCost(current.dir, newDir);
+            std::pair<int, int> nextPos = calcNextPos(current.pos, newDir);
+            if (!board_graph.isValidCell(nextPos)) {
+                continue;
+            }
+            int nextCost = current.cost + rotationCost + 1;
+            auto nextState = std::make_pair(nextPos, newDir);
+            if (visited.find(nextState) != visited.end() && visited[nextState] <= nextCost) {
                 continue;
             }
 
-            // Mark as visited
-            visited.push_back(neighbor);
-
-            // If the target is found, return the initial direction
-            if (neighbor == targetPos) {
-                return initialDir == -1 ? dir : Direction::getDirection(initialDir * 45);
-            }
-
-            // Add to the queue with the initial direction
-            queue.emplace(neighbor, initialDir == -1 ? dir / 45 : initialDir);
+            visited[nextState] = nextCost;
+            pq.push({nextPos, newDir, nextCost, current.initialDir});
         }
     }
 
-    return Direction::UP; // Default direction if no path is found
+    return Direction::UP; // Default if no path found
 }
