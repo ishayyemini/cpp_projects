@@ -220,3 +220,16 @@ Shell *GameBoard::getShell(const std::pair<int, int> &pos) const {
     }
     return getShell(shells_pos.at(pos));
 }
+
+void GameBoard::removeElement(const std::pair<int, int> &pos) {
+    if (pos.first >= 0 && pos.first < height && pos.second >= 0 && pos.second < width) {
+        board[pos.first][pos.second] = nullptr;
+    }
+}
+
+void GameBoard::removeShell(int shell_index) {
+    if (shell_index >= 0 && shell_index < shells.size()) {
+        shells_pos.erase(shells[shell_index]->getPosition());
+        shells.erase(shells.begin() + shell_index);
+    }
+}

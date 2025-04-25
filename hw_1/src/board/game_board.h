@@ -54,6 +54,12 @@ public:
     [[nodiscard]] Shell *getShell(int i) const;
 
     [[nodiscard]] Shell *getShell(const std::pair<int, int> &pos) const;
+
+    void removeElement(const std::pair<int, int> &pos);
+
+    void removeShell(int shell_index);
+
+    int getShellsCount() const { return shells.size(); }
 };
 
 #endif //GAME_BOARD_H

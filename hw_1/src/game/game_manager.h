@@ -47,6 +47,22 @@ public:
     explicit GameManager(const std::string &input_file_path);
 
     Winner startGame();
+
+    // In game_manager.h, add these new methods and data structures
+private:
+    struct MovingObject {
+        enum Type { TANK, SHELL } type;
+
+        int id; // Tank player ID or shell index
+        std::pair<int, int> from;
+        std::pair<int, int> to;
+    };
+
+    void processMovements();
+
+    void detectAndHandleCollisions(std::vector<MovingObject> &movements);
+
+    void applyMovements(const std::vector<MovingObject> &valid_movements);
 };
 
 #endif //GAME_MANAGER_H
