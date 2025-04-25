@@ -22,7 +22,7 @@ void BoardGraph::initNodes(const GameBoard &board) {
     for (int i = 0; i < board_size.first; ++i) {
         for (int j = 0; j < board_size.second; ++j) {
             std::pair pos = {i, j};
-            BoardElement *element = board.getBoardElement(i, j);
+            GameObject *element = board.getBoardElement(i, j);
             nodes[pos] = std::make_unique<BoardNode>(pos, element);
         }
     }
@@ -45,7 +45,7 @@ void BoardGraph::addEdges() {
 
 bool BoardGraph::isValidCell(const std::pair<int, int> &pos) const {
     // Check if the cell is traversable
-    const BoardElement *element = board.getBoardElement(pos);
+    const GameObject *element = board.getBoardElement(pos);
     if (element == nullptr) {
         return true;
     }

@@ -5,7 +5,7 @@
 bool Algorithm::exists_threatening_shells(const std::pair<int, int> &tank_position) {
     for (auto i = 0; i < board.getHeight(); i++) {
         for (auto j = 0; j < board.getWidth(); j++) {
-            BoardElement *element = board.getBoardElement(i, j);
+            GameObject *element = board.getBoardElement(i, j);
             //check if there is a shell in cell i,j on the board
             //todo: implement  isShellDangerous so it checks if the shell can get tank if he doesn't move.
             if (dynamic_cast<Shell *>(element) && isShellDangerous(tank_position)) {

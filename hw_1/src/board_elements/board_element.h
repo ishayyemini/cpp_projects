@@ -4,22 +4,22 @@
 #include "board/direction.h"
 
 
-class BoardElement {
+class GameObject {
 protected:
     std::pair<int, int> position;
     Direction::DirectionType direction = Direction::UP;
     bool destroyed = false;
 
 public:
-    explicit BoardElement(const std::pair<int, int> &position,
+    explicit GameObject(const std::pair<int, int> &position,
                           const Direction::DirectionType direction): position(position),
                                                                      direction(direction) {
     }
 
-    explicit BoardElement(const std::pair<int, int> &position): position(position) {
+    explicit GameObject(const std::pair<int, int> &position): position(position) {
     }
 
-    virtual ~BoardElement() = default;
+    virtual ~GameObject() = default;
 
     [[nodiscard]] virtual char getSymbol() const { return ' '; }
 
@@ -31,11 +31,11 @@ public:
 
     virtual void setDirection(const Direction::DirectionType &dir) { direction = dir; }
 
-    virtual void setDestroyed() { destroyed = true; }
+    virtual void destroy() { destroyed = true; }
 
     [[nodiscard]] virtual bool isDestroyed() const { return destroyed; }
 
-    friend std::ostream &operator<<(std::ostream &os, const BoardElement &element);
+    friend std::ostream &operator<<(std::ostream &os, const GameObject &element);
 };
 
 #endif //BOARD_ELEMENT_H

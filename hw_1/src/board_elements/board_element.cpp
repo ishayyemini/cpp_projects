@@ -5,7 +5,7 @@
 #include "board_element.h"
 #include "wall.h"
 
-std::ostream &operator<<(std::ostream &os, const BoardElement &element) {
+std::ostream &operator<<(std::ostream &os, const GameObject &element) {
     switch (element.getSymbol()) {
         case '1':
             os << "[" << element.getDirection() << " 🚘 1]";
@@ -18,7 +18,7 @@ std::ostream &operator<<(std::ostream &os, const BoardElement &element) {
             break;
         case '#':
             if (const auto wall = dynamic_cast<const Wall *>(&element)) {
-                os << "[  🧱 " << wall->getHealth() << "]";
+                os << "[  🧱 " << wall->getHitCount() << "]";
             } else {
                 os << "[  🧱  ]";
             }

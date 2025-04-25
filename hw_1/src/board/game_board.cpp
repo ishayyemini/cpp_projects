@@ -9,7 +9,7 @@ GameBoard::GameBoard() : height(0), width(0) {
 }
 
 GameBoard::GameBoard(const int width, const int height)
-    : height(height), width(width), board(std::vector<std::vector<std::unique_ptr<BoardElement> > >(height)) {
+    : height(height), width(width), board(std::vector<std::vector<std::unique_ptr<GameObject> > >(height)) {
 }
 
 int GameBoard::getHeight() const { return height; }
@@ -21,7 +21,7 @@ Tank *GameBoard::getPlayerTank(const int player_id, const int tank_id) const {
     if (!pos.contains(tank_id)) {
         return nullptr;
     }
-    BoardElement *b = getBoardElement(pos[tank_id]);
+    GameObject *b = getBoardElement(pos[tank_id]);
     if (const auto t = dynamic_cast<Tank *>(b)) {
         return t;
     }
@@ -37,25 +37,25 @@ Tank *GameBoard::getPlayerTank(const int player_id) const {
         pos = player_2_tank_pos;
     }
     if (pos.empty()) return nullptr;
-    BoardElement *b = getBoardElement(pos.begin()->second);
+    GameObject *b = getBoardElement(pos.begin()->second);
     if (const auto t = dynamic_cast<Tank *>(b)) return t;
     return nullptr;
 }
 
-BoardElement *GameBoard::getBoardElement(const int row, const int col) const noexcept {
+GameObject *GameBoard::getBoardElement(const int row, const int col) const noexcept {
     if (row < 0 || row >= height || col < 0 || col >= width) {
         return nullptr;
     }
     return board[row][col].get();
 }
 
-BoardElement *GameBoard::getBoardElement(const std::pair<int, int> &pos) const noexcept {
+GameObject *GameBoard::getBoardElement(const std::pair<int, int> &pos) const noexcept {
     return getBoardElement(pos.first, pos.second);
 }
 
 bool GameBoard::pushSymbol(const int row, const int col, const char symbol) {
     // if not a valid symbol we leave it empty as default!
-    std::unique_ptr<BoardElement> newElement = BoardElementFactory::create(symbol, {row, col});
+    std::unique_ptr<GameObject> newElement = BoardElementFactory::create(symbol, {row, col});
 
     board[row].push_back(std::move(newElement));
     if (const auto tank = dynamic_cast<Tank *>(getBoardElement(row, col))) {
@@ -74,7 +74,7 @@ bool GameBoard::moveTank(const std::pair<int, int> &old_pos, const std::pair<int
     const auto tank = dynamic_cast<Tank *>(getBoardElement(old_pos));
     if (tank == nullptr) return false;
 
-    if (BoardElement *collision = board[mod_pos.first][mod_pos.second].get()) {
+    if (GameObject *collision = board[mod_pos.first][mod_pos.second].get()) {
         if (dynamic_cast<Mine *>(collision)) {
             // Mine? We explode!
             tank->setDestroyed();
@@ -140,7 +140,7 @@ bool GameBoard::moveShell(const int shell_index, const std::pair<int, int> &new_
         return false;
     }
 
-    if (BoardElement *collision = board[mod_pos.first][mod_pos.second].get()) {
+    if (GameObject *collision = board[mod_pos.first][mod_pos.second].get()) {
         if (dynamic_cast<Mine *>(collision)) {
             // Mine? We don't care.
         }

@@ -7,9 +7,9 @@
 class BoardNode {
 public:
     std::pair<int, int> position;
-    BoardElement& node_element; //todo: check if two elements can be on the same cell
+    GameObject& node_element; //todo: check if two elements can be on the same cell
 
-    explicit BoardNode(std::pair<int, int> pos, BoardElement* elem);
+    explicit BoardNode(std::pair<int, int> pos, GameObject* elem);
 
 };
 

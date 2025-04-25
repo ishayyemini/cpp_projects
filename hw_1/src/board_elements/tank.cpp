@@ -1,24 +1,16 @@
-#include "board_elements/tank.h"
+#include "Tank.h"
 
-Tank::Tank(const int player_id, const Direction::DirectionType direction,
-           const std::pair<int, int> &position) : BoardElement(position, direction),
-                                                  player_id(player_id),
-                                                  tank_id(tank_count++) {
+Tank::Tank(const Position position, const int player_id) : GameObject(position, player_id == 1
+                                                                              ? Direction::LEFT
+                                                                              : Direction::RIGHT),
+                                                           player_id(player_id) {
 }
 
 char Tank::getSymbol() const {
     return player_id == 1 ? '1' : '2';
 }
 
-int Tank::getTankId() const {
-    return tank_id;
-}
-
-int Tank::getRemainingShell() const {
-    return shell;
-}
-
-int Tank::decreaseShell() {
+int Tank::decrementAmmunition() {
     shell--;
     return shell;
 }

@@ -16,7 +16,7 @@ protected:
         delete board;
     }
 
-    Board* board;
+    Board *board;
 };
 
 TEST_F(BoardTest, Dimensions) {
@@ -26,27 +26,27 @@ TEST_F(BoardTest, Dimensions) {
 
 TEST_F(BoardTest, WrapPosition) {
     // Test wrapping in different directions
-    Position pos1(12, 5);  // Right edge wrap
+    Position pos1(12, 5); // Right edge wrap
     Position wrapped1 = board->wrapPosition(pos1);
     EXPECT_EQ(wrapped1.x, 2);
     EXPECT_EQ(wrapped1.y, 5);
-    
-    Position pos2(-2, 3);  // Left edge wrap
+
+    Position pos2(-2, 3); // Left edge wrap
     Position wrapped2 = board->wrapPosition(pos2);
     EXPECT_EQ(wrapped2.x, 8);
     EXPECT_EQ(wrapped2.y, 3);
-    
-    Position pos3(4, -1);  // Top edge wrap
+
+    Position pos3(4, -1); // Top edge wrap
     Position wrapped3 = board->wrapPosition(pos3);
     EXPECT_EQ(wrapped3.x, 4);
     EXPECT_EQ(wrapped3.y, 7);
-    
-    Position pos4(7, 10);  // Bottom edge wrap
+
+    Position pos4(7, 10); // Bottom edge wrap
     Position wrapped4 = board->wrapPosition(pos4);
     EXPECT_EQ(wrapped4.x, 7);
     EXPECT_EQ(wrapped4.y, 2);
-    
-    Position pos5(-3, -2);  // Multiple wraps
+
+    Position pos5(-3, -2); // Multiple wraps
     Position wrapped5 = board->wrapPosition(pos5);
     EXPECT_EQ(wrapped5.x, 7);
     EXPECT_EQ(wrapped5.y, 6);
@@ -54,50 +54,41 @@ TEST_F(BoardTest, WrapPosition) {
 
 TEST_F(BoardTest, PlaceAndRetrieveObject) {
     // Place a tank on the board
-    Tank* tank = new Tank(Position(3, 4), 1);
-    board->placeObject(tank);
-    
+    Tank *tank = board->placeObject(std::make_unique<Tank>(Position(3, 4), 1));
+
     // Retrieve the object from the board
-    GameObject* retrieved = board->getObjectAt(Position(3, 4));
+    GameObject *retrieved = board->getObjectAt(Position(3, 4));
     EXPECT_EQ(retrieved, tank);
-    
+
     // Check that the location is now occupied
     EXPECT_TRUE(board->isOccupied(Position(3, 4)));
-    
+
     // Check that a different location is not occupied
     EXPECT_FALSE(board->isOccupied(Position(5, 5)));
-    
-    delete tank;  // Clean up
 }
 
 TEST_F(BoardTest, RemoveObject) {
     // Place a wall on the board
-    Wall* wall = new Wall(Position(2, 2));
-    board->placeObject(wall);
-    
+    board->placeObject(std::make_unique<Wall>(Position(2, 2)));
+
     // Verify it's there
     EXPECT_TRUE(board->isOccupied(Position(2, 2)));
-    
+
     // Remove it
     board->removeObject(Position(2, 2));
-    
+
     // Verify it's gone
     EXPECT_FALSE(board->isOccupied(Position(2, 2)));
-    
-    delete wall;  // Clean up
 }
 
 TEST_F(BoardTest, WrapObjectPosition) {
     // Place object outside board boundaries
-    Mine* mine = new Mine(Position(15, 9));
-    board->placeObject(mine);
-    
+    Mine *mine = board->placeObject(std::make_unique<Mine>(Position(15, 9)));
+
     // The object should be wrapped to a valid position
     EXPECT_EQ(mine->getPosition().x, 5);
     EXPECT_EQ(mine->getPosition().y, 1);
-    
+
     // Verify it's at the wrapped position
     EXPECT_TRUE(board->isOccupied(Position(5, 1)));
-    
-    delete mine;  // Clean up
-} 
+}

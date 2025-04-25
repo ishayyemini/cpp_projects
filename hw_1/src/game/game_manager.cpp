@@ -1,12 +1,12 @@
-#include "game/game_manager.h"
+#include "GameManager.h"
 
 #include <iostream>
 #include <thread>
 #include <chrono>
 #include <utility>
 
-#include "board_elements/mine.h"
-#include "board_elements/wall.h"
+#include "Mine.h"
+#include "Wall.h"
 #include "utils/file_utils.h"
 
 GameManager::GameManager(const std::string &input_file_path) {
@@ -120,7 +120,7 @@ bool GameManager::rotate(Tank &tank, const int turn) {
 }
 
 bool GameManager::shoot(Tank &tank) {
-    if (tank.getShootingCooldown() == 0) {
+    if (tank.getCooldown() == 0) {
         tank.shoot();
         board.addShell(std::make_unique<Shell>(tank.getPosition(), tank.getDirection()));
         return true;
@@ -161,18 +161,20 @@ Winner GameManager::startGame() {
     return winner;
 }
 
-void GameManager::tanksTurn(Player1Algo &algo1, Player2Algo &algo2) {
+void GameManager::tanksTurn() {
     Tank *t1 = board.getPlayerTank(1);
     Tank *t2 = board.getPlayerTank(2);
     Action a1 = NONE;
     Action a2 = NONE;
 
+    GameState game_state_1 = GameState(board, );
+
     if (t1 != nullptr) {
-        a1 = algo1.getNextAction();
+        a1 = algo1.decideAction();
     }
 
     if (t2 != nullptr) {
-        a2 = algo2.getNextAction();
+        a2 = algo2.decideAction();
     }
 
     std::cout << a1 << " " << a2 << std::endl;
@@ -219,7 +221,7 @@ void GameManager::processMovements() {
                 new_pos = calcNextPos(t1->getPosition(), t1->getDirection() + 180);
                 break;
             case SHOOT:
-                willShoot = (t1->getShootingCooldown() == 0 && t1->getRemainingShell() > 0);
+                willShoot = (t1->getCooldown() == 0 && t1->getRemainingShell() > 0);
                 break;
             case ROTATE_45_LEFT:
             case ROTATE_45_RIGHT:
@@ -266,7 +268,7 @@ void GameManager::processMovements() {
                 new_pos = calcNextPos(t2->getPosition(), t2->getDirection() + 180);
                 break;
             case SHOOT:
-                willShoot = (t2->getShootingCooldown() == 0 && t2->getRemainingShell() > 0);
+                willShoot = (t2->getCooldown() == 0 && t2->getRemainingShell() > 0);
                 break;
             case ROTATE_45_LEFT:
             case ROTATE_45_RIGHT:
@@ -332,10 +334,10 @@ void GameManager::detectAndHandleCollisions(std::vector<MovingObject> &movements
             }
 
             // Handle board elements at this position
-            if (BoardElement *elem = board.getBoardElement(pos)) {
+            if (GameObject *elem = board.getBoardElement(pos)) {
                 if (auto *wall = dynamic_cast<Wall *>(elem)) {
                     wall->takeDamage();
-                    if (wall->getHealth() == 0) {
+                    if (wall->getHitCount() == 0) {
                         board.removeElement(pos);
                     }
                 } else {
@@ -345,11 +347,11 @@ void GameManager::detectAndHandleCollisions(std::vector<MovingObject> &movements
         } else if (objs.size() == 1) {
             // Single object - check collision with board elements
             MovingObject *obj = objs[0];
-            if (BoardElement *elem = board.getBoardElement(pos)) {
+            if (GameObject *elem = board.getBoardElement(pos)) {
                 if (auto *wall = dynamic_cast<Wall *>(elem)) {
                     if (obj->type == MovingObject::SHELL) {
                         wall->takeDamage();
-                        if (wall->getHealth() == 0) {
+                        if (wall->getHitCount() == 0) {
                             board.removeElement(pos);
                         }
                         obj->to = {-1, -1}; // Mark shell invalid
@@ -414,4 +416,32 @@ void GameManager::shellsTurn() {
     // Process shell movements
     detectAndHandleCollisions(shell_movements);
     applyMovements(shell_movements);
+}
+
+void GameManager::processStep() {
+    if (empty_countdown == 0) {
+        winner = TIE;
+    }
+
+    tanksTurn();
+    processMovements();
+    shellsTurn();
+    board.displayBoard();
+
+    if (const Winner winner = checkDeaths(); winner != NO_WINNER) {
+        return winner;
+    }
+}
+
+std::string GameManager::getGameResult() const {
+    switch (winner) {
+        case TIE:
+            return "Tie";
+        case PLAYER_1:
+            return "Player 1 wins";
+        case PLAYER_2:
+            return "Player 2 wins";
+        default:
+            return "Bad result";
+    }
 }

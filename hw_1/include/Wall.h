@@ -1,14 +1,14 @@
 #ifndef WALL_H
 #define WALL_H
-#include "board_elements/board_element.h"
 
 static constexpr int max_health = 2;
 
-class Wall final : public BoardElement {
+class Wall final : public GameObject {
     int health = max_health;
 
 public:
-    explicit Wall(const std::pair<int, int> &position);
+    explicit Wall(const Position position): GameObject(position) {
+    }
 
     [[nodiscard]] char getSymbol() const override { return '#'; }
 
@@ -18,7 +18,7 @@ public:
         if (health == 0) destroyed = true;
     }
 
-    int getHealth() const { return health; }
+    [[nodiscard]] int getHitCount() const { return health - max_health; }
 };
 
 #endif //WALL_H

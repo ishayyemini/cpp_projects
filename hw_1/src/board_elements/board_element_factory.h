@@ -5,7 +5,7 @@
 
 class BoardElementFactory {
 public:
-    static std::unique_ptr<BoardElement> create(char symbol, std::pair<int, int> position) noexcept;
+    static std::unique_ptr<GameObject> create(char symbol, std::pair<int, int> position) noexcept;
 };
 
 

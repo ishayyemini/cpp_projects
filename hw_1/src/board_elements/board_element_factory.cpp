@@ -6,7 +6,7 @@
 #include "board_elements/tank.h"
 
 
-std::unique_ptr<BoardElement> BoardElementFactory::create(const char symbol, std::pair<int, int> position) noexcept {
+std::unique_ptr<GameObject> BoardElementFactory::create(const char symbol, std::pair<int, int> position) noexcept {
     switch (symbol) {
         case '#': return std::make_unique<Wall>(position);
         case '@': return std::make_unique<Mine>(position);

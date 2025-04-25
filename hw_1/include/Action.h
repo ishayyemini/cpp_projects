@@ -1,0 +1,15 @@
+#ifndef ACTION_H
+#define ACTION_H
+
+enum Action {
+    NONE,
+    MOVE_FORWARD,
+    MOVE_BACKWARD,
+    ROTATE_LEFT_EIGHTH,
+    ROTATE_RIGHT_EIGHTH,
+    ROTATE_LEFT_QUARTER,
+    ROTATE_RIGHT_QUARTER,
+    SHOOT,
+};
+
+#endif //ACTION_H

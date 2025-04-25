@@ -18,7 +18,7 @@
 class GameBoard {
     int height;
     int width;
-    std::vector<std::vector<std::unique_ptr<BoardElement> > > board;
+    std::vector<std::vector<std::unique_ptr<GameObject> > > board;
     std::map<int, std::pair<int, int> > player_1_tank_pos;
     std::map<int, std::pair<int, int> > player_2_tank_pos;
     std::vector<std::unique_ptr<Shell> > shells;
@@ -37,9 +37,9 @@ public:
 
     [[nodiscard]] Tank *getPlayerTank(int player_id) const;
 
-    [[nodiscard]] BoardElement *getBoardElement(int row, int col) const noexcept;
+    [[nodiscard]] GameObject *getBoardElement(int row, int col) const noexcept;
 
-    [[nodiscard]] BoardElement *getBoardElement(const std::pair<int, int> &pos) const noexcept;
+    [[nodiscard]] GameObject *getBoardElement(const std::pair<int, int> &pos) const noexcept;
 
     bool pushSymbol(int row, int col, char symbol);
 
