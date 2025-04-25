@@ -8,23 +8,23 @@
 std::ostream &operator<<(std::ostream &os, const BoardElement &element) {
     switch (element.getSymbol()) {
         case '1':
-            os << "[" << element.getDirection() << "🚘1]";
+            os << "[" << element.getDirection() << " 🚘 1]";
             break;
         case '2':
-            os << "[" << element.getDirection() << "🚘2]";
+            os << "[" << element.getDirection() << " 🚘 2]";
             break;
         case '*':
-            os << "[" << element.getDirection() << "☄️ ]";
+            os << "[" << element.getDirection() << " ☄️  ]";
             break;
         case '#':
             if (const auto wall = dynamic_cast<const Wall *>(&element)) {
-                os << "[  🧱" << wall->getHealth() << "]";
+                os << "[  🧱 " << wall->getHealth() << "]";
             } else {
-                os << "[  🧱 ]";
+                os << "[  🧱  ]";
             }
             break;
         case '@':
-            os << "[  💣 ]";
+            os << "[  💣  ]";
             break;
         default: ;
     }
