@@ -20,6 +20,10 @@ public:
 
     [[nodiscard]] std::string getSymbol() const override;
 
+    [[nodiscard]] std::pair<int, int> getPosition() const override { return position; }
+
+    void setPosition(const std::pair<int, int> &pos) override { position = pos; }
+
     void setCannonDirection(Direction::DirectionType cannonDirection);
 
     [[nodiscard]] Direction::DirectionType getCannonDirection() const;

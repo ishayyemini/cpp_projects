@@ -11,6 +11,7 @@
 #include <board_elements/shell.h>
 
 #include "board_elements/board_element.h"
+#include "board_elements/shell.h"
 #include "board_elements/tank.h"
 
 
@@ -20,6 +21,7 @@ class GameBoard {
     std::vector<std::vector<std::unique_ptr<BoardElement> > > board;
     std::map<int, std::pair<int, int> > player_1_tank_pos;
     std::map<int, std::pair<int, int> > player_2_tank_pos;
+    std::vector<std::unique_ptr<Shell> > shells;
 
 public:
     GameBoard();
@@ -43,6 +45,8 @@ public:
     void displayBoard() const;
 
     void addShell(std::unique_ptr<Shell> shell);
+
+    [[nodiscard]] Shell getShells(int i) const { return *shells[i]; }
 };
 
 #endif //GAME_BOARD_H
