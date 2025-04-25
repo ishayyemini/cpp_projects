@@ -12,8 +12,8 @@ Player1Algo::Player1Algo(GameBoard &board)
 }
 
 Action Player1Algo::getNextAction() {
-    const auto &player2_tank = board.getPlayerTank(2, 0);
-    const auto &player1_tank = board.getPlayerTank(1, 1);
+    const auto &player2_tank = board.getPlayerTank(2);
+    const auto &player1_tank = board.getPlayerTank(1);
 
     if (!player2_tank || !player1_tank) {
         return NONE;
@@ -37,11 +37,11 @@ Action Player1Algo::escape() {
 }
 
 Action Player1Algo::chase() {
-    const auto &player2_tank = board.getPlayerTank(2, 0);
-    const auto &player1_tank = board.getPlayerTank(1, 1);
+    const auto &player2_tank = board.getPlayerTank(2);
+    const auto &player1_tank = board.getPlayerTank(1);
 
     const Direction::DirectionType dir = bfsToOpponent(player1_tank->getPosition(), player2_tank->getPosition());
-
+    std::cout << dir << std::endl;
     const auto current_dir = player1_tank->getDirection();
     if (dir == current_dir) {
         return FORWARD;
@@ -82,7 +82,7 @@ Direction::DirectionType Player1Algo::bfsToOpponent(const std::pair<int, int> &t
         return Direction::UP; // Already at target
     }
 
-    const auto &player1_tank = board.getPlayerTank(1, 1);
+    const auto &player1_tank = board.getPlayerTank(1);
     Direction::DirectionType currentTankDirection = player1_tank->getDirection();
 
     // State for search algorithm
