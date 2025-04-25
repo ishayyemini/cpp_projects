@@ -8,24 +8,24 @@
 #include "graph/board_graph.h"
 
 
-class Player1Algo final: public Algorithm {
+class Player1Algo final : public Algorithm {
 public:
-    explicit Player1Algo(GameBoard& board);
+    explicit Player1Algo(GameBoard &board);
 
-    Action getNextAction(std::pair<int, int> tank_position) override;
+    Action getNextAction() override;
 
     ~Player1Algo() override = default;
 
 private:
     BoardGraph board_graph;
+
     Action escape();
+
     Action chase(); //todo: add tankid as param
     Action suicide_mission();
-    Action calcActionBFS(const std::pair<int, int>& tank_position);
 
-
+    Action calcActionBFS(const std::pair<int, int> &tank_position);
 };
-
 
 
 #endif //PLAYER1_ALGO_H

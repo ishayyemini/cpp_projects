@@ -13,7 +13,7 @@ public:
     explicit Player2Algo(GameBoard &board): Algorithm(board) {
     }
 
-    Action getNextAction() override;
+    Action getNextAction();
 
     static int calcDistance(const std::pair<int, int> &pos1, const std::pair<int, int> &pos2);
 

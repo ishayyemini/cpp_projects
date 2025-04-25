@@ -6,18 +6,24 @@
 
 class Algorithm {
 protected:
-    GameBoard& board;
+    GameBoard &board;
 
 public:
-    explicit Algorithm(GameBoard& board) : board(board) {
+    explicit Algorithm(GameBoard &board) : board(board) {
     }
-    virtual Action getNextAction(std::pair<int, int> tank_position) = 0;
+
+    virtual Action getNextAction() = 0;
+
     virtual ~Algorithm() = default;
+
     bool isActionValid(); //todo: maybe delete this - i don't think we will need this
-    bool isTankThreaten(std::pair<int, int> tank_position);
-    bool isShellDangerous(std::pair<int, int> tank_position);
-    bool exists_threatening_shells(std::pair<int, int> tank_position);
-    bool is_enemy_tank_threatening(std::pair<int, int> tank_position);
+    bool isTankThreaten(const std::pair<int, int> &tank_position);
+
+    bool isShellDangerous(const std::pair<int, int> &tank_position);
+
+    bool exists_threatening_shells(const std::pair<int, int> &tank_position);
+
+    bool is_enemy_tank_threatening(const std::pair<int, int> &tank_position);
 };
 
 

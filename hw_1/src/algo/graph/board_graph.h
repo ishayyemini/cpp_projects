@@ -18,8 +18,8 @@ public:
 
 private:
     std::pair<int, int> board_size;
-    std::unordered_map<std::pair<int, int>, std::unique_ptr<BoardNode> > nodes;
-    std::unordered_map<std::pair<int, int>, std::vector<std::unique_ptr<BoardNode> > > graph;
+    std::map<std::pair<int, int>, std::unique_ptr<BoardNode> > nodes;
+    std::map<std::pair<int, int>, std::vector<std::unique_ptr<BoardNode> > > graph;
 
     void initGraph(const GameBoard &board);
 
@@ -28,9 +28,6 @@ private:
     void initNodes(const GameBoard &board);
 
     void addEdges();
-
-
-
 };
 
 #endif // BOARDGRAPH_H

@@ -22,17 +22,17 @@ add_executable(tanks_game src/main.cpp
         src/game/game_manager.h
         src/game/game_manager.cpp
         src/game/game_manager.cpp
-        src/algo/player1_algo.cpp
         src/algo/bfs_utils.h
         src/algo/bfs_utils.cpp
         src/algo/algorithm.h
+        src/algo/algorithm.cpp
         src/algo/player1_algo.h
+        src/algo/player1_algo.cpp
         src/algo/player2_algo.h
         src/algo/player2_algo.cpp
         src/algo/graph/graph_node.h
+        src/algo/graph/graph_node.cpp
         src/algo/graph/board_graph.h
         src/algo/graph/board_graph.cpp
-        src/algo/algorithm.cpp
-        src/algo/graph/graph_node.cpp
         src/board_elements/board_element.cpp
 )

@@ -3,15 +3,21 @@
 #include "algorithm.h"
 
 
-Player1Algo::Player1Algo(GameBoard *board)
-    : Algorithm(board), board_graph(*board) {
-
+Player1Algo::Player1Algo(GameBoard &board)
+    : Algorithm(board), board_graph(board) {
 }
 
-Action Player1Algo::getNextAction(std::pair<int, int> tank_position) {
-    if (isTankThreaten(tank_position)) {
-        Action escape_action = escape();
-        if (escape_action == Action::NONE) {
+Action Player1Algo::getNextAction() {
+    const auto &player2_tank = board.getPlayerTank(2, 0);
+    const auto &player1_tank = board.getPlayerTank(1, 1);
+
+    if (!player2_tank || !player1_tank) {
+        return NONE;
+    }
+
+    if (isTankThreaten(player1_tank->getPosition())) {
+        const Action escape_action = escape();
+        if (escape_action == NONE) {
             return suicide_mission(); //aka - try to get tie at least
         }
         return escape_action;
@@ -22,7 +28,7 @@ Action Player1Algo::getNextAction(std::pair<int, int> tank_position) {
 
 Action Player1Algo::escape() {
     // TODO: Implement escape logic
-    return Action::NONE;
+    return NONE;
 }
 
 Action Player1Algo::chase() {
