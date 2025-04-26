@@ -1,7 +1,7 @@
 #include <queue>
 #include <unordered_set>
 
-#include "Bfs_Utils.h"
+#include "../../include/algo/BfsUtils.h"
 
 
 Position BfsUtils::execute_stateful_bfs(
@@ -56,7 +56,7 @@ void BfsUtils::generateNextStates(
     ) const{
     // 1. Move Forward
     Position forwardPos = state.calcNextPosition(current.pos, current.dir);
-    if (state.isSafePosition(forwardPos)) {
+    if (state.isSafePosition(forwardPos) && state.isEmptyPosition(forwardPos)) {
         TankState forwardState{forwardPos, current.dir};
         tryMove(state, q, visited, bfs_tree, current, forwardState, cost + 1); // Forward costs 1
     }
@@ -70,10 +70,50 @@ void BfsUtils::generateNextStates(
     }
 
     // 3. Move Backward
-    Position backwardPos = state.calcPreviousPos(current.pos, current.dir);
-    if (state.isSafePosition(backwardPos)) {
+    Position backwardPos = state.calcNextPosition(current.pos, -current.dir);
+    if (state.isSafePosition(backwardPos) && state.isEmptyPosition(backwardPos)) {
         TankState backwardState{backwardPos, current.dir}; // Position changes, direction stays
         tryMove(state, q, visited, bfs_tree, current, backwardState, cost + 3); // Backward costs 3
     }
 }
 
+void BfsUtils::tryMove(
+    const GameState &state,
+    std::queue<std::pair<TankState, int>> &q,
+    std::unordered_set<TankState> &visited,
+    std::unordered_map<TankState, TankState> &bfs_tree,
+    const TankState &fromState,
+    const TankState &toState,
+    int newCost
+) const
+{
+    if (!visited.count(toState)) {
+        visited.insert(toState);
+        bfs_tree[toState] = fromState;
+        q.push({toState, newCost});
+    }
+}
+
+
+Position BfsUtils::reconstructFirstMove(
+    const std::unordered_map<TankState, TankState> &bfs_tree,
+    const TankState &goalReached,
+    const TankState &startState
+) const
+{
+    // If no path exists
+    if (bfs_tree.empty()) {
+        return startState.pos; // No move, stay in place
+    }
+
+    // Start from goal
+    TankState current = goalReached;
+
+    // Backtrack until we reach a node whose parent is startState
+    while (bfs_tree.count(current) && bfs_tree.at(current).pos != startState.pos) {
+        current = bfs_tree.at(current);
+    }
+
+    // Now 'current' is the first move you should do after start
+    return current.pos;
+}
