@@ -22,8 +22,8 @@ class Board {
     int height = 1;
     std::vector<std::vector<std::unique_ptr<GameObject> > > board;
     std::map<int, Position> tanks_pos;
-    int player_1_tank;
-    int player_2_tank;
+    int player_1_tank = -1;
+    int player_2_tank = -1;
     std::map<int, Position> shells_pos;
     std::map<int, Position> collisions_pos;
 

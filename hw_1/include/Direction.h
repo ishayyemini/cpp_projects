@@ -11,6 +11,11 @@ struct Position {
     bool operator==(const Position &pos2) const {
         return x == pos2.x && y == pos2.y;
     }
+
+    Position() = default;
+
+    Position(const int row, const int col): x(row), y(col) {
+    }
 };
 
 
