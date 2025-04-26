@@ -17,7 +17,7 @@ std::ostream &operator<<(std::ostream &os, const GameObject &element) {
             break;
         case '#':
             if (const auto wall = dynamic_cast<const Wall *>(&element)) {
-                os << "[  🧱 " << wall->getHitCount() << "]";
+                os << "[  🧱 " << wall->getHealth() << "]";
             } else {
                 os << "[  🧱  ]";
             }

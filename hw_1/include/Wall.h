@@ -19,6 +19,8 @@ public:
     }
 
     [[nodiscard]] int getHitCount() const { return health - max_health; }
+
+    int getHealth() const { return health; }
 };
 
 #endif //WALL_H

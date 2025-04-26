@@ -102,7 +102,9 @@ T *Board::placeObject(std::unique_ptr<T> element) {
         std::is_same_v<GameObject, Mine> ||
         std::is_same_v<GameObject, GameObject>
     );
-    return dynamic_cast<T *>(placeObjectReal(std::move(element), element->getPosition() * 2));
+    if (element == nullptr) return nullptr;
+    Position pos = element->getPosition();
+    return dynamic_cast<T *>(placeObjectReal(std::move(element), pos * 2));
 }
 
 #endif //BOARD_H

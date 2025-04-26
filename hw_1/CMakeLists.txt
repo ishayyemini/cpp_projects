@@ -65,3 +65,10 @@ target_link_libraries(tank_game_tests gtest_main gmock)
 
 include(GoogleTest)
 gtest_discover_tests(tank_game_tests)
+
+add_custom_command(
+        TARGET tank_game
+        POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:tank_game> ${PROJECT_SOURCE_DIR}
+        COMMENT "Copying tank_game to ${PROJECT_SOURCE_DIR}"
+)

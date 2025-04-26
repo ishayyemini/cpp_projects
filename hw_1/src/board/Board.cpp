@@ -48,7 +48,9 @@ GameObject *Board::placeObjectReal(std::unique_ptr<GameObject> element, const Po
 }
 
 Position Board::wrapPositionReal(const Position real_pos) const {
-    return Position((real_pos.x % width + width) % width, (real_pos.y % height + height) % height);
+    const int mod_x = (real_pos.x % width + width) % width;
+    const int mod_y = (real_pos.y % height + height) % height;
+    return Position(mod_x, mod_y);
 }
 
 GameObject *Board::getObjectAtReal(const Position real_pos) const {
@@ -125,9 +127,8 @@ Board::Board(const int width, const int height) : width(width * 2),
                                                   board(std::vector<std::vector<std::unique_ptr<GameObject> > >(
                                                       height * 2)) {
     for (int i = 0; i < this->height; i++) {
-        board[i] = std::vector<std::unique_ptr<GameObject> >(this->width);
         for (int j = 0; j < this->width; j++) {
-            board[i][j] = nullptr;
+            board[i].push_back(nullptr);
         }
     }
 }

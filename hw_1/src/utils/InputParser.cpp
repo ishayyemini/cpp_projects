@@ -19,7 +19,6 @@ bool InputParser::parseDimensions(std::ifstream &inFile) {
 // if there are more char we ignore them, but there needs to be at lead width * height
 bool InputParser::populateBoard(std::ifstream &inFile) {
     std::string line;
-    board = new Board(width, height);
 
     for (int row = 0; row < height; ++row) {
         if (!std::getline(inFile, line)) {
@@ -29,7 +28,8 @@ bool InputParser::populateBoard(std::ifstream &inFile) {
 
         for (int col = 0; col < width; ++col) {
             const char symbol = col < line.length() ? line[col] : ' ';
-            std::unique_ptr<GameObject> newElement = BoardElementFactory::create(symbol, Position(row, col));
+            std::unique_ptr<GameObject> newElement = BoardElementFactory::create(symbol, Position(col, row));
+            std::cout << "created " << row << " " << col << std::endl;
             board->placeObject(std::move(newElement));
         }
     }
@@ -42,16 +42,21 @@ Board *InputParser::parseInputFile(const std::string &file_name) {
 
     // check if file opened successfully
     if (!inFile) {
+        std::cerr << "Error: Failed to open file " << file_name << " for reading.\n";
         error_messages.push_back("Error opening file " + file_name);
         return nullptr; // TODO maybe include a default map?
     }
 
     if (!parseDimensions(inFile)) {
+        std::cerr << "Error: dimensions.\n";
         return nullptr;
     }
 
+    std::cout << "Dimensions read from file " << file_name << ":\n";
+
     // create Board object of size width x height
     board = new Board(width, height);
+    std::cout << "Board created\n";
     populateBoard(inFile);
     std::cout << "Board loaded from '" << file_name << "':\n";
     inFile.close();
