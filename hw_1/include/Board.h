@@ -1,11 +1,10 @@
-//
-// Created by Ishay Yemini on 25/04/2025.
-//
-
 #ifndef BOARD_H
 #define BOARD_H
 
 #include <map>
+#include <memory>
+#include <Shell.h>
+#include <vector>
 
 #include "GameObject.h"
 #include "Tank.h"
@@ -49,6 +48,8 @@ public:
 
     GameObject *getObjectAt(Position pos) const;
 
+    std::map<int, Position> getShellsPos() const{ return shells_pos; }
+
     // [[nodiscard]] Tank *getPlayerTank(int player_id, int tank_id) const;
     //
     [[nodiscard]] Tank *getPlayerTank(int player_id) const;
@@ -68,7 +69,7 @@ public:
     //
     // void addShell(std::unique_ptr<Shell> shell);
     //
-    // [[nodiscard]] Shell *getShell(int i) const;
+    [[nodiscard]] Shell *getShell(int i) const;
     //
     // [[nodiscard]] Shell *getShell(const std::pair<int, int> &pos) const;
     //

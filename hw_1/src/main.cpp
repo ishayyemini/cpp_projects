@@ -1,3 +1,4 @@
+#include <GameManager.h>
 #include <iostream>
 
 #include "game/game_manager.h"

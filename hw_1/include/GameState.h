@@ -1,6 +1,8 @@
 #ifndef GAMESTATE_H
 #define GAMESTATE_H
 
+#include <vector>
+
 #include "Board.h"
 
 class GameState {
@@ -8,16 +10,18 @@ class GameState {
     int player_id;
 
 public:
-    explicit GameState(Board &board, const int player_id): board(board), player_id(player_id) {
-    }
+    explicit GameState(Board &board, int player_id);
 
-    Board &getBoard() const { return board; }
+    Board &getBoard() const;
 
-    Tank *getPlayerTank() const { return board.getPlayerTank(player_id); }
+    Tank *getPlayerTank() const;
 
-    Tank *getEnemyTank() const { return board.getPlayerTank(player_id == 1 ? 2 : 1); }
+    Tank *getEnemyTank() const;
 
-    bool isSafePosition(Position position) const;
+    bool isSafePosition(Position position, bool immediate_safe = false) const;
+
+    std::vector<Direction::DirectionType> getSafeDirections(Position position) const;
+
 
     std::vector<Position> getNearbyEmptyPositions(Position position) const;
 
@@ -25,9 +29,33 @@ public:
         return getNearbyEmptyPositions(getPlayerTank()->getPosition());
     }
 
-    bool isShellApproaching();
+    Action getActionToPosition(Position target_position) const;
 
-    bool isInLineOfSight(Position position) const;
+    bool isShellApproaching(int threat_threshold) const;
+
+    bool isObjectInLine(Position object_position, int distance) const;
+
+    bool isEmptyPosition(Position position) const;
+
+    std::vector<Position> getApproachingShellsPosition(int threat_threshold = -1, bool get_closest = false) const;
+
+    // bool isInLineOfSight(Position position) const;
+
+    int getEnemyDistance() const;
+
+    int getEnemyDistance(Position position) const;
+
+    bool doesPlayerTankFacingWall() const;
+
+    bool isWallInDirection(Position position, Direction::DirectionType direction) const;
+
+    Action rotateTowardsWall() const;
+
+private:
+    int getObjectsDistance(Position obj1, Position obj2) const;
+
+    bool areObjectsInLine(Position obj1, Direction::DirectionType obj1_direction, Position obj2,
+                          int max_distance) const;
 };
 
 #endif //GAMESTATE_H

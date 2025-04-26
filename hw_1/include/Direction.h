@@ -11,6 +11,14 @@ struct Position {
     bool operator==(const Position &pos2) const {
         return x == pos2.x && y == pos2.y;
     }
+
+    Position operator+(const Position &pos2) const {
+        return {x + pos2.x, y + pos2.y};
+    }
+
+    Position scalar_multiplication(int a) const {
+        return {x * a, y * a};
+    }
 };
 
 
@@ -37,6 +45,14 @@ public:
         return static_cast<DirectionType>(mod_dir);
     }
 
+    static constexpr DirectionType getDirectionFromIndex(const int index) {
+        return getDirection(index * 45);
+    }
+
+    static constexpr DirectionType getDirection(const Position &pos) {
+        return getDirection(pos.x);
+    }
+
     static constexpr int getDirectionSize() {
         return kDirectionCount;
     }
@@ -49,35 +65,11 @@ public:
     }
 
     friend std::ostream &operator<<(std::ostream &os, const DirectionType dir) {
-        std::string dir_string = "";
-        switch (dir) {
-            case UP:
-                dir_string = "⬆️";
-                break;
-            case UP_RIGHT:
-                dir_string = "↗️";
-                break;
-            case RIGHT:
-                dir_string = "➡️";
-                break;
-            case DOWN_RIGHT:
-                dir_string = "↘️";
-                break;
-            case DOWN:
-                dir_string = "⬇️";
-                break;
-            case DOWN_LEFT:
-                dir_string = "↙️";
-                break;
-            case LEFT:
-                dir_string = "⬅️";
-                break;
-            case UP_LEFT:
-                dir_string = "↖️";
-                break;
-        }
-        os << dir_string;
-        return os;
+        static const std::array<std::string, kDirectionCount> directionStrings = {
+            "⬆️", "↗️", "➡️", "↘️", "⬇️", "↙️", "⬅️", "↖️"
+        };
+
+        return os << directionStrings[dir / 45];
     }
 
 private:

@@ -161,3 +161,36 @@ Action Player2Algo::getNextAction() {
     // Or rotate if can't move forward
     return ROTATE_45_RIGHT;
 }
+
+// Action Player2Algo::getNextAction() {
+//     const auto& player2_tank = board.getPlayerTank(2);
+//     const auto& player1_tank = board.getPlayerTank(1);
+//
+//     if (!player2_tank || !player1_tank) {
+//         return NONE;
+//     }
+//
+//     const auto player2_pos = player2_tank->getPosition();
+//     const auto player1_pos = player1_tank->getPosition();
+//     const auto player2_dir = player2_tank->getDirection();
+//     const int curr_dist = calcDistance(player1_pos, player2_pos);
+//
+//     // 1. Try shooting or rotating to shoot
+//     Action action = tryShootOrRotate(player2_tank, player1_tank, curr_dist);
+//     if (action != NONE) return action;
+//
+//     // 2. Try escaping from shells
+//     action = escapeFromShells(player2_tank);
+//     if (action != NONE) return action;
+//
+//     // 3. Try running away if too close
+//     action = runAwayIfTooClose(player2_tank, player1_tank, curr_dist);
+//     if (action != NONE) return action;
+//
+//     // 4. Try crashing into opponent if very close
+//     action = crashIfVeryClose(player2_tank, player1_tank, curr_dist);
+//     if (action != NONE) return action;
+//
+//     // 5. Default behavior: move forward or rotate
+//     return defaultMove(player2_tank);
+// }

@@ -10,9 +10,9 @@ class Algorithm {
 public:
     Algorithm() = default;
 
-    [[nodiscard]] virtual std::string getName() const;
+    virtual std::string getName() const=0;
 
-    [[nodiscard]] virtual Action decideAction(const GameState &state) const;
+    virtual Action decideAction(const GameState &state) const = 0;
 
     virtual ~Algorithm() = default;
 };
