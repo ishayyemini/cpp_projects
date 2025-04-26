@@ -2,8 +2,8 @@
 #include <iostream>
 #include <thread>
 
-#include "../include/GameManager.h"
-#include "../include/InputParser.h"
+#include "Logger.h"
+#include "InputParser.h"
 
 using namespace std::chrono_literals;
 
@@ -12,6 +12,8 @@ int main(const int argc, char *argv[]) {
         std::cerr << "Usage: " << argv[0] << " <game-file>" << std::endl;
         return EXIT_FAILURE;
     }
+
+    Logger::getInstance().init("./out.txt", "./err.txt");
 
     const std::string path = argv[1];
     Board *board = InputParser().parseInputFile(path);
