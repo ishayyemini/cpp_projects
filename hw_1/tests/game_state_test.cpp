@@ -14,7 +14,7 @@ protected:
 
         // Place tanks on board
         tank1 = board->placeObject(std::make_unique<Tank>(Position(2, 2), 1));
-        tank1 = board->placeObject(std::make_unique<Tank>(Position(7, 7), 2));
+        tank2 = board->placeObject(std::make_unique<Tank>(Position(7, 7), 2));
 
         // Create walls
         wall1 = board->placeObject(std::make_unique<Wall>(Position(4, 4)));
