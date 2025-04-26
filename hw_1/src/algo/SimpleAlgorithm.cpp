@@ -37,7 +37,7 @@ Action SimpleAlgorithm::handleFutureThreat(const GameState &state) const {
     }
 
     //if we are pointing to wall, shoot
-    if (state.doesPlayerTankFacingWall()) {
+    if (state.isFacingWall()) {
         return SHOOT;
     }
     //else rotate towards it
