@@ -15,6 +15,13 @@ struct Position {
         return x == pos2.x && y == pos2.y;
     }
 
+    bool operator<(const Position &other) const {
+        if (x == other.x) {
+            return y < other.y;
+        }
+        return x < other.x;
+    }
+
     Position operator+(const Position &pos2) const {
         return Position(x + pos2.x, y + pos2.y);
     }

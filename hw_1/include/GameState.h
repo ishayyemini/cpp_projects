@@ -26,7 +26,7 @@ public:
 
     Action getActionToPosition(Position target_position) const;
 
-    bool isShellApproaching(int threat_threshold = 1) const;
+    bool isShellApproaching(int threat_threshold = -1) const;
 
     bool isObjectInLine(Position object_position, int distance) const;
 

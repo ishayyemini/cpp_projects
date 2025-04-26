@@ -1,6 +1,7 @@
 #include "GameState.h"
 
 #include <limits>
+#include <set>
 
 #include "Wall.h"
 #include "SimpleAlgorithm.h"
@@ -15,7 +16,27 @@ Tank *GameState::getPlayerTank() const { return board.getPlayerTank(player_id); 
 Tank *GameState::getEnemyTank() const { return board.getPlayerTank(player_id == 1 ? 2 : 1); }
 
 bool GameState::isSafePosition(Position position, bool immediate_safe) const {
-    //todo: implement this
+    // Check if there's any object at the position
+    if (board.getObjectAt(position) != nullptr) {
+        return false; // Position has an object, not safe
+    }
+    // If only checking immediate safety, we're done
+    if (immediate_safe) {
+        return true;
+    }
+
+    // Check for approaching shells
+    for (const auto &[id, shell_pos]: board.getShells()) {
+        Shell *shell = dynamic_cast<Shell *>(board.getObjectAt(shell_pos));
+        if (!shell) continue;
+
+        // Check if shell will pass through this position
+        if (areObjectsInLine(shell_pos, shell->getDirection(), position,
+                             std::max(board.getWidth(), board.getHeight()))) {
+            return false;
+        }
+    }
+
     return true;
 }
 
@@ -34,13 +55,95 @@ std::vector<Direction::DirectionType> GameState::getSafeDirections(Position posi
 
 
 std::vector<Position> GameState::getNearbyEmptyPositions(Position position, int steps_num) const {
-    //todo: implement this
-    return {};
+    std::vector<Position> result;
+    std::set<Position> visited;
+
+    struct State {
+        Position pos;
+        int steps;
+    };
+
+    std::queue<State> queue;
+    queue.push({position, 0});
+    visited.insert(position);
+
+    while (!queue.empty()) {
+        auto current = queue.front();
+        queue.pop();
+
+        // If we've used all steps, don't explore further
+        if (current.steps >= steps_num) continue;
+
+        // Try all directions
+        for (int i = 0; i < Direction::getDirectionSize(); i++) {
+            auto dir = Direction::getDirectionFromIndex(i);
+            Position next_pos = current.pos + Direction::getDirectionDelta(dir);
+
+            // Handle wrapping
+            next_pos.x = (next_pos.x + board.getHeight()) % board.getHeight();
+            next_pos.y = (next_pos.y + board.getWidth()) % board.getWidth();
+
+            // Check if position is valid and empty
+            if (visited.find(next_pos) == visited.end() && isEmptyPosition(next_pos)) {
+                result.push_back(next_pos);
+                visited.insert(next_pos);
+                queue.push({next_pos, current.steps + 1});
+            }
+        }
+    }
+
+    return result;
 }
 
 Action GameState::getActionToPosition(Position target_position) const {
-    //todo: implement this
-    return NONE;
+    Position current = getPlayerTank()->getPosition();
+    Direction::DirectionType current_dir = getPlayerTank()->getDirection();
+
+    // If already at the target
+    if (current == target_position) {
+        return NONE;
+    }
+
+    // Calculate relative direction to target
+    int dx = target_position.x - current.x;
+    int dy = target_position.y - current.y;
+
+    // Handle board wrapping
+    if (std::abs(dx) > board.getHeight() / 2) {
+        dx = dx > 0 ? dx - board.getHeight() : dx + board.getHeight();
+    }
+    if (std::abs(dy) > board.getWidth() / 2) {
+        dy = dy > 0 ? dy - board.getWidth() : dy + board.getWidth();
+    }
+
+    // Determine target direction
+    Direction::DirectionType target_dir;
+    if (dx < 0 && dy == 0) target_dir = Direction::UP;
+    else if (dx > 0 && dy == 0) target_dir = Direction::DOWN;
+    else if (dx == 0 && dy < 0) target_dir = Direction::LEFT;
+    else if (dx == 0 && dy > 0) target_dir = Direction::RIGHT;
+    else if (dx < 0 && dy < 0) target_dir = Direction::UP_LEFT;
+    else if (dx < 0 && dy > 0) target_dir = Direction::UP_RIGHT;
+    else if (dx > 0 && dy < 0) target_dir = Direction::DOWN_LEFT;
+    else target_dir = Direction::DOWN_RIGHT;
+
+    // If already facing the target direction, move forward
+    if (current_dir == target_dir) {
+        return MOVE_FORWARD;
+    }
+
+    // Need to rotate - find shortest path
+    int current_index = current_dir / 45;
+    int target_index = target_dir / 45;
+    int diff = (target_index - current_index + 8) % 8;
+
+    if (diff == 1) return ROTATE_RIGHT_EIGHTH;
+    if (diff == 7) return ROTATE_LEFT_EIGHTH;
+    if (diff == 2) return ROTATE_RIGHT_QUARTER;
+    if (diff == 6) return ROTATE_LEFT_QUARTER;
+
+    // For larger rotations, take biggest step in correct direction
+    return (diff <= 4) ? ROTATE_RIGHT_QUARTER : ROTATE_LEFT_QUARTER;
 }
 
 bool GameState::isShellApproaching(const int threat_threshold) const {
@@ -85,8 +188,45 @@ std::vector<Position> GameState::getApproachingShellsPosition(int threat_thresho
 }
 
 bool GameState::isInLineOfSight(Position position) const {
-    // TODO implement
-    return false;
+    Position player_pos = getPlayerTank()->getPosition();
+    Direction::DirectionType player_dir = getPlayerTank()->getDirection();
+
+    // First check if the target is in the direction the tank is facing
+    if (!areObjectsInLine(player_pos, player_dir, position,
+                          std::max(board.getWidth(), board.getHeight()))) {
+        return false;
+    }
+
+    // Now check if there are obstacles between tank and target
+    Position current = player_pos;
+    auto dir_delta = Direction::getDirectionDelta(player_dir);
+
+    while (current != position) {
+        current = current + dir_delta;
+
+        // Handle board wrapping
+        current.x = (current.x + board.getHeight()) % board.getHeight();
+        current.y = (current.y + board.getWidth()) % board.getWidth();
+
+        // Stop if we reached the target
+        if (current == position) {
+            break;
+        }
+
+        // Check for obstacles
+        auto *obj = board.getObjectAt(current);
+        if (obj != nullptr && dynamic_cast<Wall *>(obj) != nullptr) {
+            return false; // Wall blocks line of sight
+        }
+
+        // Tank blocks line of sight too
+        if (obj != nullptr && dynamic_cast<Tank *>(obj) != nullptr &&
+            current != position) {
+            return false;
+        }
+    }
+
+    return true;
 }
 
 int GameState::getEnemyDistance() const {
