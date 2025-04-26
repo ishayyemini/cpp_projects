@@ -10,11 +10,17 @@ class Algorithm {
 public:
     Algorithm() = default;
 
-    [[nodiscard]] virtual std::string getName() const { return "Algorithm"; }
+    virtual std::string getName() const { return "Algorithm"; };
 
-    [[nodiscard]] virtual Action decideAction(const GameState &state) const { return NONE; }
+    virtual Action decideAction(const GameState &state) const { return NONE; }
 
     virtual ~Algorithm() = default;
+
+protected:
+    Action handleImmediateThreat(const GameState &state, int tankDistance) const;
+
+    Action escape(const GameState &state, bool can_change_direction, int available_steps = 1,
+                  Action default_action = NONE) const;
 };
 
 #endif //ALGORITHM_H

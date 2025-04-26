@@ -1,4 +1,4 @@
-#include "Algorithm.h"
+#include "../../include/Algorithm.h"
 
 
 Action Algorithm::handleImmediateThreat(const GameState &state, int tankDistance) const {
@@ -26,7 +26,8 @@ Action Algorithm::handleImmediateThreat(const GameState &state, int tankDistance
     return escape(state, canChangeDirection);
 }
 
-Action Algorithm::escape(const GameState &state, bool can_change_direction, int available_steps, Action default_action) const {
+Action Algorithm::escape(const GameState &state, bool can_change_direction, int available_steps,
+                         Action default_action) const {
     // if we cannot change direction, we can only check if moving forward is possible and immediate safe
     auto forward_position = state.getPlayerTank()->getPosition() + Direction::getDirectionDelta(
                                 state.getPlayerTank()->getDirection());
@@ -37,7 +38,8 @@ Action Algorithm::escape(const GameState &state, bool can_change_direction, int 
         return default_action;
     }
     // let's check which safe direction we can go to. if there aren't any, return default action
-    auto empty_positions = state.getNearbyEmptyPositions(available_steps); //todo: implement this -> nearby means we can get to them using available_steps steps
+    auto empty_positions = state.getNearbyEmptyPositions(state.getPlayerTank()->getPosition());
+    //todo: implement this -> nearby means we can get to them using available_steps steps
     for (auto position: empty_positions) {
         if (state.isSafePosition(position, false)) {
             return state.getActionToPosition(position);

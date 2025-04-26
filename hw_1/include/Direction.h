@@ -70,10 +70,6 @@ public:
         return getDirection(index * 45);
     }
 
-    static constexpr DirectionType getDirection(const Position &pos) {
-        return getDirection(pos.x);
-    }
-
     static constexpr int getDirectionSize() {
         return kDirectionCount;
     }

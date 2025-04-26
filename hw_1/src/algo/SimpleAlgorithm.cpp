@@ -10,7 +10,7 @@ Action SimpleAlgorithm::decideAction(const GameState &state) const {
     return handleFutureThreat(state);
 }
 
-Action SimpleAlgorithm::handleFutureThreat(const GameState &state) const{
+Action SimpleAlgorithm::handleFutureThreat(const GameState &state) const {
     //distance > 3:
     //always check if we have an escape way - meaning at least two different directions we
     //can move to (2 because we don't know in which direction the enemy 2 will come
