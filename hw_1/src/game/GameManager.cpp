@@ -4,6 +4,7 @@
 #include <thread>
 #include <chrono>
 
+#include "Logger.h"
 #include "Mine.h"
 #include "Shell.h"
 
@@ -144,6 +145,9 @@ void GameManager::tanksTurn() {
 
     step_history.push_back(action_strings[a1]);
     step_history.push_back(action_strings[a2]);
+
+    Logger::getInstance().log("Player 1 Action: " + action_strings[a1]);
+    Logger::getInstance().log("Player 2 Action: " + action_strings[a2]);
 
     tankAction(*t1, a1);
     tankAction(*t2, a2);

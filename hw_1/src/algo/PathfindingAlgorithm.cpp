@@ -20,7 +20,7 @@ std::vector<Direction::DirectionType> PathfindingAlgorithm::computeBFS(const Gam
     };
 
     Logger::getInstance().log(
-        "Player " + std::to_string(state.getPlayerId()) + " - BFS: starting BFS from position (" +
+        "Player " + std::to_string(state.getPlayerId()) + ": BFS: starting BFS from position (" +
         std::to_string(state.getPlayerTank()->getPosition().x) + "," + std::to_string(
             state.getPlayerTank()->getPosition().y) + ")");
 
@@ -74,7 +74,7 @@ Action PathfindingAlgorithm::decideAction(const GameState &state) {
         return moveIfThreatened(state);
     }
 
-    if (state.getPlayerTank()->getAmmunition()) {
+    if (state.getPlayerTank()->getAmmunition() == 0) {
         Logger::getInstance().log("Player " + std::to_string(state.getPlayerId()) + ": No ammo.");
         return NONE;
     }
@@ -84,8 +84,9 @@ Action PathfindingAlgorithm::decideAction(const GameState &state) {
         std::string(state.canShootEnemy() ? "true" : "false"));
 
     if (state.canShootEnemy()) {
-        // Logger::getInstance().log(
-        //     "Player " + std::to_string(state.getPlayerId()) + ": Enemy in direction " + std::to_string(self.getDirection().getDirection()) + ". Shooting now.");
+        Logger::getInstance().log(
+            "Player " + std::to_string(state.getPlayerId()) + ": Enemy in direction " + std::to_string(
+                state.getPlayerTank()->getDirection()) + ". Shooting now.");
         tried_path_without_success = false;
         return SHOOT;
     }
@@ -138,7 +139,7 @@ Action PathfindingAlgorithm::decideAction(const GameState &state) {
 
     Direction::DirectionType target_dir = current_path.front();
     if (state.getPlayerTank()->getDirection() == target_dir) {
-        const Position next_pos = state.getPlayerTank()->getPosition() + target_dir;
+        const Position next_pos = state.getBoard().wrapPosition(state.getPlayerTank()->getPosition() + target_dir);
 
         if (state.getBoard().isMine(next_pos)) {
             Logger::getInstance().log(

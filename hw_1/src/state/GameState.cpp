@@ -343,18 +343,18 @@ Action GameState::rotateTowards(const Direction::DirectionType from, const Direc
 
     // Find the shortest rotation path
     if (int diff = (from - to + 360) % 360; diff > 180) {
-        // Counter-clockwise is shorter
         diff = 360 - diff;
-        if (diff == 45) return ROTATE_LEFT_EIGHTH;
-        if (diff == 90) return ROTATE_LEFT_QUARTER;
-        if (diff == 135) return ROTATE_LEFT_QUARTER;
-        if (diff == 180) return ROTATE_LEFT_QUARTER;
-    } else {
-        // Clockwise is shorter or equal
+        // Clockwise is shorter
         if (diff == 45) return ROTATE_RIGHT_EIGHTH;
         if (diff == 90) return ROTATE_RIGHT_QUARTER;
         if (diff == 135) return ROTATE_RIGHT_QUARTER;
         if (diff == 180) return ROTATE_RIGHT_QUARTER;
+    } else {
+        // Counter-clockwise is shorter or equal
+        if (diff == 45) return ROTATE_LEFT_EIGHTH;
+        if (diff == 90) return ROTATE_LEFT_QUARTER;
+        if (diff == 135) return ROTATE_LEFT_QUARTER;
+        if (diff == 180) return ROTATE_LEFT_QUARTER;
     }
 
     return NONE;

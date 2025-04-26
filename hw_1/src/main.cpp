@@ -31,6 +31,7 @@ int main(const int argc, char *argv[]) {
         std::this_thread::sleep_for(1000ms);
     }
 
+    Logger::getInstance().log(game_manager.getGameResult());
     std::cout << game_manager.getGameResult() << std::endl;
 
     delete board;
