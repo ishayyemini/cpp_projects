@@ -12,6 +12,7 @@ using namespace std::chrono_literals;
 
 void GameManager::tankAction(Tank &tank, const Action action) {
     const int back_counter = tank.getBackwardsCounter();
+    tank.decreaseShootingCooldown();
 
     /* 3 -> "regular". Here, any action will perform normally, except for back, which will just dec the counter.
      * 2 -> "waiting". Don't move. If FORWARD, reset counter. Else, dec counter.
@@ -65,8 +66,6 @@ void GameManager::tankAction(Tank &tank, const Action action) {
             break;
         default: ;
     }
-
-    tank.decreaseShootingCooldown();
 }
 
 void GameManager::checkDeaths() {
@@ -114,13 +113,14 @@ bool GameManager::shoot(Tank &tank) {
     if (tank.getAmmunition() == 0) {
         return false;
     }
-    if (tank.getCooldown() == 0) {
+    if (tank.getCooldown() != 0) {
         return false;
     }
 
     tank.decrementAmmunition();
+    tank.setCooldown(3);
     board.placeObject(std::make_unique<Shell>(tank.getPosition() + tank.getDirection(), tank.getDirection(),
-                                              tank.getPlayerId()));
+                                              tank.getId()));
     return true;
 }
 
@@ -152,21 +152,12 @@ void GameManager::tanksTurn() {
     }
 }
 
-void GameManager::shellsTurn() {
-    // std::vector<MovingObject> shell_movements;
-    //
-    // // Collect all shell movements
-    // for (int i = 0; i < board.getShellsCount(); i++) {
-    //     const Shell *shell = board.getShell(i);
-    //     if (shell) {
-    //         Position nextPos = calcNextPos(shell->getPosition(), shell->getDirection());
-    //         shell_movements.push_back({MovingObject::SHELL, i, shell->getPosition(), nextPos});
-    //     }
-    // }
-    //
-    // // Process shell movements
-    // detectAndHandleCollisions(shell_movements);
-    // applyMovements(shell_movements);
+void GameManager::shellsTurn() const {
+    for (auto [id, shell_pos]: board.getShells()) {
+        if (const auto *shell = dynamic_cast<Shell *>(board.getObjectAt(shell_pos))) {
+            board.moveObject(shell->getPosition(), shell->getDirection());
+        }
+    }
 }
 
 void GameManager::processStep() {

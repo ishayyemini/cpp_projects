@@ -33,7 +33,7 @@ class GameManager {
 
     bool shoot(Tank &tank);
 
-    void shellsTurn();
+    void shellsTurn() const;
 
     void checkDeaths();
 

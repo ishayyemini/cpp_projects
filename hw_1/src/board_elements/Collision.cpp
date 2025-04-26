@@ -41,6 +41,8 @@ bool Collision::checkOkCollision() {
     for (auto it = elements.begin(); it != elements.end();) {
         if (auto *wallPtr = dynamic_cast<Wall *>(it->get())) {
             wallPtr->takeDamage();
+            if (!wallPtr->isDestroyed()) hasWeakenedWall = true;
+            else hasWeakenedWall = false;
         } else {
             it->get()->destroy();
         }
@@ -48,4 +50,22 @@ bool Collision::checkOkCollision() {
     }
 
     return false;
+}
+
+std::unique_ptr<Wall> Collision::getWeakenedWall() {
+    if (!hasWeakenedWall) return nullptr;
+
+    std::unique_ptr<Wall> weakenedWall = nullptr;
+
+    for (auto it = elements.begin(); it != elements.end();) {
+        if (auto *wallPtr = dynamic_cast<Wall *>(it->get())) {
+            setDirection(wallPtr->getDirection());
+            weakenedWall.reset(wallPtr);
+            it->release();
+            return std::move(weakenedWall);
+        }
+        ++it;
+    }
+
+    return weakenedWall;
 }

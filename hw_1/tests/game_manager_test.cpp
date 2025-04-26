@@ -157,21 +157,23 @@ TEST_F(GameManagerTest, ShellCreation) {
     Position tankPos = tank1->getPosition();
     std::cout << "Tank position after step: (" << tankPos.x << "," << tankPos.y << ")" << std::endl;
 
-    // Create shell directly to test
-    Position shellPos(tankPos.x + 1, tankPos.y); // Tank is facing right, so shell is to the right
-    board->placeObject(std::make_unique<Shell>(shellPos, initialDir, tank1->getId()));
-
-    // Now verify that shell can be placed on the board
-    GameObject *testObj = board->getObjectAt(shellPos);
-    ASSERT_NE(testObj, nullptr) << "Test shell could not be placed at ("
-                                << shellPos.x << "," << shellPos.y << ")";
-
-    // Clean up test shell to avoid memory leak
-    board->removeObject(shellPos);
+    // // Create shell directly to test
+    // Position shellPos(tankPos.x + 1, tankPos.y); // Tank is facing right, so shell is to the right
+    // board->placeObject(std::make_unique<Shell>(shellPos, initialDir, tank1->getId()));
+    //
+    // // Now verify that shell can be placed on the board
+    // GameObject *testObj = board->getObjectAt(shellPos);
+    // ASSERT_NE(testObj, nullptr) << "Test shell could not be placed at ("
+    //                             << shellPos.x << "," << shellPos.y << ")";
+    //
+    // // Clean up test shell to avoid memory leak
+    // board->removeObject(shellPos);
 
     // For testing, directly inspect all board positions to find any shells
     bool foundShell = false;
     Position foundShellPos(-1, -1);
+
+    board->displayBoard();
 
     for (int y = 0; y < board->getHeight(); ++y) {
         for (int x = 0; x < board->getWidth(); ++x) {

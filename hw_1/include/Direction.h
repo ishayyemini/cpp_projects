@@ -35,7 +35,8 @@ struct Position {
 
     Position operator-(int dirValue) const;
 
-    Position() = default;
+    constexpr Position(): x(0), y(0) {
+    }
 
     constexpr Position(const int row, const int col): x(row), y(col) {
     }

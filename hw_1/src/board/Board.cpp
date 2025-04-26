@@ -191,6 +191,12 @@ void Board::checkCollisions() {
     for (auto tmp_pos = collisions_pos; const auto [id, pos]: tmp_pos) {
         if (const auto collision = dynamic_cast<Collision *>(getObjectAtReal(pos))) {
             if (collision->checkOkCollision()) continue;
+
+            if (std::unique_ptr<Wall> wall = collision->getWeakenedWall()) {
+                removeObjectReal(pos);
+                placeObjectReal(std::move(wall), pos);
+                continue;
+            }
         }
 
         removeObjectReal(pos);
@@ -209,4 +215,14 @@ void Board::finishMove() {
     }
 
     checkCollisions();
+}
+
+std::map<int, Position> Board::getShells() const {
+    std::map<int, Position> shells;
+    for (const auto [id, pos]: shells_pos) {
+        if (pos.x % 2 == 0 && pos.y % 2 == 0) {
+            shells[id] = pos / 2;
+        }
+    }
+    return shells;
 }

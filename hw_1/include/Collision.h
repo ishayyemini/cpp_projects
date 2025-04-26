@@ -4,12 +4,14 @@
 #include "GameObject.h"
 #include "Mine.h"
 #include "Shell.h"
+#include "Wall.h"
 
 class Collision final : public GameObject {
     std::vector<std::unique_ptr<GameObject> > elements;
     std::unique_ptr<Shell> shell = nullptr;
     std::unique_ptr<Mine> mine = nullptr;
     bool marked = false;
+    bool hasWeakenedWall = false;
 
 public:
     explicit Collision(std::unique_ptr<GameObject> element1,
@@ -29,6 +31,8 @@ public:
     std::unique_ptr<Shell> getShell() { return std::move(shell); }
 
     std::unique_ptr<Mine> getMine() { return std::move(mine); }
+
+    std::unique_ptr<Wall> getWeakenedWall();
 };
 
 #endif //COLLISION_H

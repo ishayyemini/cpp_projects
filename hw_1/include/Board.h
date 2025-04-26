@@ -81,6 +81,8 @@ public:
 
     void finishMove();
 
+    std::map<int, Position> getShells() const;
+
     // void addShell(std::unique_ptr<Shell> shell);
     //
     // [[nodiscard]] Shell *getShell(int i) const;
