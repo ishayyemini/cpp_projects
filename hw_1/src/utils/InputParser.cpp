@@ -64,13 +64,12 @@ Board *InputParser::parseInputFile(const std::string &file_name) {
 
     // check if file opened successfully
     if (!inFile) {
-        std::cerr << "Error: Failed to open file " << file_name << " for reading.\n";
+        std::cerr << "Error: Failed to create board. Could not open file " << file_name << " for reading.\n";
         error_messages.push_back("Error opening file " + file_name);
         return nullptr; // TODO maybe include a default map?
     }
 
     if (!parseDimensions(inFile)) {
-        std::cerr << "Error: dimensions.\n";
         return nullptr;
     }
 
