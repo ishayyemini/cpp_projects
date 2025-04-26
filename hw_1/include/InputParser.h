@@ -1,0 +1,32 @@
+#ifndef INPUTPARSER_H
+#define INPUTPARSER_H
+
+#include "Board.h"
+
+class InputParser {
+    std::vector<std::string> error_messages;
+    int width;
+    int height;
+    Board *board;
+
+    bool parseDimensions(std::ifstream &inFile);
+
+    bool populateBoard(std::ifstream &inFile);
+
+public:
+    InputParser() = default;
+
+    Board *parseInputFile(const std::string &file_name);
+
+    Tank *getTank1();
+
+    Tank *getTank2();
+
+    bool hasErrors() const { return !error_messages.empty(); }
+
+    const std::vector<std::string> &getErrorMessages() const { return error_messages; }
+
+    ~InputParser() = default;
+};
+
+#endif //INPUTPARSER_H

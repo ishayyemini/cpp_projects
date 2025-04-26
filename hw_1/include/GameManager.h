@@ -8,6 +8,7 @@
 #include "Tank.h"
 
 enum Winner {
+    TIE_AMMO,
     TIE,
     PLAYER_1,
     PLAYER_2,
@@ -20,13 +21,9 @@ class GameManager {
     Winner winner = NO_WINNER;
     Board &board;
     int empty_countdown = -1;
-    Algorithm algo1;
-    Algorithm algo2;
+    Algorithm *algo1;
+    Algorithm *algo2;
     std::vector<std::string> step_history;
-
-    Position calcNextPos(Position pos, const Direction::DirectionType &dir) const;
-
-    Position calcNextPos(Position pos, int dir_i) const;
 
     bool moveForward(Tank &tank);
 
@@ -36,21 +33,21 @@ class GameManager {
 
     bool shoot(Tank &tank);
 
-    void shellsTurn();
+    void shellsTurn() const;
 
-    Winner checkDeaths() const;
+    void checkDeaths();
 
-    // void tanksTurn(Player1Algo &algo1, Player2Algo &algo2);
+    void tanksTurn();
 
     void tankAction(Tank &tank, Action action);
 
 public:
-    explicit GameManager(Board &board): board(board) {
+    explicit GameManager(Board &board): board(board), algo1(new Algorithm()), algo2(new Algorithm()) {
     }
 
-    void setAlgorithm1(Algorithm &algo) { algo1 = algo; }
+    void setAlgorithm1(Algorithm &algo) { algo1 = &algo; }
 
-    void setAlgorithm2(Algorithm &algo) { algo2 = algo; }
+    void setAlgorithm2(Algorithm &algo) { algo2 = &algo; }
 
     bool isGameOver() const { return game_over; }
 
@@ -60,23 +57,10 @@ public:
 
     std::string getGameResult() const;
 
-    // In game_manager.h, add these new methods and data structures
-
-
-private:
-    struct MovingObject {
-        enum Type { TANK, SHELL } type;
-
-        int id; // Tank player ID or shell index
-        Position from;
-        Position to;
-    };
-
-    void processMovements();
-
-    void detectAndHandleCollisions(std::vector<MovingObject> &movements);
-
-    void applyMovements(const std::vector<MovingObject> &valid_movements);
+    ~GameManager() {
+        delete algo1;
+        delete algo2;
+    }
 };
 
 #endif //GAMEMANAGER_H

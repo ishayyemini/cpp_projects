@@ -67,9 +67,9 @@ TEST_F(AlgorithmsTest, PathfindingAlgorithm_GetName) {
 TEST_F(AlgorithmsTest, SimpleAlgorithm_ShootWhenInLineOfSight) {
     // Position tanks in line of sight
     tank1->setDirection(Direction::RIGHT);
-    board->moveObject(Position(2, 2), Position(2, 5));
+    board->replaceObject(Position(2, 2), Position(2, 5));
 
-    board->moveObject(Position(7, 7), Position(7, 5));
+    board->replaceObject(Position(7, 7), Position(7, 5));
 
     // Create game state from tank1's perspective
     GameState state(*board, 1);
@@ -135,9 +135,9 @@ TEST_F(AlgorithmsTest, PathfindingAlgorithm_FindPathToEnemy) {
 TEST_F(AlgorithmsTest, PathfindingAlgorithm_ShootWhenInLineOfSight) {
     // Position tanks in line of sight
     tank1->setDirection(Direction::RIGHT);
-    board->moveObject(Position(2, 2), Position(2, 5));
+    board->replaceObject(Position(2, 2), Position(2, 5));
 
-    board->moveObject(Position(7, 7), Position(7, 5));
+    board->replaceObject(Position(7, 7), Position(7, 5));
 
     // Create game state from tank1's perspective
     GameState state(*board, 1);

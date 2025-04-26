@@ -1,12 +1,15 @@
 #ifndef PATHFINDINGALGORITHM_H
 #define PATHFINDINGALGORITHM_H
+
 #include "Algorithm.h"
 
 class PathfindingAlgorithm final : public Algorithm {
 public:
-    PathfindingAlgorithm(int default_bfs_timer);
+    explicit PathfindingAlgorithm() = default;
 
-    ~PathfindingAlgorithm() override;
+    explicit PathfindingAlgorithm(int default_bfs_timer);
+
+    ~PathfindingAlgorithm() override = default;
 
     std::string getName() const override { return "PathfindingAlgorithm"; }
 
@@ -15,8 +18,8 @@ public:
 
 private:
     const int default_bfs_timer_execution = 5;
-    int bfs_steps_timer;
-    //todo: add where to store bfs tree
+
+    int bfs_steps_timer = default_bfs_timer_execution;
 
     Action chase(const GameState &state);
     void set_bfs_timer(const GameState &state, int threshold = 3);

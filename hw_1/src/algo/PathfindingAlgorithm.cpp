@@ -1,6 +1,7 @@
-#include "PathFindingAlgorithm.h"
+#include "PathfindingAlgorithm.h"
 
-PathfindingAlgorithm::PathfindingAlgorithm(int default_bfs_timer) : bfs_steps_timer(default_bfs_timer) {}
+PathfindingAlgorithm::PathfindingAlgorithm(int default_bfs_timer) : bfs_steps_timer(default_bfs_timer) {
+}
 
 Action PathfindingAlgorithm::decideAction(const GameState &state) const {
     int enemy_tank_distance = state.getEnemyDistance();

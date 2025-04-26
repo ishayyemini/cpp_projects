@@ -1,32 +1,38 @@
 #include <GameManager.h>
 #include <iostream>
+#include <thread>
 
-#include "game/game_manager.h"
-#include "utils/file_utils.h"
+#include "../include/GameManager.h"
+#include "../include/InputParser.h"
 
+using namespace std::chrono_literals;
 
 int main(const int argc, char *argv[]) {
     if (argc != 2) {
         std::cerr << "Usage: " << argv[0] << " <game-file>" << std::endl;
+        return EXIT_FAILURE;
     }
 
     const std::string path = argv[1];
-    GameManager gm(path);
-    const Winner winner = gm.startGame();
+    Board *board = InputParser().parseInputFile(path);
 
-    switch (winner) {
-        case TIE:
-            std::cout << "Tie" << std::endl;
-            break;
-        case PLAYER_1:
-            std::cout << "Player 1 Won!" << std::endl;
-            break;
-        case PLAYER_2:
-            std::cout << "Player 2 Won!" << std::endl;
-            break;
-        case NO_WINNER:
-            std::cout << "No winner" << std::endl;
-            break;
+    if (board == nullptr) {
+        std::cerr << "Can't open file " << path << std::endl;
+        return EXIT_FAILURE;
     }
+
+    std::cout << "managed to create board" << std::endl;
+
+    GameManager game_manager(*board);
+    while (!game_manager.isGameOver()) {
+        game_manager.processStep();
+        std::this_thread::sleep_for(500ms);
+    }
+
+    std::cout << game_manager.getGameResult() << std::endl;
+
+    delete board;
+
+    return EXIT_SUCCESS;
 }
 

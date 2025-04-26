@@ -22,16 +22,11 @@ public:
 
     std::vector<Direction::DirectionType> getSafeDirections(Position position) const;
 
-
-    std::vector<Position> getNearbyEmptyPositions(Position position, int steps_num) const;
-
-    std::vector<Position> getNearbyEmptyPositions(int steps_num) const {
-        return getNearbyEmptyPositions(getPlayerTank()->getPosition(), steps_num);
-    }
+    std::vector<Position> getNearbyEmptyPositions(Position position, int steps_num = 1) const;
 
     Action getActionFromPosition(Position target_position) const;
 
-    bool isShellApproaching(int threat_threshold) const;
+    bool isShellApproaching(int threat_threshold = 1) const;
 
     bool isObjectInLine(Position object_position, int distance) const;
 
@@ -39,7 +34,7 @@ public:
 
     std::vector<Position> getApproachingShellsPosition(int threat_threshold = -1, bool get_closest = false) const;
 
-    // bool isInLineOfSight(Position position) const;
+    bool isInLineOfSight(Position position) const;
 
     int getEnemyDistance() const;
 

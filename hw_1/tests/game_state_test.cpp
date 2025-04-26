@@ -14,7 +14,7 @@ protected:
 
         // Place tanks on board
         tank1 = board->placeObject(std::make_unique<Tank>(Position(2, 2), 1));
-        tank1 = board->placeObject(std::make_unique<Tank>(Position(7, 7), 2));
+        tank2 = board->placeObject(std::make_unique<Tank>(Position(7, 7), 2));
 
         // Create walls
         wall1 = board->placeObject(std::make_unique<Wall>(Position(4, 4)));
@@ -40,7 +40,7 @@ protected:
 TEST_F(GameStateTest, ConstructorAndGetters) {
     GameState state(*board, 1);
 
-    EXPECT_EQ(state.getBoard(), board);
+    EXPECT_EQ(&state.getBoard(), board);
     EXPECT_EQ(state.getPlayerTank(), tank1);
     EXPECT_EQ(state.getEnemyTank(), tank2);
     // EXPECT_EQ(state.getShells().size(), 0);
@@ -49,7 +49,7 @@ TEST_F(GameStateTest, ConstructorAndGetters) {
 TEST_F(GameStateTest, IsInLineOfSight_ClearPath) {
     // Position tank1 directly to the left of tank2 with no obstacles
     tank1->setDirection(Direction::RIGHT);
-    board->moveObject(Position(2, 2), Position(2, 7));
+    board->replaceObject(Position(2, 2), Position(2, 7));
 
     // Remove walls between them
     board->removeObject(wall1->getPosition());
@@ -73,7 +73,7 @@ TEST_F(GameStateTest, IsInLineOfSight_ClearPath) {
 TEST_F(GameStateTest, IsInLineOfSight_Blocked) {
     // Position tank1 directly to the left of tank2
     tank1->setDirection(Direction::RIGHT);
-    board->moveObject(Position(2, 2), Position(2, 7));
+    board->replaceObject(Position(2, 2), Position(2, 7));
 
     // Place a wall between them
     board->placeObject(std::make_unique<Wall>(Position(4, 7)));

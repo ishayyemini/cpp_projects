@@ -4,6 +4,9 @@
 #include <array>
 #include <ostream>
 
+class Direction;
+enum class DirectionType : int;
+
 struct Position {
     int x;
     int y;
@@ -13,11 +16,29 @@ struct Position {
     }
 
     Position operator+(const Position &pos2) const {
-        return {x + pos2.x, y + pos2.y};
+        return Position(x + pos2.x, y + pos2.y);
     }
 
-    Position scalar_multiplication(int a) const {
-        return {x * a, y * a};
+    Position operator-(const Position &pos2) const {
+        return Position(x - pos2.x, y - pos2.y);
+    }
+
+    Position operator*(const int by) const {
+        return Position(x * by, y * by);
+    }
+
+    Position operator/(const int by) const {
+        return Position(x / by, y / by);
+    }
+
+    Position operator+(int dirValue) const;
+
+    Position operator-(int dirValue) const;
+
+    constexpr Position(): x(0), y(0) {
+    }
+
+    constexpr Position(const int row, const int col): x(row), y(col) {
     }
 };
 
@@ -49,10 +70,6 @@ public:
         return getDirection(index * 45);
     }
 
-    static constexpr DirectionType getDirection(const Position &pos) {
-        return getDirection(pos.x);
-    }
-
     static constexpr int getDirectionSize() {
         return kDirectionCount;
     }
@@ -62,6 +79,10 @@ public:
         const int mul = clockwise ? 1 : -1;
         const int mod_dir = ((dir + mul * turn) % 360 + 360) % 360;
         return getDirection(mod_dir);
+    }
+
+    friend DirectionType operator-(const DirectionType dir) {
+        return getDirection(dir + 180);
     }
 
     friend std::ostream &operator<<(std::ostream &os, const DirectionType dir) {
@@ -76,19 +97,27 @@ private:
     static constexpr std::size_t kDirectionCount = 8;
 
     static constexpr std::array<Position, kDirectionCount> directionOffsets{
-        {
-            {0, -1}, // UP
-            {1, -1}, // UP_RIGHT
-            {1, 0}, // RIGHT
-            {1, 1}, // DOWN_RIGHT
-            {0, 1}, // DOWN
-            {-1, 1}, // DOWN_LEFT
-            {-1, 0}, // LEFT
-            {-1, -1} // UP_LEFT
-        }
+        Position(0, -1), // UP
+        Position(1, -1), // UP_RIGHT
+        Position(1, 0), // RIGHT
+        Position(1, 1), // DOWN_RIGHT
+        Position(0, 1), // DOWN
+        Position(-1, 1), // DOWN_LEFT
+        Position(-1, 0), // LEFT
+        Position(-1, -1), // UP_LEFT
     };
 
     Direction() = delete; // Prevent instantiation
 };
+
+inline Position Position::operator+(const int dirValue) const {
+    if (dirValue % 45 != 0 || dirValue < 0 || dirValue > 360) return Position(x, y);
+    return Position(x, y) + Direction::getDirectionDelta(static_cast<Direction::DirectionType>(dirValue));
+}
+
+inline Position Position::operator-(const int dirValue) const {
+    if (dirValue % 45 != 0 || dirValue < 0 || dirValue > 360) return Position(x, y);
+    return Position(x, y) - Direction::getDirectionDelta(static_cast<Direction::DirectionType>(dirValue));
+}
 
 #endif // DIRECTION_H

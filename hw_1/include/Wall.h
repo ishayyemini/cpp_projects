@@ -13,12 +13,16 @@ public:
     [[nodiscard]] char getSymbol() const override { return '#'; }
 
     void takeDamage(const int amount = 1) {
-        if (destroyed) return;
-        health -= amount;
-        if (health == 0) destroyed = true;
+        if (health > 0) health -= amount;
     }
 
-    [[nodiscard]] int getHitCount() const { return health - max_health; }
+    [[nodiscard]] int getHitCount() const { return max_health - health; }
+
+    int getHealth() const { return health; }
+
+    bool isDestroyed() const override { return health == 0; }
+
+    void destroy() override { health = 0; }
 };
 
 #endif //WALL_H

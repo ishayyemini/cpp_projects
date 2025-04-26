@@ -1,12 +1,14 @@
 #include "GameState.h"
 
 #include <limits>
-#include <Wall.h>
-#include <algo/SimpleAlgorithm.h>
 
-GameState::GameState(Board &board, const int player_id): board(board), player_id(player_id) {}
+#include "Wall.h"
+#include "SimpleAlgorithm.h"
 
-Board& GameState::getBoard() const { return board; }
+GameState::GameState(Board &board, const int player_id): board(board), player_id(player_id) {
+}
+
+Board &GameState::getBoard() const { return board; }
 
 Tank *GameState::getPlayerTank() const { return board.getPlayerTank(player_id); }
 
@@ -36,12 +38,12 @@ std::vector<Position> GameState::getNearbyEmptyPositions(Position position, int 
     return {};
 }
 
-Action GameState::getActionFromPosition(Position target_position) const {
+Action GameState::getActionToPosition(Position target_position) const {
     //todo: implement this
     return NONE;
 }
 
-bool GameState::isShellApproaching(int threat_threshold) const {
+bool GameState::isShellApproaching(const int threat_threshold) const {
     return getApproachingShellsPosition(threat_threshold).size() > 0;
 }
 
@@ -60,10 +62,13 @@ std::vector<Position> GameState::getApproachingShellsPosition(int threat_thresho
     std::vector<Position> closest_shells;
     int closest_distance = std::numeric_limits<int>::max();
 
-    for (const auto &shell_pos: board.getShellsPos()) {
+    for (const auto &shell_pos: board.getShells()) {
         int distance = getObjectsDistance(player_position, shell_pos.second);
         int max_distance = (threat_threshold == -1) ? distance : threat_threshold;
-        Direction::DirectionType shell_direction = board.getShell(shell_pos.first)->getDirection();
+        Shell *shell = dynamic_cast<Shell *>(board.getObjectAt(shell_pos.second));
+        if (shell == nullptr) continue;
+
+        Direction::DirectionType shell_direction = shell->getDirection();
         if (areObjectsInLine(shell_pos.second, shell_direction, player_position, max_distance)) {
             approaching_shells.push_back(shell_pos.second);
             if (distance < closest_distance) {
@@ -77,6 +82,11 @@ std::vector<Position> GameState::getApproachingShellsPosition(int threat_thresho
         return closest_shells;
     }
     return approaching_shells;
+}
+
+bool GameState::isInLineOfSight(Position position) const {
+    // TODO implement
+    return false;
 }
 
 int GameState::getEnemyDistance() const {
@@ -133,7 +143,7 @@ bool GameState::areObjectsInLine(Position obj1, Direction::DirectionType obj1_di
                                  int max_distance) const {
     auto direction_delta = Direction::getDirectionDelta(obj1_direction);
     for (auto i = 0; i <= max_distance; i++) {
-        Position inline_position = obj1 + direction_delta.scalar_multiplication(i);
+        Position inline_position = obj1 + direction_delta * i;
         if (inline_position == obj2) {
             return true;
         }

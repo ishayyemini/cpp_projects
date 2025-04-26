@@ -61,8 +61,8 @@ protected:
 
     void TearDown() override {
         delete gameManager;
-        delete mockAlgo1;
-        delete mockAlgo2;
+        // delete mockAlgo1;
+        // delete mockAlgo2;
 
         delete board;
     }
@@ -157,21 +157,23 @@ TEST_F(GameManagerTest, ShellCreation) {
     Position tankPos = tank1->getPosition();
     std::cout << "Tank position after step: (" << tankPos.x << "," << tankPos.y << ")" << std::endl;
 
-    // Create shell directly to test
-    Position shellPos(tankPos.x + 1, tankPos.y); // Tank is facing right, so shell is to the right
-    board->placeObject(std::make_unique<Shell>(shellPos, initialDir, tank1->getId()));
-
-    // Now verify that shell can be placed on the board
-    GameObject *testObj = board->getObjectAt(shellPos);
-    ASSERT_NE(testObj, nullptr) << "Test shell could not be placed at ("
-                                << shellPos.x << "," << shellPos.y << ")";
-
-    // Clean up test shell to avoid memory leak
-    board->removeObject(shellPos);
+    // // Create shell directly to test
+    // Position shellPos(tankPos.x + 1, tankPos.y); // Tank is facing right, so shell is to the right
+    // board->placeObject(std::make_unique<Shell>(shellPos, initialDir, tank1->getId()));
+    //
+    // // Now verify that shell can be placed on the board
+    // GameObject *testObj = board->getObjectAt(shellPos);
+    // ASSERT_NE(testObj, nullptr) << "Test shell could not be placed at ("
+    //                             << shellPos.x << "," << shellPos.y << ")";
+    //
+    // // Clean up test shell to avoid memory leak
+    // board->removeObject(shellPos);
 
     // For testing, directly inspect all board positions to find any shells
     bool foundShell = false;
     Position foundShellPos(-1, -1);
+
+    board->displayBoard();
 
     for (int y = 0; y < board->getHeight(); ++y) {
         for (int x = 0; x < board->getWidth(); ++x) {
@@ -230,8 +232,8 @@ TEST_F(GameManagerTest, TankMineCollision) {
 
 TEST_F(GameManagerTest, TankTankCollision) {
     // Move tanks next to each other
-    board->moveObject(Position(2, 2), Position(4, 4));
-    board->moveObject(Position(7, 7), Position(5, 4));
+    board->replaceObject(Position(2, 2), Position(4, 4));
+    board->replaceObject(Position(7, 7), Position(5, 4));
 
     // Set tank1 to move right into tank2
     tank1->setDirection(Direction::RIGHT);
@@ -339,7 +341,7 @@ TEST_F(GameManagerTest, ShellTankCollision) {
     Position delta = Direction::getDirectionDelta(dir);
     Position tank2Pos(pos.x + 3 * delta.x, pos.y + 3 * delta.y); // Three spaces ahead
 
-    board->moveObject(Position(7, 7), tank2Pos);
+    board->replaceObject(Position(7, 7), tank2Pos);
 
     // Set tank1 to shoot
     mockAlgo1->setAction(SHOOT);

@@ -1,9 +1,8 @@
-//
-// Created by Ishay Yemini on 24/04/2025.
-//
+#include "../include/GameObject.h"
 
-#include "board_element.h"
-#include "wall.h"
+#include <iosfwd>
+
+#include "Wall.h"
 
 std::ostream &operator<<(std::ostream &os, const GameObject &element) {
     switch (element.getSymbol()) {
@@ -18,7 +17,7 @@ std::ostream &operator<<(std::ostream &os, const GameObject &element) {
             break;
         case '#':
             if (const auto wall = dynamic_cast<const Wall *>(&element)) {
-                os << "[  🧱 " << wall->getHitCount() << "]";
+                os << "[  🧱 " << wall->getHealth() << "]";
             } else {
                 os << "[  🧱  ]";
             }
