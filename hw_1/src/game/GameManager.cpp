@@ -77,13 +77,21 @@ void GameManager::checkDeaths() {
     if (firstDead && secondDead) {
         winner = TIE;
         game_over = true;
+        return;
     }
     if (firstDead) {
         winner = PLAYER_2;
         game_over = true;
+        return;
     }
     if (secondDead) {
         winner = PLAYER_1;
+        game_over = true;
+        return;
+    }
+
+    if (empty_countdown == 0) {
+        winner = TIE_AMMO;
         game_over = true;
     }
 }
@@ -122,24 +130,25 @@ void GameManager::tanksTurn() {
 
     Tank *t1 = game_state_1.getPlayerTank();
     if (t1 == nullptr) return;
-    const Action a1 = algo1.decideAction(game_state_1);
+    const Action a1 = algo1->decideAction(game_state_1);
 
     Tank *t2 = game_state_2.getPlayerTank();
     if (t2 == nullptr) return;
-    const Action a2 = algo2.decideAction(game_state_2);
+    const Action a2 = algo2->decideAction(game_state_2);
 
-    std::cout << a1 << " " << a2 << std::endl;
+    step_history.push_back(action_strings[a1]);
+    step_history.push_back(action_strings[a2]);
 
     tankAction(*t1, a1);
     tankAction(*t2, a2);
 
-    if (empty_countdown != -1) {
-        empty_countdown--;
-    }
-
     // Check if both tanks used their shells
     if (empty_countdown == -1 && t1->getAmmunition() == 0 && t2->getAmmunition() == 0) {
         empty_countdown = 40;
+    }
+
+    if (empty_countdown != -1) {
+        empty_countdown--;
     }
 }
 
@@ -164,24 +173,18 @@ void GameManager::processStep() {
     if (game_over) return;
     game_step++;
 
-    if (empty_countdown == 0) {
-        winner = TIE;
-        game_over = true;
-        return;
-    }
-
     shellsTurn();
     board.finishMove();
 
+    std::cout << "Step " << game_step << std::endl;
+
     board.displayBoard();
-    std::this_thread::sleep_for(500ms);
 
     shellsTurn();
     tanksTurn();
     board.finishMove();
 
     board.displayBoard();
-    std::this_thread::sleep_for(500ms);
 
     checkDeaths();
 }
@@ -189,7 +192,9 @@ void GameManager::processStep() {
 std::string GameManager::getGameResult() const {
     switch (winner) {
         case TIE:
-            return "Tie";
+            return "Tie - Both tanks are destroyed";
+        case TIE_AMMO:
+            return "Tie - No more ammunition";
         case PLAYER_1:
             return "Player 1 wins";
         case PLAYER_2:

@@ -61,8 +61,8 @@ protected:
 
     void TearDown() override {
         delete gameManager;
-        delete mockAlgo1;
-        delete mockAlgo2;
+        // delete mockAlgo1;
+        // delete mockAlgo2;
 
         delete board;
     }

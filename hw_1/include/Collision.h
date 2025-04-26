@@ -9,6 +9,7 @@ class Collision final : public GameObject {
     std::vector<std::unique_ptr<GameObject> > elements;
     std::unique_ptr<Shell> shell = nullptr;
     std::unique_ptr<Mine> mine = nullptr;
+    bool marked = false;
 
 public:
     explicit Collision(std::unique_ptr<GameObject> element1,
@@ -19,7 +20,7 @@ public:
         elements.push_back(std::move(element2));
     }
 
-    std::vector<std::unique_ptr<GameObject> > &getElements() { return elements; }
+    std::unique_ptr<GameObject> popElement();
 
     void addElement(std::unique_ptr<GameObject> element) { elements.push_back(std::move(element)); }
 

@@ -8,6 +8,7 @@
 #include "Tank.h"
 
 enum Winner {
+    TIE_AMMO,
     TIE,
     PLAYER_1,
     PLAYER_2,
@@ -20,8 +21,8 @@ class GameManager {
     Winner winner = NO_WINNER;
     Board &board;
     int empty_countdown = -1;
-    Algorithm algo1;
-    Algorithm algo2;
+    Algorithm *algo1;
+    Algorithm *algo2;
     std::vector<std::string> step_history;
 
     bool moveForward(Tank &tank);
@@ -41,12 +42,12 @@ class GameManager {
     void tankAction(Tank &tank, Action action);
 
 public:
-    explicit GameManager(Board &board): board(board) {
+    explicit GameManager(Board &board): board(board), algo1(new Algorithm()), algo2(new Algorithm()) {
     }
 
-    void setAlgorithm1(Algorithm &algo) { algo1 = algo; }
+    void setAlgorithm1(Algorithm &algo) { algo1 = &algo; }
 
-    void setAlgorithm2(Algorithm &algo) { algo2 = algo; }
+    void setAlgorithm2(Algorithm &algo) { algo2 = &algo; }
 
     bool isGameOver() const { return game_over; }
 
@@ -55,6 +56,11 @@ public:
     void processStep();
 
     std::string getGameResult() const;
+
+    ~GameManager() {
+        delete algo1;
+        delete algo2;
+    }
 };
 
 #endif //GAMEMANAGER_H

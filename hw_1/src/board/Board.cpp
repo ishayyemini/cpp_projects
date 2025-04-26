@@ -65,7 +65,7 @@ bool Board::isOccupiedReal(const Position real_pos) const {
 void Board::removeObjectReal(const Position real_pos) {
     const auto [x, y] = wrapPositionReal(real_pos);
     if (board[y][x] != nullptr) removeIndices(board[y][x].get());
-    board[y][x] = nullptr;
+    destroyed.push_back(std::move(board[y][x]));
 }
 
 GameObject *Board::replaceObjectReal(const Position from_real, const Position to_real) {
@@ -110,8 +110,9 @@ void Board::removeIndices(GameObject *game_object) {
     }
 
     if (const auto collision = dynamic_cast<Collision *>(game_object)) {
-        for (const auto it = collision->getElements().begin(); it != collision->getElements().end();) {
-            removeIndices(it->get());
+        while (auto it = collision->popElement()) {
+            removeIndices(it.get());
+            destroyed.push_back(std::move(it));
         }
         collisions_pos.erase(collision->getId());
     }
@@ -187,22 +188,25 @@ void Board::displayBoard() const {
 }
 
 void Board::checkCollisions() {
-    for (const auto [id, pos]: collisions_pos) {
+    for (auto tmp_pos = collisions_pos; const auto [id, pos]: tmp_pos) {
         if (const auto collision = dynamic_cast<Collision *>(getObjectAtReal(pos))) {
             if (collision->checkOkCollision()) continue;
         }
+
         removeObjectReal(pos);
     }
 }
 
 void Board::finishMove() {
     checkCollisions(); // After this, we only have ok collisions
-    for (const auto [id, pos]: moving_pos) {
+
+    for (const auto tmp_pos = moving_pos; const auto [id, pos]: tmp_pos) {
         if (const auto obj = getObjectAtReal(pos)) {
             moveObjectReal(pos, obj->getDirection());
         } else {
             moving_pos.erase(id);
         }
     }
+
     checkCollisions();
 }

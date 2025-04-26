@@ -1,8 +1,10 @@
 #include <iostream>
+#include <thread>
 
 #include "../include/GameManager.h"
 #include "../include/InputParser.h"
 
+using namespace std::chrono_literals;
 
 int main(const int argc, char *argv[]) {
     if (argc != 2) {
@@ -23,6 +25,7 @@ int main(const int argc, char *argv[]) {
     GameManager game_manager(*board);
     while (!game_manager.isGameOver()) {
         game_manager.processStep();
+        std::this_thread::sleep_for(500ms);
     }
 
     std::cout << game_manager.getGameResult() << std::endl;

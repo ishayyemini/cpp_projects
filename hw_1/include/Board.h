@@ -31,6 +31,7 @@ class Board {
     std::map<int, Position> shells_pos;
     std::map<int, Position> collisions_pos;
     std::map<int, Position> moving_pos;
+    std::vector<std::unique_ptr<GameObject> > destroyed;
 
     GameObject *placeObjectReal(std::unique_ptr<GameObject> element, Position real_pos);
 
