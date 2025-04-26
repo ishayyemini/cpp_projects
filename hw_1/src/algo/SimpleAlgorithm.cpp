@@ -1,12 +1,28 @@
 #include "SimpleAlgorithm.h"
 
 Action SimpleAlgorithm::decideAction(const GameState &state) const {
+    if (state.getPlayerTank() == nullptr || state.getPlayerTank()->isDestroyed()) return NONE;
+
     int enemy_tank_distance = state.getEnemyDistance();
 
     // step 1: check if the tank is at risk
     if (enemy_tank_distance <= 3 || state.getApproachingShellsPosition().size() > 0) {
         return handleImmediateThreat(state, enemy_tank_distance);
     }
+
+    // Shoot on the other tank if can
+    if (state.isInLineOfSight(state.getEnemyTank()->getPosition())) {
+        return SHOOT;
+    }
+
+    // If rotation can face enemy, rotate
+    if (state.canRotateToFaceEnemy()) {
+        Action action = state.getActionToPosition(state.getEnemyTank()->getPosition());
+        if (action != NONE && action != MOVE_FORWARD && action != MOVE_BACKWARD && action != SHOOT) {
+            return action;
+        }
+    }
+
     return handleFutureThreat(state);
 }
 

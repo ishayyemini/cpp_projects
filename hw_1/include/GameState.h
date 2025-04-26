@@ -24,11 +24,13 @@ public:
 
     std::vector<Position> getNearbyEmptyPositions(Position position, int steps_num = 1) const;
 
-    Action getActionFromPosition(Position target_position) const;
+    Action getActionToPosition(Position target_position) const;
 
     bool isShellApproaching(int threat_threshold = -1) const;
 
     bool isObjectInLine(Position object_position, int distance) const;
+
+    bool canRotateToFaceEnemy() const;
 
     bool isEmptyPosition(Position position) const;
 
