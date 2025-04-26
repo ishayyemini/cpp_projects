@@ -8,7 +8,7 @@
 
 bool InputParser::parseDimensions(std::ifstream &inFile) {
     if (!(inFile >> width >> height) || width <= 0 || height <= 0) {
-        error_messages.push_back("Error: Invalid board dimensions.\n");
+        error_messages.push_back("Failed to extract board dimensions");
         return false;
     }
     std::string dummy;
@@ -22,16 +22,38 @@ bool InputParser::populateBoard(std::ifstream &inFile) {
 
     for (int row = 0; row < height; ++row) {
         if (!std::getline(inFile, line)) {
-            error_messages.push_back("Error: Missing row " + std::to_string(row + 1) + " in file.\n");
+            error_messages.push_back("Map is shorter than specified height");
             line = " ";
         }
 
         for (int col = 0; col < width; ++col) {
             const char symbol = col < line.length() ? line[col] : ' ';
+            if (symbol == '1' && getTank1() != nullptr) {
+                error_messages.push_back("Multiple Tank 1");
+                continue;
+            }
+            if (symbol == '2' && getTank2() != nullptr) {
+                error_messages.push_back("Multiple Tank 1");
+                continue;
+            }
+            if (symbol != '1' && symbol != '2' && symbol != '@' && symbol != '#') {
+                error_messages.push_back("Unknown symbol '" + std::string{symbol} + "'");
+            }
             std::unique_ptr<GameObject> newElement = BoardElementFactory::create(symbol, Position(col, row));
             std::cout << "created " << row << " " << col << std::endl;
             board->placeObject(std::move(newElement));
         }
+
+        if (line.length() > width) {
+            error_messages.push_back("Line " + std::to_string(row + 1) + " is longer than specified width");
+        }
+        if (line.length() < width) {
+            error_messages.push_back("Line " + std::to_string(row + 1) + " is shorter than specified width");
+        }
+    }
+
+    if (std::getline(inFile, line)) {
+        error_messages.push_back("Map is longer than specified height");
     }
 
     return true;
@@ -74,7 +96,7 @@ Tank *InputParser::getTank2() {
     if (board == nullptr) {
         return nullptr;
     }
-    return board->getPlayerTank(1);
+    return board->getPlayerTank(2);
 }
 
 
