@@ -1,6 +1,6 @@
 #include "SimpleAlgorithm.h"
 
-Action SimpleAlgorithm::decideAction(const GameState &state) const {
+Action SimpleAlgorithm::decideAction(const GameState &state) {
     if (state.getPlayerTank() == nullptr || state.getPlayerTank()->isDestroyed()) return NONE;
 
     int enemy_tank_distance = state.getEnemyDistance();

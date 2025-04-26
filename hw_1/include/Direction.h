@@ -92,6 +92,10 @@ public:
         return getDirection(dir + 180);
     }
 
+    friend DirectionType operator-(const DirectionType dir, const DirectionType other) {
+        return getDirection(dir + 180);
+    }
+
     friend std::ostream &operator<<(std::ostream &os, const DirectionType dir) {
         static const std::array<std::string, kDirectionCount> directionStrings = {
             "⬆️", "↗️", "➡️", "↘️", "⬇️", "↙️", "⬅️", "↖️"

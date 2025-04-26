@@ -26,7 +26,7 @@ int main(const int argc, char *argv[]) {
     GameManager game_manager(*board);
     while (!game_manager.isGameOver()) {
         game_manager.processStep();
-        std::this_thread::sleep_for(500ms);
+        std::this_thread::sleep_for(1000ms);
     }
 
     std::cout << game_manager.getGameResult() << std::endl;

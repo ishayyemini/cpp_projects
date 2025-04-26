@@ -1,4 +1,4 @@
-#include "../../include/Algorithm.h"
+#include "Algorithm.h"
 
 
 Action Algorithm::handleImmediateThreat(const GameState &state, int tankDistance) const {

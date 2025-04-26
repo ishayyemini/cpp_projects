@@ -11,7 +11,7 @@ public:
 
     std::string getName() const override { return "SimpleAlgorithm"; }
 
-    Action decideAction(const GameState &state) const override;
+    Action decideAction(const GameState &state) override;
 
 private:
     Action handleFutureThreat(const GameState &state) const;

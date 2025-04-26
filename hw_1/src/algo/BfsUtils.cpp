@@ -1,18 +1,16 @@
 #include <queue>
 #include <unordered_set>
 
-#include "../../include/algo/BfsUtils.h"
+#include "BfsUtils.h"
 
 
-Position BfsUtils::execute_stateful_bfs(
-    const GameState &state,
-    std::unordered_map<TankState, TankState>& bfs_tree
-) const {
+Position BfsUtils::executeStatefulBfs(const GameState &state,
+                                      std::unordered_map<TankState, TankState> &bfs_tree) {
     //clear the bfs tree
     bfs_tree.clear();
 
     //initialize the queue and visited set
-    std::queue<std::pair<TankState, int>> visit_queue;
+    std::queue<std::pair<TankState, int> > visit_queue;
     std::unordered_set<TankState> visited;
 
     const Position start_position = state.getPlayerTank()->getPosition();
@@ -27,7 +25,8 @@ Position BfsUtils::execute_stateful_bfs(
     bool target_found = false;
 
     while (!visit_queue.empty()) {
-        auto [current, cost] = visit_queue.front(); visit_queue.pop();
+        auto [current, cost] = visit_queue.front();
+        visit_queue.pop();
 
         if (current.pos == enemy_position) {
             goalReached = current;
@@ -50,10 +49,10 @@ void BfsUtils::generateNextStates(
     const GameState &state,
     const TankState &current,
     int cost,
-    std::queue<std::pair<TankState, int>> &q,
+    std::queue<std::pair<TankState, int> > &q,
     std::unordered_set<TankState> &visited,
     std::unordered_map<TankState, TankState> &bfs_tree
-    ) const{
+) {
     // 1. Move Forward
     Position forwardPos = state.calcNextPosition(current.pos, current.dir);
     if (state.isSafePosition(forwardPos) && state.isEmptyPosition(forwardPos)) {
@@ -63,7 +62,7 @@ void BfsUtils::generateNextStates(
 
     // 2. Rotations: 90° Left, 45° Left, 45° Right, 90° Right
     std::vector<int> rotationAngles = {-90, -45, 45, 90}; // Degrees
-    for (int angle : rotationAngles) {
+    for (int angle: rotationAngles) {
         Direction::DirectionType newDir = Direction::getDirection(current.dir + angle);
         TankState rotatedState{current.pos, newDir}; // Rotation does not move
         tryMove(state, q, visited, bfs_tree, current, rotatedState, cost + 2); // Rotation costs 2
@@ -79,14 +78,13 @@ void BfsUtils::generateNextStates(
 
 void BfsUtils::tryMove(
     const GameState &state,
-    std::queue<std::pair<TankState, int>> &q,
+    std::queue<std::pair<TankState, int> > &q,
     std::unordered_set<TankState> &visited,
     std::unordered_map<TankState, TankState> &bfs_tree,
     const TankState &fromState,
     const TankState &toState,
     int newCost
-) const
-{
+) {
     if (!visited.count(toState)) {
         visited.insert(toState);
         bfs_tree[toState] = fromState;
@@ -99,8 +97,7 @@ Position BfsUtils::reconstructFirstMove(
     const std::unordered_map<TankState, TankState> &bfs_tree,
     const TankState &goalReached,
     const TankState &startState
-) const
-{
+) {
     // If no path exists
     if (bfs_tree.empty()) {
         return startState.pos; // No move, stay in place

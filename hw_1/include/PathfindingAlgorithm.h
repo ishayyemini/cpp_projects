@@ -2,8 +2,8 @@
 #define PATHFINDINGALGORITHM_H
 
 #include "Algorithm.h"
-#include "algo/TankState.h"
-#include "algo/BfsUtils.h"
+#include "TankState.h"
+#include "BfsUtils.h"
 
 class PathfindingAlgorithm final : public Algorithm {
 public:
@@ -15,7 +15,7 @@ public:
 
     std::string getName() const override { return "PathfindingAlgorithm"; }
 
-    Action decideAction(const GameState &state) const override;
+    Action decideAction(const GameState &state) override;
 
 private:
     const int default_bfs_timer_execution = 5;
@@ -27,7 +27,6 @@ private:
     void set_bfs_timer(const GameState &state, int threshold = 3);
 
     Action getActionFromBfsTree(const GameState &state) const;
-
 };
 
 
