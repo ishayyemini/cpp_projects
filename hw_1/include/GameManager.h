@@ -5,6 +5,8 @@
 
 #include "Algorithm.h"
 #include "Board.h"
+#include "PathfindingAlgorithm.h"
+#include "SimpleAlgorithm.h"
 #include "Tank.h"
 
 enum Winner {
@@ -42,7 +44,7 @@ class GameManager {
     void tankAction(Tank &tank, Action action);
 
 public:
-    explicit GameManager(Board &board): board(board), algo1(new Algorithm()), algo2(new Algorithm()) {
+    explicit GameManager(Board &board): board(board), algo1(new PathfindingAlgorithm()), algo2(new SimpleAlgorithm()) {
     }
 
     void setAlgorithm1(Algorithm &algo) { algo1 = &algo; }
