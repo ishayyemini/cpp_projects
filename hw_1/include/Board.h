@@ -7,6 +7,8 @@
 
 #include <map>
 #include <unordered_set>
+#include <memory>
+#include <vector>
 
 #include "GameObject.h"
 #include "Mine.h"
@@ -75,6 +77,10 @@ public:
 
     GameObject *getObjectAt(Position pos) const;
 
+    std::map<int, Position> getShellsPos() const{ return shells_pos; }
+
+    // [[nodiscard]] Tank *getPlayerTank(int player_id, int tank_id) const;
+    //
     [[nodiscard]] Tank *getPlayerTank(int player_id) const;
 
     void displayBoard() const;
@@ -85,7 +91,7 @@ public:
 
     // void addShell(std::unique_ptr<Shell> shell);
     //
-    // [[nodiscard]] Shell *getShell(int i) const;
+    [[nodiscard]] Shell *getShell(int i) const;
     //
     // [[nodiscard]] Shell *getShell(const std::pair<int, int> &pos) const;
     //

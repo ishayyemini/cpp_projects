@@ -11,7 +11,12 @@ public:
 
     ~SimpleAlgorithm() override = default;
 
-    [[nodiscard]] std::string getName() const override { return "SimpleAlgorithm"; }
+    std::string getName() const override { return "SimpleAlgorithm"; }
+
+    Action decideAction(const GameState &state) const override;
+
+private:
+    Action handleFutureThreat(const GameState &state) const;
 };
 
 #endif //SIMPLEALGORITHM_H
