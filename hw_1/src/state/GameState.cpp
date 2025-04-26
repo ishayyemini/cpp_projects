@@ -296,7 +296,7 @@ int GameState::getObjectsDistance(Position obj1, Position obj2) const {
 }
 
 
-bool GameState::doesPlayerTankFacingWall() const {
+bool GameState::isFacingWall() const {
     return isWallInDirection(getPlayerTank()->getPosition(), getPlayerTank()->getDirection());
 }
 
@@ -306,7 +306,6 @@ bool GameState::isWallInDirection(Position position, Direction::DirectionType di
     auto element = board.getObjectAt(next_position);
     return dynamic_cast<Wall *>(element) != nullptr;
 }
-
 
 Action GameState::rotateTowardsWall() const {
     auto current_player_direction = getPlayerTank()->getDirection();
@@ -348,7 +347,24 @@ Position GameState::calcNextPosition(Position position, Direction::DirectionType
     return position + direction_delta;
 }
 
+bool GameState::canShootWall() const {
+    const auto &player_tank = board.getPlayerTank(1);
+    if (!player_tank) {
+        return false;
+    }
+    const auto tank_pos = player_tank->getPosition();
+    const auto tank_dir = player_tank->getDirection();
+    Position checkPos = tank_pos;
+    for (int i = 1; i <= 5; i++) {
+        // Check up to 5 squares ahead
+        if (isWallInDirection(checkPos, tank_dir)) {
+            return true;
+        }
+        checkPos = checkPos + tank_dir;
+    }
 
+    return false;
+}
 
 
 

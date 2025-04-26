@@ -42,13 +42,15 @@ public:
 
     int getEnemyDistance(Position position) const;
 
-    bool doesPlayerTankFacingWall() const;
+    bool isFacingWall() const;
 
     bool isWallInDirection(Position position, Direction::DirectionType direction) const;
 
     Action rotateTowardsWall() const;
 
     Position calcNextPosition(Position position, Direction::DirectionType direction) const;
+
+    bool canShootWall() const;
 
 private:
     int getObjectsDistance(Position obj1, Position obj2) const;
