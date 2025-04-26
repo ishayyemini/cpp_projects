@@ -33,6 +33,8 @@ public:
     std::unique_ptr<Mine> getMine() { return std::move(mine); }
 
     std::unique_ptr<Wall> getWeakenedWall();
+
+    bool isCollision() const override { return true; }
 };
 
 #endif //COLLISION_H

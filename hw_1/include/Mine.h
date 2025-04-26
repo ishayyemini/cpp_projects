@@ -9,6 +9,8 @@ public:
     }
 
     [[nodiscard]] char getSymbol() const override { return '@'; }
+
+    bool isMine() const override { return true; }
 };
 
 #endif //MINE_H

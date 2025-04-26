@@ -87,6 +87,16 @@ public:
 
     std::map<int, Position> getShells() const;
 
+    bool isWall(const Position pos) const { return isOccupied(pos) && getObjectAt(pos)->isWall(); }
+
+    bool isTank(const Position pos) const { return isOccupied(pos) && getObjectAt(pos)->isTank(); }
+
+    bool isShell(const Position pos) const { return isOccupied(pos) && getObjectAt(pos)->isShell(); }
+
+    bool isCollision(const Position pos) const { return isOccupied(pos) && getObjectAt(pos)->isCollision(); }
+
+    bool isMine(const Position pos) const { return isOccupied(pos) && getObjectAt(pos)->isMine(); }
+
     // void addShell(std::unique_ptr<Shell> shell);
     //
     //

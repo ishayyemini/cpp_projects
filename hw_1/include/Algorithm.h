@@ -17,10 +17,12 @@ public:
     virtual ~Algorithm() = default;
 
 protected:
-    Action handleImmediateThreat(const GameState &state, int tankDistance) const;
+    Action moveIfThreatened(const GameState &state) const;
 
-    Action escape(const GameState &state, bool can_change_direction, int available_steps = 1,
-                  Action default_action = NONE) const;
+    // Action handleImmediateThreat(const GameState &state, int tankDistance) const;
+
+    // Action escape(const GameState &state, bool can_change_direction, int available_steps = 1,
+    //               Action default_action = NONE) const;
 };
 
 #endif //ALGORITHM_H

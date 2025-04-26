@@ -41,6 +41,8 @@ public:
 
     void decrementAmmunition() { if (shell > 0) shell--; }
 
+    bool isTank() const override { return true; }
+
     // void queueAction(Action action) { queued_action = action; }
     // Action getQueuedAction() const { return queued_action; }
 };

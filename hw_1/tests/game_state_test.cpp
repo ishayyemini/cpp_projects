@@ -100,8 +100,8 @@ TEST_F(GameStateTest, IsShellApproaching) {
     // Create a shell from tank1 - should not be considered as approaching tank1
     board->placeObject(std::make_unique<Shell>(Position(3, 2), Direction::RIGHT, 1));
 
-    // Own shell should not be considered as approaching
-    EXPECT_TRUE(state1.isShellApproaching()); // Only the enemy shell counts
+    // They cancel each other out
+    EXPECT_FALSE(state1.isShellApproaching());
 }
 
 TEST_F(GameStateTest, GetNearbyEmptyPositions) {

@@ -4,6 +4,8 @@
 #include <array>
 #include <ostream>
 
+#include "Action.h"
+
 class Direction;
 enum class DirectionType : int;
 
@@ -88,12 +90,43 @@ public:
         return getDirection(mod_dir);
     }
 
+    static DirectionType getDirectionAfterAction(const DirectionType dir, const Action action) {
+        switch (action) {
+            case ROTATE_LEFT_EIGHTH:
+                return rotateDirection(dir, false, false);
+            case ROTATE_RIGHT_EIGHTH:
+                return rotateDirection(dir, true, false);
+            case ROTATE_LEFT_QUARTER:
+                return rotateDirection(dir, false, true);
+            case ROTATE_RIGHT_QUARTER:
+                return rotateDirection(dir, true, true);
+            default:
+                return dir;
+        }
+    }
+
+    static constexpr DirectionType getDirectionTo(const Position from, const Position to) {
+        const int dx = to.x - from.x;
+        const int dy = to.y - from.y;
+
+        if (dx == 0 && dy < 0) return UP;
+        if (dx > 0 && dy < 0) return UP_RIGHT;
+        if (dx > 0 && dy == 0) return RIGHT;
+        if (dx > 0) return DOWN_RIGHT;
+        if (dx == 0 && dy > 0) return DOWN;
+        if (dx < 0 && dy > 0) return DOWN_LEFT;
+        if (dx < 0 && dy == 0) return LEFT;
+        if (dx < 0) return UP_LEFT;
+
+        return UP;
+    }
+
     friend DirectionType operator-(const DirectionType dir) {
         return getDirection(dir + 180);
     }
 
     friend DirectionType operator-(const DirectionType dir, const DirectionType other) {
-        return getDirection(dir + 180);
+        return getDirection(static_cast<int>(dir) - static_cast<int>(other));
     }
 
     friend std::ostream &operator<<(std::ostream &os, const DirectionType dir) {

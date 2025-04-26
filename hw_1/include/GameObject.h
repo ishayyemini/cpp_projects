@@ -39,6 +39,16 @@ public:
 
     [[nodiscard]] virtual bool isDestroyed() const { return destroyed; }
 
+    virtual bool isWall() const { return false; }
+
+    virtual bool isShell() const { return false; }
+
+    virtual bool isMine() const { return false; }
+
+    virtual bool isCollision() const { return false; }
+
+    virtual bool isTank() const { return false; }
+
     friend std::ostream &operator<<(std::ostream &os, const GameObject &element);
 };
 

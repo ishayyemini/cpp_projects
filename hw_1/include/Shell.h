@@ -15,6 +15,8 @@ public:
     int getOwnerId() const { return owner_id; }
 
     [[nodiscard]] char getSymbol() const override { return '*'; }
+
+    bool isShell() const override { return true; }
 };
 
 #endif //SHELL_H

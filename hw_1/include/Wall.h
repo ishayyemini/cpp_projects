@@ -23,6 +23,8 @@ public:
     bool isDestroyed() const override { return health == 0; }
 
     void destroy() override { health = 0; }
+
+    bool isWall() const override { return true; }
 };
 
 #endif //WALL_H
