@@ -96,10 +96,16 @@ void GameManager::checkDeaths() {
 }
 
 bool GameManager::moveForward(Tank &tank) {
+    if (const auto obj = board.getObjectAt(tank.getPosition() + tank.getDirection())) {
+        if (obj->getSymbol() == '#') return false;
+    }
     return board.moveObject(tank.getPosition(), tank.getDirection());
 }
 
 bool GameManager::moveBackward(Tank &tank) {
+    if (const auto obj = board.getObjectAt(tank.getPosition() + tank.getDirection())) {
+        if (obj->getSymbol() == '#') return false;
+    }
     return board.moveObject(tank.getPosition(), -tank.getDirection());
 }
 
