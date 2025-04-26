@@ -2,6 +2,7 @@
 #define ACTION_H
 #include <list>
 #include <map>
+#include <string>
 
 enum Action {
     NONE,
