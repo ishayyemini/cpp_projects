@@ -23,6 +23,14 @@ struct Position {
         return Position(x - pos2.x, y - pos2.y);
     }
 
+    Position operator*(const int by) const {
+        return Position(x * by, y * by);
+    }
+
+    Position operator/(const int by) const {
+        return Position(x / by, y / by);
+    }
+
     Position operator+(int dirValue) const;
 
     Position operator-(int dirValue) const;
@@ -66,6 +74,10 @@ public:
         const int mul = clockwise ? 1 : -1;
         const int mod_dir = ((dir + mul * turn) % 360 + 360) % 360;
         return getDirection(mod_dir);
+    }
+
+    friend DirectionType operator-(const DirectionType dir) {
+        return getDirection(dir + 180);
     }
 
     friend std::ostream &operator<<(std::ostream &os, const DirectionType dir) {

@@ -49,7 +49,7 @@ TEST_F(GameStateTest, ConstructorAndGetters) {
 TEST_F(GameStateTest, IsInLineOfSight_ClearPath) {
     // Position tank1 directly to the left of tank2 with no obstacles
     tank1->setDirection(Direction::RIGHT);
-    board->moveObject(Position(2, 2), Position(2, 7));
+    board->replaceObject(Position(2, 2), Position(2, 7));
 
     // Remove walls between them
     board->removeObject(wall1->getPosition());
@@ -73,7 +73,7 @@ TEST_F(GameStateTest, IsInLineOfSight_ClearPath) {
 TEST_F(GameStateTest, IsInLineOfSight_Blocked) {
     // Position tank1 directly to the left of tank2
     tank1->setDirection(Direction::RIGHT);
-    board->moveObject(Position(2, 2), Position(2, 7));
+    board->replaceObject(Position(2, 2), Position(2, 7));
 
     // Place a wall between them
     board->placeObject(std::make_unique<Wall>(Position(4, 7)));

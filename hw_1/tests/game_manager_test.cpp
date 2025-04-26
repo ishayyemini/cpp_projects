@@ -230,8 +230,8 @@ TEST_F(GameManagerTest, TankMineCollision) {
 
 TEST_F(GameManagerTest, TankTankCollision) {
     // Move tanks next to each other
-    board->moveObject(Position(2, 2), Position(4, 4));
-    board->moveObject(Position(7, 7), Position(5, 4));
+    board->replaceObject(Position(2, 2), Position(4, 4));
+    board->replaceObject(Position(7, 7), Position(5, 4));
 
     // Set tank1 to move right into tank2
     tank1->setDirection(Direction::RIGHT);
@@ -339,7 +339,7 @@ TEST_F(GameManagerTest, ShellTankCollision) {
     Position delta = Direction::getDirectionDelta(dir);
     Position tank2Pos(pos.x + 3 * delta.x, pos.y + 3 * delta.y); // Three spaces ahead
 
-    board->moveObject(Position(7, 7), tank2Pos);
+    board->replaceObject(Position(7, 7), tank2Pos);
 
     // Set tank1 to shoot
     mockAlgo1->setAction(SHOOT);

@@ -89,11 +89,11 @@ void GameManager::checkDeaths() {
 }
 
 bool GameManager::moveForward(Tank &tank) {
-    return board.moveObject(tank.getPosition(), tank.getPosition() + tank.getDirection());
+    return board.moveObject(tank.getPosition(), tank.getDirection());
 }
 
 bool GameManager::moveBackward(Tank &tank) {
-    return board.moveObject(tank.getPosition(), tank.getPosition() - tank.getDirection());
+    return board.moveObject(tank.getPosition(), -tank.getDirection());
 }
 
 bool GameManager::rotate(Tank &tank, const int turn) {
@@ -162,6 +162,7 @@ void GameManager::shellsTurn() {
 
 void GameManager::processStep() {
     if (game_over) return;
+    game_step++;
 
     if (empty_countdown == 0) {
         winner = TIE;
@@ -170,16 +171,14 @@ void GameManager::processStep() {
     }
 
     shellsTurn();
-    board.checkCollisions();
+    board.finishMove();
 
     board.displayBoard();
     std::this_thread::sleep_for(500ms);
 
     shellsTurn();
-    board.checkCollisions();
-
     tanksTurn();
-    board.checkCollisions();
+    board.finishMove();
 
     board.displayBoard();
     std::this_thread::sleep_for(500ms);
