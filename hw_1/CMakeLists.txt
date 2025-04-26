@@ -17,7 +17,14 @@ list(FILTER SOURCES EXCLUDE REGEX ".*main\\.cpp$")
 
 # Add the main executable
 add_executable(tank_game ${SOURCES} "${PROJECT_SOURCE_DIR}/src/main.cpp"
-        src/board/Board.cpp)
+        src/board/Board.cpp
+        include/algo/SimpleAlgorithm.cpp
+        include/GameState.cpp
+        include/algo/PathFindingAlgorithm.cpp
+        include/algo/Algorithm.cpp
+        include/algo/TankState.h
+        include/algo/Bfs_Utils.h
+        include/algo/Bfs_utils.cpp)
 
 # Add the shared library for Python
 add_library(tank_game_lib SHARED
