@@ -9,7 +9,7 @@
 GameState::GameState(Board &board, const int player_id): board(board), player_id(player_id) {
 }
 
-Board &GameState::getBoard() const { return board; }
+const Board &GameState::getBoard() const { return board; }
 
 Tank *GameState::getPlayerTank() const { return board.getPlayerTank(player_id); }
 
@@ -77,11 +77,7 @@ std::vector<Position> GameState::getNearbyEmptyPositions(Position position, int 
         // Try all directions
         for (int i = 0; i < Direction::getDirectionSize(); i++) {
             auto dir = Direction::getDirectionFromIndex(i);
-            Position next_pos = current.pos + Direction::getDirectionDelta(dir);
-
-            // Handle wrapping
-            next_pos.x = (next_pos.x + board.getHeight()) % board.getHeight();
-            next_pos.y = (next_pos.y + board.getWidth()) % board.getWidth();
+            Position next_pos = board.wrapPosition(current.pos + Direction::getDirectionDelta(dir));
 
             // Check if position is valid and empty
             if (visited.find(next_pos) == visited.end() && isEmptyPosition(next_pos)) {
@@ -147,7 +143,7 @@ Action GameState::getActionToPosition(Position target_position) const {
 }
 
 bool GameState::isShellApproaching(const int threat_threshold) const {
-    return getApproachingShellsPosition(threat_threshold).size() > 0;
+    return !getApproachingShellsPosition(threat_threshold).empty();
 }
 
 bool GameState::isObjectInLine(Position object_position, int distance) const {
@@ -159,48 +155,24 @@ bool GameState::canRotateToFaceEnemy() const {
     Tank *player = getPlayerTank();
     Tank *enemy = getEnemyTank();
     if (!player || !enemy) return false;
-    Direction::DirectionType current_dir = player->getDirection();
+
     Position player_pos = player->getPosition();
     Position enemy_pos = enemy->getPosition();
-    // Check all possible one-step rotations
     const std::vector possible_directions = {
-        Direction::rotateDirection(current_dir, true, false), // 45° right
-        Direction::rotateDirection(current_dir, false, false), // 45° left
-        Direction::rotateDirection(current_dir, true, true), // 90° right
-        Direction::rotateDirection(current_dir, false, true) // 90° left
+        Direction::rotateDirection(player->getDirection(), true, false),
+        Direction::rotateDirection(player->getDirection(), false, false),
+        Direction::rotateDirection(player->getDirection(), true, true),
+        Direction::rotateDirection(player->getDirection(), false, true)
     };
-    for (const auto &new_dir: possible_directions) {
-        // First check if enemy would be in line with the new direction
-        if (!areObjectsInLine(player_pos, new_dir, enemy_pos, std::max(board.getWidth(), board.getHeight()))) {
-            continue;
-        }
-        // Now check for obstacles in the path
-        Position current = player_pos;
-        auto dir_delta = Direction::getDirectionDelta(new_dir);
-        bool clear_path = true;
-        while (current != enemy_pos && clear_path) {
-            current = current + dir_delta;
-            // Handle board wrapping
-            current.x = (current.x + board.getHeight()) % board.getHeight();
-            current.y = (current.y + board.getWidth()) % board.getWidth();
-            // Stop if we reached the enemy
-            if (current == enemy_pos) {
-                break;
-            }
-            // Check for obstacles
-            auto *obj = board.getObjectAt(current);
-            if (obj != nullptr && (dynamic_cast<Wall *>(obj) != nullptr || (
-                                       dynamic_cast<Tank *>(obj) != nullptr && current != enemy_pos))) {
-                clear_path = false;
-            }
-        }
 
-        if (clear_path) {
-            return true; // This rotation would give a clear line of sight
+    for (const auto &new_dir: possible_directions) {
+        if (areObjectsInLine(player_pos, new_dir, enemy_pos, std::max(board.getWidth(), board.getHeight())) &&
+            isLineOfSightClear(player_pos, enemy_pos, new_dir)) {
+            return true;
         }
     }
 
-    return false; // No rotation gives a clear line of sight
+    return false;
 }
 
 bool GameState::isEmptyPosition(Position position) const {
@@ -239,42 +211,11 @@ bool GameState::isInLineOfSight(Position position) const {
     Position player_pos = getPlayerTank()->getPosition();
     Direction::DirectionType player_dir = getPlayerTank()->getDirection();
 
-    // First check if the target is in the direction the tank is facing
-    if (!areObjectsInLine(player_pos, player_dir, position,
-                          std::max(board.getWidth(), board.getHeight()))) {
+    if (!areObjectsInLine(player_pos, player_dir, position, std::max(board.getWidth(), board.getHeight()))) {
         return false;
     }
 
-    // Now check if there are obstacles between tank and target
-    Position current = player_pos;
-    auto dir_delta = Direction::getDirectionDelta(player_dir);
-
-    while (current != position) {
-        current = current + dir_delta;
-
-        // Handle board wrapping
-        current.x = (current.x + board.getHeight()) % board.getHeight();
-        current.y = (current.y + board.getWidth()) % board.getWidth();
-
-        // Stop if we reached the target
-        if (current == position) {
-            break;
-        }
-
-        // Check for obstacles
-        auto *obj = board.getObjectAt(current);
-        if (obj != nullptr && dynamic_cast<Wall *>(obj) != nullptr) {
-            return false; // Wall blocks line of sight
-        }
-
-        // Tank blocks line of sight too
-        if (obj != nullptr && dynamic_cast<Tank *>(obj) != nullptr &&
-            current != position) {
-            return false;
-        }
-    }
-
-    return true;
+    return isLineOfSightClear(player_pos, position, player_dir);
 }
 
 int GameState::getEnemyDistance() const {
@@ -329,11 +270,7 @@ bool GameState::areObjectsInLine(Position obj1, Direction::DirectionType obj1_di
                                  int max_distance) const {
     auto direction_delta = Direction::getDirectionDelta(obj1_direction);
     for (auto i = 0; i <= max_distance; i++) {
-        Position inline_position = obj1 + direction_delta * i;
-
-        // Handle board wrapping
-        inline_position.x = (inline_position.x + board.getHeight()) % board.getHeight();
-        inline_position.y = (inline_position.y + board.getWidth()) % board.getWidth();
+        Position inline_position = board.wrapPosition(obj1 + direction_delta * i);
 
         if (inline_position == obj2) {
             return true;
@@ -348,7 +285,7 @@ Position GameState::calcNextPosition(Position position, Direction::DirectionType
 }
 
 bool GameState::canShootWall() const {
-    const auto &player_tank = board.getPlayerTank(1);
+    const auto &player_tank = getPlayerTank();
     if (!player_tank) {
         return false;
     }
@@ -366,6 +303,27 @@ bool GameState::canShootWall() const {
     return false;
 }
 
+bool GameState::isLineOfSightClear(const Position start, const Position end,
+                                   const Direction::DirectionType direction) const {
+    Position current = start;
+    auto dir_delta = Direction::getDirectionDelta(direction);
+
+    while (current != end) {
+        current = board.wrapPosition(current + dir_delta);
+
+        if (current == end) {
+            break;
+        }
+
+        auto *obj = board.getObjectAt(current);
+        if (obj != nullptr && (dynamic_cast<Wall *>(obj) != nullptr ||
+                               (dynamic_cast<Tank *>(obj) != nullptr && current != end))) {
+            return false;
+        }
+    }
+
+    return true;
+}
 
 
 

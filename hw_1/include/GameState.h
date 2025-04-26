@@ -12,7 +12,7 @@ class GameState {
 public:
     explicit GameState(Board &board, int player_id);
 
-    Board &getBoard() const;
+    const Board &getBoard() const;
 
     Tank *getPlayerTank() const;
 
@@ -51,6 +51,8 @@ public:
     Position calcNextPosition(Position position, Direction::DirectionType direction) const;
 
     bool canShootWall() const;
+
+    bool isLineOfSightClear(Position start, Position end, Direction::DirectionType direction) const;
 
 private:
     int getObjectsDistance(Position obj1, Position obj2) const;
