@@ -24,7 +24,7 @@ public:
 
     std::vector<Position> getNearbyEmptyPositions(Position position, int steps_num = 1) const;
 
-    Action getActionToPosition(Position target_position) const;
+    Action getActionFromPosition(Position target_position) const;
 
     bool isShellApproaching(int threat_threshold = -1) const;
 
@@ -45,6 +45,8 @@ public:
     bool isWallInDirection(Position position, Direction::DirectionType direction) const;
 
     Action rotateTowardsWall() const;
+
+    Position calcNextPosition(Position position, Direction::DirectionType direction) const;
 
 private:
     int getObjectsDistance(Position obj1, Position obj2) const;

@@ -13,6 +13,17 @@ Action PathfindingAlgorithm::decideAction(const GameState &state) const {
     return chase(state);
 }
 
-Action PathfindingAlgorithm::chase(const GameState &state) const {
-    return NONE;
+void PathfindingAlgorithm::set_bfs_timer(const GameState &state, int threshold) {
+    auto distance = state.getEnemyDistance();
+    bfs_steps_timer = (distance > threshold) ? default_bfs_timer_execution : 0;
+}
+
+Action PathfindingAlgorithm::chase(const GameState &state){
+    if (bfs_steps_timer == 0) {
+        //timer expired, so we can start a new bfs
+        Position position = execute_bfs(state);
+        set_bfs_timer(state);
+        return state.getActionToPosition(position);
+    }
+    return decideOfflineAction(state);
 }

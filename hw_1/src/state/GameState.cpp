@@ -290,3 +290,15 @@ bool GameState::areObjectsInLine(Position obj1, Direction::DirectionType obj1_di
     }
     return false;
 }
+
+//todo: use this function in the rest of the code
+Position GameState::calcNextPosition(Position position, Direction::DirectionType direction) const {
+    auto direction_delta = Direction::getDirectionDelta(direction);
+    return position + direction_delta;
+}
+
+
+
+
+
+
