@@ -15,9 +15,13 @@ class Tank final : public GameObject {
     Action queued_action = NONE;
 
 public:
-    explicit Tank(Position position, int player_id);
+    explicit Tank(Position position, int player_id): GameObject(position, player_id == 1
+                                                                              ? Direction::LEFT
+                                                                              : Direction::RIGHT),
+                                                     player_id(player_id) {
+    }
 
-    [[nodiscard]] char getSymbol() const override;
+    [[nodiscard]] char getSymbol() const override { return player_id == 1 ? '1' : '2'; }
 
     int getAmmunition() const { return shell; }
 
@@ -37,8 +41,8 @@ public:
 
     void decrementAmmunition() { if (shell > 0) shell--; }
 
-    void queueAction(Action action) { queued_action = action; }
-    Action getQueuedAction() const { return queued_action; }
+    // void queueAction(Action action) { queued_action = action; }
+    // Action getQueuedAction() const { return queued_action; }
 };
 
 

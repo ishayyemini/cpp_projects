@@ -1,13 +1,17 @@
 #include "Board.h"
 
+#include <iostream>
+
 #include "Collision.h"
+#include "Mine.h"
 #include "Tank.h"
 #include "Wall.h"
 #include "Shell.h"
 
 template<typename T>
 T *Board::placeObject(std::unique_ptr<T> element) {
-    static_assert(std::is_same_v<T, Tank> || std::is_same_v<T, Wall>);
+    // static_assert(
+    //     std::is_same_v<T, Tank> || std::is_same_v<T, Wall> || std::is_same_v<T, Shell> || std::is_same_v<T, Mine>);
     return nullptr;
 }
 
@@ -20,7 +24,7 @@ Tank *Board::placeObject<Tank>(std::unique_ptr<Tank> element) {
         if (const auto collision = dynamic_cast<Collision *>(getObjectAt(Position(x, y)))) {
             collision->addElement(std::move(element));
         } else {
-            board[y][x] = std::make_unique<Collision>(board[y][x], std::move(element));
+            board[y][x] = std::make_unique<Collision>(std::move(board[y][x]), std::move(element));
             collisions_pos[board[y][x]->getId()] = board[y][x]->getPosition();
         }
     } else {
@@ -46,7 +50,7 @@ Shell *Board::placeObject<Shell>(std::unique_ptr<Shell> element) {
         if (const auto collision = dynamic_cast<Collision *>(getObjectAt(Position(x, y)))) {
             collision->addElement(std::move(element));
         } else {
-            board[y][x] = std::make_unique<Collision>(board[y][x], std::move(element));
+            board[y][x] = std::make_unique<Collision>(std::move(board[y][x]), std::move(element));
             collisions_pos[board[y][x]->getId()] = board[y][x]->getPosition();
         }
     } else {
@@ -58,13 +62,35 @@ Shell *Board::placeObject<Shell>(std::unique_ptr<Shell> element) {
     return dynamic_cast<Shell *>(game_object);
 }
 
+template<>
+Mine *Board::placeObject<Mine>(std::unique_ptr<Mine> element) {
+    const auto [x, y] = wrapPosition(element->getPosition());
+    board[y][x] = std::move(element);
+    GameObject *game_object = board[y][x].get();
+    return dynamic_cast<Mine *>(game_object);
+}
+
+template<>
+Wall *Board::placeObject<Wall>(std::unique_ptr<Wall> element) {
+    const auto [x, y] = wrapPosition(element->getPosition());
+    board[y][x] = std::move(element);
+    GameObject *game_object = board[y][x].get();
+    return dynamic_cast<Wall *>(game_object);
+}
+
 Board::Board() {
 }
 
 Board::Board(const int width, const int height) : width(width),
                                                   height(height),
                                                   board(std::vector<std::vector<std::unique_ptr<GameObject> > >(
-                                                      height, std::vector<std::unique_ptr<GameObject> >(width))) {
+                                                      height)) {
+    for (int i = 0; i < height; i++) {
+        board[i] = std::vector<std::unique_ptr<GameObject> >(width);
+        for (int j = 0; j < width; j++) {
+            board[i][j] = nullptr;
+        }
+    }
 }
 
 bool Board::isOccupied(const Position pos) const {
@@ -106,4 +132,26 @@ Tank *Board::getPlayerTank(const int player_id) const {
     GameObject *b = getObjectAt(tanks_pos.at(tank_id));
     if (const auto t = dynamic_cast<Tank *>(b)) return t;
     return nullptr;
+}
+
+void Board::displayBoard() const {
+    for (int i = 0; i < height; ++i) {
+        for (int j = 0; j < width; ++j) {
+            if (board[i][j] != nullptr) {
+                std::cout << *board[i][j];
+            } else {
+                std::cout << "[     ]";
+            }
+        }
+        std::cout << std::endl;
+    }
+    std::cout << std::endl;
+}
+
+void Board::checkCollisions() {
+    // Check collisions -> finis move -> check again
+
+    // for (Position pos: collisions_pos.value_comp()) {
+    // TODO implement
+    // }
 }

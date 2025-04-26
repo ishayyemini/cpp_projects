@@ -1,7 +1,9 @@
 #ifndef BOARD_ELEMENT_FACTORY_H
 #define BOARD_ELEMENT_FACTORY_H
 
-#include "GameObject.h"
+#include <memory>
+
+#include "../include/GameObject.h"
 
 class BoardElementFactory {
 public:

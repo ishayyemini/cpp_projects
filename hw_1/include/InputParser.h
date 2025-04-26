@@ -11,7 +11,7 @@ class InputParser {
 
     bool parseDimensions(std::ifstream &inFile);
 
-    bool InputParser::populateBoard(std::ifstream &inFile);
+    bool populateBoard(std::ifstream &inFile);
 
 public:
     InputParser() = default;

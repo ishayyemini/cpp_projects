@@ -40,7 +40,7 @@ protected:
 TEST_F(GameStateTest, ConstructorAndGetters) {
     GameState state(*board, 1);
 
-    EXPECT_EQ(state.getBoard(), board);
+    EXPECT_EQ(&state.getBoard(), board);
     EXPECT_EQ(state.getPlayerTank(), tank1);
     EXPECT_EQ(state.getEnemyTank(), tank2);
     // EXPECT_EQ(state.getShells().size(), 0);

@@ -4,6 +4,9 @@
 #include <array>
 #include <ostream>
 
+class Direction;
+enum class DirectionType : int;
+
 struct Position {
     int x;
     int y;
@@ -12,9 +15,21 @@ struct Position {
         return x == pos2.x && y == pos2.y;
     }
 
+    Position operator+(const Position &pos2) const {
+        return Position(x + pos2.x, y + pos2.y);
+    }
+
+    Position operator-(const Position &pos2) const {
+        return Position(x - pos2.x, y - pos2.y);
+    }
+
+    Position operator+(int dirValue) const;
+
+    Position operator-(int dirValue) const;
+
     Position() = default;
 
-    Position(const int row, const int col): x(row), y(col) {
+    constexpr Position(const int row, const int col): x(row), y(col) {
     }
 };
 
@@ -89,19 +104,27 @@ private:
     static constexpr std::size_t kDirectionCount = 8;
 
     static constexpr std::array<Position, kDirectionCount> directionOffsets{
-        {
-            {0, -1}, // UP
-            {1, -1}, // UP_RIGHT
-            {1, 0}, // RIGHT
-            {1, 1}, // DOWN_RIGHT
-            {0, 1}, // DOWN
-            {-1, 1}, // DOWN_LEFT
-            {-1, 0}, // LEFT
-            {-1, -1} // UP_LEFT
-        }
+        Position(0, -1), // UP
+        Position(1, -1), // UP_RIGHT
+        Position(1, 0), // RIGHT
+        Position(1, 1), // DOWN_RIGHT
+        Position(0, 1), // DOWN
+        Position(-1, 1), // DOWN_LEFT
+        Position(-1, 0), // LEFT
+        Position(-1, -1), // UP_LEFT
     };
 
     Direction() = delete; // Prevent instantiation
 };
+
+inline Position Position::operator+(const int dirValue) const {
+    if (dirValue % 45 != 0 || dirValue < 0 || dirValue > 360) return Position(x, y);
+    return Position(x, y) + Direction::getDirectionDelta(static_cast<Direction::DirectionType>(dirValue));
+}
+
+inline Position Position::operator-(const int dirValue) const {
+    if (dirValue % 45 != 0 || dirValue < 0 || dirValue > 360) return Position(x, y);
+    return Position(x, y) - Direction::getDirectionDelta(static_cast<Direction::DirectionType>(dirValue));
+}
 
 #endif // DIRECTION_H

@@ -64,7 +64,10 @@ public:
     //
     // bool moveShell(int shell_index, const std::pair<int, int> &new_pos);
     //
-    // void displayBoard() const;
+    void displayBoard() const;
+
+    void checkCollisions();
+
     //
     // void addShell(std::unique_ptr<Shell> shell);
     //

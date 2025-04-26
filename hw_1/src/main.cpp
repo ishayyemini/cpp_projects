@@ -1,7 +1,7 @@
 #include <iostream>
 
-#include "game/game_manager.h"
-#include "utils/file_utils.h"
+#include "../include/GameManager.h"
+#include "../include/InputParser.h"
 
 
 int main(const int argc, char *argv[]) {
@@ -10,22 +10,15 @@ int main(const int argc, char *argv[]) {
     }
 
     const std::string path = argv[1];
-    GameManager gm(path);
-    const Winner winner = gm.startGame();
+    Board *board = InputParser().parseInputFile(path);
 
-    switch (winner) {
-        case TIE:
-            std::cout << "Tie" << std::endl;
-            break;
-        case PLAYER_1:
-            std::cout << "Player 1 Won!" << std::endl;
-            break;
-        case PLAYER_2:
-            std::cout << "Player 2 Won!" << std::endl;
-            break;
-        case NO_WINNER:
-            std::cout << "No winner" << std::endl;
-            break;
+    GameManager game_manager(*board);
+    while (!game_manager.isGameOver()) {
+        game_manager.processStep();
     }
+
+    std::cout << game_manager.getGameResult() << std::endl;
+
+    delete board;
 }
 

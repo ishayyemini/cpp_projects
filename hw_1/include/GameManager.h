@@ -24,10 +24,6 @@ class GameManager {
     Algorithm algo2;
     std::vector<std::string> step_history;
 
-    Position calcNextPos(Position pos, const Direction::DirectionType &dir) const;
-
-    Position calcNextPos(Position pos, int dir_i) const;
-
     bool moveForward(Tank &tank);
 
     bool moveBackward(Tank &tank);
@@ -38,9 +34,9 @@ class GameManager {
 
     void shellsTurn();
 
-    Winner checkDeaths() const;
+    void checkDeaths();
 
-    // void tanksTurn(Player1Algo &algo1, Player2Algo &algo2);
+    void tanksTurn();
 
     void tankAction(Tank &tank, Action action);
 
@@ -59,24 +55,6 @@ public:
     void processStep();
 
     std::string getGameResult() const;
-
-    // In game_manager.h, add these new methods and data structures
-
-
-private:
-    struct MovingObject {
-        enum Type { TANK, SHELL } type;
-
-        int id; // Tank player ID or shell index
-        Position from;
-        Position to;
-    };
-
-    void processMovements();
-
-    void detectAndHandleCollisions(std::vector<MovingObject> &movements);
-
-    void applyMovements(const std::vector<MovingObject> &valid_movements);
 };
 
 #endif //GAMEMANAGER_H
