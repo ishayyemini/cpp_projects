@@ -40,7 +40,7 @@ Action Algorithm::escape(const GameState &state, bool can_change_direction, int 
     auto empty_positions = state.getNearbyEmptyPositions(available_steps); //todo: implement this -> nearby means we can get to them using available_steps steps
     for (auto position: empty_positions) {
         if (state.isSafePosition(position, false)) {
-            return state.getActionToPosition(position);
+            return state.getActionFromPosition(position);
         }
     }
     return default_action;
