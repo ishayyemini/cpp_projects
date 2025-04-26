@@ -21,13 +21,13 @@ bool Logger::init(const std::string &logFilePath, const std::string &errFilePath
         close();
     }
 
-    log_file.open(logFilePath, std::ios::out | std::ios::app);
+    log_file.open(logFilePath, std::ios::out);
     if (!log_file.is_open()) {
         std::cerr << "Failed to open log file: " << logFilePath << std::endl;
         return false;
     }
 
-    err_file.open(errFilePath, std::ios::out | std::ios::app);
+    err_file.open(errFilePath, std::ios::out);
     if (!err_file.is_open()) {
         std::cerr << "Failed to open error file: " << errFilePath << std::endl;
         log_file.close();

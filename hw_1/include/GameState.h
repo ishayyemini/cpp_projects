@@ -14,6 +14,8 @@ public:
 
     Board &getBoard() const;
 
+    int getPlayerId() const { return player_id; }
+
     Tank *getPlayerTank() const;
 
     bool canShoot() const;
