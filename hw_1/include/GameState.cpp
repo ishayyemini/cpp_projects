@@ -31,8 +31,9 @@ std::vector<Direction::DirectionType> GameState::getSafeDirections(Position posi
 }
 
 
-std::vector<Position> GameState::getNearbyEmptyPositions(Position position) const {
+std::vector<Position> GameState::getNearbyEmptyPositions(Position position, int steps_num) const {
     //todo: implement this
+    return {};
 }
 
 Action GameState::getActionToPosition(Position target_position) const {

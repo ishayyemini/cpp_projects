@@ -23,10 +23,10 @@ public:
     std::vector<Direction::DirectionType> getSafeDirections(Position position) const;
 
 
-    std::vector<Position> getNearbyEmptyPositions(Position position) const;
+    std::vector<Position> getNearbyEmptyPositions(Position position, int steps_num) const;
 
-    std::vector<Position> getNearbyEmptyPositions() const {
-        return getNearbyEmptyPositions(getPlayerTank()->getPosition());
+    std::vector<Position> getNearbyEmptyPositions(int steps_num) const {
+        return getNearbyEmptyPositions(getPlayerTank()->getPosition(), steps_num);
     }
 
     Action getActionToPosition(Position target_position) const;

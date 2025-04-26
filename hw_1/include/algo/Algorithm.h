@@ -15,6 +15,11 @@ public:
     virtual Action decideAction(const GameState &state) const = 0;
 
     virtual ~Algorithm() = default;
+
+
+protected:
+    Action handleImmediateThreat(const GameState &state, int tankDistance) const;
+    Action escape(const GameState &state, bool can_change_direction,  int available_steps=1, Action default_action=NONE) const;
 };
 
 #endif //ALGORITHM_H
