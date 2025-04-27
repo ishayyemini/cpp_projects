@@ -21,13 +21,13 @@ bool InputParser::parseDimensions(std::ifstream &inFile) {
 bool InputParser::populateBoard(std::ifstream &inFile) {
     std::string line;
 
-    for (int row = 0; row < height; ++row) {
+    for (size_t row = 0; row < height; ++row) {
         if (!std::getline(inFile, line)) {
             error_messages.push_back("Map is shorter than specified height");
             line = " ";
         }
 
-        for (int col = 0; col < width; ++col) {
+        for (size_t col = 0; col < width; ++col) {
             const char symbol = col < line.length() ? line[col] : ' ';
             if (symbol == '1' && getTank1() != nullptr) {
                 error_messages.push_back("Multiple Tank 1");

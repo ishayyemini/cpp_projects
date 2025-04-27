@@ -5,8 +5,8 @@
 
 class InputParser {
     std::vector<std::string> error_messages;
-    int width;
-    int height;
+    size_t width;
+    size_t height;
     Board *board;
 
     bool parseDimensions(std::ifstream &inFile);

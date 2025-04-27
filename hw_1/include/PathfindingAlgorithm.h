@@ -2,7 +2,6 @@
 #define PATHFINDINGALGORITHM_H
 
 #include "Algorithm.h"
-#include "TankState.h"
 
 class PathfindingAlgorithm final : public Algorithm {
 public:

@@ -12,7 +12,7 @@ public:
 
     virtual std::string getName() const { return "Algorithm"; };
 
-    virtual Action decideAction(const GameState &state) { return NONE; }
+    virtual Action decideAction(const GameState &_) { return NONE; }
 
     virtual ~Algorithm() = default;
 

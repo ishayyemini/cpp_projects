@@ -14,7 +14,7 @@ public:
     MockAlgorithm(Action defaultAction) : defaultAction(defaultAction) {
     }
 
-    Action decideAction(const GameState &state) override {
+    Action decideAction(const GameState &_) override {
         return defaultAction;
     }
 

@@ -66,7 +66,7 @@ std::unique_ptr<Wall> Collision::getWeakenedWall() {
             setDirection(wallPtr->getDirection());
             weakenedWall.reset(wallPtr);
             it->release();
-            return std::move(weakenedWall);
+            return weakenedWall;
         }
         ++it;
     }

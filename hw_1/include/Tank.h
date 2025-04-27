@@ -12,7 +12,6 @@ class Tank final : public GameObject {
     int backwards_counter = 3;
     int shooting_cooldown = 0;
     int shell = MAX_SHELL;
-    Action queued_action = NONE;
 
 public:
     explicit Tank(Position position, int player_id): GameObject(position, player_id == 1
