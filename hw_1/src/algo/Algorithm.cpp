@@ -23,6 +23,10 @@ Action Algorithm::moveIfThreatened(const GameState &state) const {
         }
     }
 
+    if (state.isSafePosition(forward_pos, true)) {
+        return MOVE_FORWARD;
+    }
+
     return NONE;
 }
 
