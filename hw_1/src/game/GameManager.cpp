@@ -179,10 +179,8 @@ void GameManager::processStep() {
 
     std::cout << "Step " << game_step << std::endl;
 
-    board.displayBoard();
-
-    shellsTurn();
     tanksTurn();
+    shellsTurn();
     board.finishMove();
 
     board.displayBoard();

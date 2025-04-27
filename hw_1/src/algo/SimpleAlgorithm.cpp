@@ -9,7 +9,7 @@ Action SimpleAlgorithm::decideAction(const GameState &state) {
         return NONE;
     }
 
-    if (state.isShellApproaching(state.getPlayerTank()->getPosition())) {
+    if (state.isShellApproaching()) {
         Logger::getInstance().log("Player " + std::to_string(state.getPlayerId()) + ": Threatened by shells.");
         return moveIfThreatened(state);
     }

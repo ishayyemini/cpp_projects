@@ -40,6 +40,10 @@ struct Position {
         return Position(x / by, y / by);
     }
 
+    std::string toString() const {
+        return "(" + std::to_string(x) + ", " + std::to_string(y) + ")";
+    }
+
     Position operator+(int dirValue) const;
 
     Position operator-(int dirValue) const;
