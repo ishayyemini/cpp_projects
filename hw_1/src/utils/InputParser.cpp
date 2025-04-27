@@ -4,6 +4,7 @@
 #include <iostream>
 
 #include "Board.h"
+#include "Logger.h"
 #include "../board_elements/BoardElementFactory.h"
 
 bool InputParser::parseDimensions(std::ifstream &inFile) {
@@ -40,7 +41,6 @@ bool InputParser::populateBoard(std::ifstream &inFile) {
                 error_messages.push_back("Unknown symbol '" + std::string{symbol} + "'");
             }
             std::unique_ptr<GameObject> newElement = BoardElementFactory::create(symbol, Position(col, row));
-            std::cout << "created " << row << " " << col << std::endl;
             board->placeObject(std::move(newElement));
         }
 
@@ -73,13 +73,13 @@ Board *InputParser::parseInputFile(const std::string &file_name) {
         return nullptr;
     }
 
-    std::cout << "Dimensions read from file " << file_name << ":\n";
+    Logger::getInstance().log(
+        "Dimensions read from file " + file_name + ": " + std::to_string(width) + "x" + std::to_string(height));
 
     // create Board object of size width x height
     board = new Board(width, height);
-    std::cout << "Board created\n";
     populateBoard(inFile);
-    std::cout << "Board loaded from '" << file_name << "':\n";
+    Logger::getInstance().log("Board loaded successfully");
     inFile.close();
     return board;
 }

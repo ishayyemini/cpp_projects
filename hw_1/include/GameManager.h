@@ -18,6 +18,7 @@ enum Winner {
 };
 
 class GameManager {
+    bool visual;
     int game_step = 0;
     bool game_over = false;
     Winner winner = NO_WINNER;
@@ -41,10 +42,16 @@ class GameManager {
 
     void tanksTurn();
 
-    void tankAction(Tank &tank, Action action);
+    bool tankAction(Tank &tank, Action action);
 
 public:
-    explicit GameManager(Board &board): board(board), algo1(new PathfindingAlgorithm()), algo2(new SimpleAlgorithm()) {
+    explicit GameManager(Board &board): visual(false), board(board), algo1(new PathfindingAlgorithm()),
+                                        algo2(new SimpleAlgorithm()) {
+    }
+
+    explicit GameManager(Board &board, const bool visual): visual(visual), board(board),
+                                                           algo1(new PathfindingAlgorithm()),
+                                                           algo2(new SimpleAlgorithm()) {
     }
 
     void setAlgorithm1(Algorithm &algo) { algo1 = &algo; }

@@ -11,9 +11,12 @@
 using namespace std::chrono_literals;
 
 
-void GameManager::tankAction(Tank &tank, const Action action) {
+bool GameManager::tankAction(Tank &tank, const Action action) {
+    bool result = false;
     const int back_counter = tank.getBackwardsCounter();
     tank.decreaseShootingCooldown();
+
+    if (action == NONE) result = true;
 
     /* 3 -> "regular". Here, any action will perform normally, except for back, which will just dec the counter.
      * 2 -> "waiting". Don't move. If FORWARD, reset counter. Else, dec counter.
@@ -33,40 +36,42 @@ void GameManager::tankAction(Tank &tank, const Action action) {
         if (action == MOVE_FORWARD) {
             tank.setBackwardsCounter(3);
         } else {
-            moveBackward(tank);
+            result = moveBackward(tank);
             tank.setBackwardsCounter(back_counter - 1);
         }
     }
 
     switch (action) {
         case MOVE_FORWARD:
-            moveForward(tank);
+            result = moveForward(tank);
             if (back_counter == 0) tank.setBackwardsCounter(3);
             break;
         case MOVE_BACKWARD:
             if (back_counter == 0) {
-                moveBackward(tank);
+                result = moveBackward(tank);
             } else {
                 tank.setBackwardsCounter(back_counter - 1);
             }
             break;
         case ROTATE_LEFT_EIGHTH:
-            rotate(tank, -45);
+            result = rotate(tank, -45);
             break;
         case ROTATE_RIGHT_EIGHTH:
-            rotate(tank, 45);
+            result = rotate(tank, 45);
             break;
         case ROTATE_LEFT_QUARTER:
-            rotate(tank, -90);
+            result = rotate(tank, -90);
             break;
         case ROTATE_RIGHT_QUARTER:
-            rotate(tank, 90);
+            result = rotate(tank, 90);
             break;
         case SHOOT:
-            shoot(tank);
+            result = shoot(tank);
             break;
         default: ;
     }
+
+    return result;
 }
 
 void GameManager::checkDeaths() {
@@ -146,11 +151,12 @@ void GameManager::tanksTurn() {
     step_history.push_back(action_strings[a1]);
     step_history.push_back(action_strings[a2]);
 
-    Logger::getInstance().log("Player 1 Action: " + action_strings[a1]);
-    Logger::getInstance().log("Player 2 Action: " + action_strings[a2]);
+    const bool g1 = tankAction(*t1, a1);
+    const bool g2 = tankAction(*t2, a2);
 
-    tankAction(*t1, a1);
-    tankAction(*t2, a2);
+    Logger::getInstance().log("Player 1 Action: " + action_strings[a1] + (!g1 ? " [Bad Step]" : ""));
+    Logger::getInstance().log("Player 2 Action: " + action_strings[a2] + (!g2 ? " [Bad Step]" : ""));
+
 
     // Check if both tanks used their shells
     if (empty_countdown == -1 && t1->getAmmunition() == 0 && t2->getAmmunition() == 0) {
@@ -175,13 +181,17 @@ void GameManager::processStep() {
     shellsTurn();
     board.finishMove();
 
-    std::cout << "Step " << game_step << std::endl;
+    if (visual) {
+        std::cout << "Step " << game_step << std::endl;
+    }
 
     shellsTurn();
     tanksTurn();
     board.finishMove();
 
-    board.displayBoard();
+    if (visual) {
+        board.displayBoard();
+    }
 
     checkDeaths();
 }
