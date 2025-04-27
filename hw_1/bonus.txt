@@ -1,0 +1,23 @@
+Visualization
+We added a nice and simple visual printing to the console.
+You can run it with the flag "-g" before the path_name:
+./tank_game -g <input_file>
+
+Testing
+We added many automatic tests with GTest.
+You can run it with:
+make test
+
+Logging
+The decisions that the algorithms make, are logged into output.txt. This allows for
+a nicer and deeper understanding of why they decided to take each action.
+
+Board Implementation
+We implement the board in a very interesting way (IMO). The board is actually double in
+height and width, and between each "normal" cell, there is a "phantom" cell. This allows
+us to find collisions quite easily.
+For example:
+If two elements are moving, one from (0,0) to (1,1), and the other from (0,1) to (1,0),
+our Board implementation will actually move them from (0,0) to (2,2) and from (0,2) to (2,0)
+each, meaning the first they both take a "half" step to (1,1). Then we see a collision, and
+boom! They're gone.
