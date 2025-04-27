@@ -13,10 +13,13 @@ int main(const int argc, char *argv[]) {
         return EXIT_FAILURE;
     }
 
-    Logger::getInstance().init();
-
     const bool visual = argc == 3 && strcmp(argv[1], "-g") == 0;
     const std::string path = argc == 2 ? argv[1] : argv[2];
+
+    Logger::getInstance().init(
+        "output_" + path.substr(path.find_last_of("/\\") + 1, path.find_last_of(".")) + ".txt"
+    );
+
     Board *board = InputParser().parseInputFile(path);
 
     if (board == nullptr) {
