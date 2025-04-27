@@ -50,6 +50,8 @@ public:
 
     bool isShellApproaching(Position position) const;
 
+    bool isEnemyNearby() const;
+
     // Action getActionToPosition(Position target_position) const;
     //
     // bool isShellApproaching(int threat_threshold = -1) const;

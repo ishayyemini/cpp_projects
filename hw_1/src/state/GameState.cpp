@@ -386,6 +386,22 @@ bool GameState::isShellApproaching(const Position position) const {
     return false;
 }
 
+bool GameState::isEnemyNearby() const {
+    if (!getPlayerTank() || !getEnemyTank()) return false;
+    const Position player_pos = getPlayerTank()->getPosition();
+    const Position enemy_pos = getEnemyTank()->getPosition();
+    for (int i = 0; i < 8; ++i) {
+        const Direction::DirectionType dir = Direction::getDirectionFromIndex(i);
+        if (enemy_pos == player_pos + dir) {
+            return true;
+        }
+        if (enemy_pos == player_pos + dir + dir) {
+            return true;
+        }
+    }
+    return false;
+}
+
 // bool GameState::isLineOfSightClear(const Position start, const Position end,
 //                                    const Direction::DirectionType direction) const {
 //     Position current = start;

@@ -14,6 +14,11 @@ Action SimpleAlgorithm::decideAction(const GameState &state) {
         return moveIfThreatened(state);
     }
 
+    if (state.isEnemyNearby()) {
+        Logger::getInstance().log("Player " + std::to_string(state.getPlayerId()) + ": Threatened by enemy.");
+        return moveIfThreatened(state);
+    }
+
     if (state.canShootEnemy()) {
         Logger::getInstance().log(
             "Player " + std::to_string(state.getPlayerId()) + ": Enemy in direct line of fire. Shooting now.");
