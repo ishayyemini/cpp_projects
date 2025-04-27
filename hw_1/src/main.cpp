@@ -16,9 +16,13 @@ int main(const int argc, char *argv[]) {
     const bool visual = argc == 3 && strcmp(argv[1], "-g") == 0;
     const std::string path = argc == 2 ? argv[1] : argv[2];
 
-    Logger::getInstance().init(
-        "output_" + path.substr(path.find_last_of("/\\") + 1, path.find_last_of(".")) + ".txt"
-    );
+    int last_dot = path.find_last_of(".");
+    int last_slash = path.find_last_of("/");
+    std::string name;
+    if (last_dot > last_slash) name = path.substr(last_slash + 1, last_dot - last_slash - 1);
+    else name = path.substr(last_slash + 1);
+
+    Logger::getInstance().init("output_" + name + ".txt");
 
     Board *board = InputParser().parseInputFile(path);
 

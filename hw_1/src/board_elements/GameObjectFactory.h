@@ -1,14 +1,14 @@
-#ifndef BOARD_ELEMENT_FACTORY_H
-#define BOARD_ELEMENT_FACTORY_H
+#ifndef GAMEOBJECTFACTORY_H
+#define GAMEOBJECTFACTORY_H
 
 #include <memory>
 
 #include "../include/GameObject.h"
 
-class BoardElementFactory {
+class GameObjectFactory {
 public:
     static std::unique_ptr<GameObject> create(char symbol, Position position);
 };
 
 
-#endif //BOARD_ELEMENT_FACTORY_H
+#endif //GAMEOBJECTFACTORY_H

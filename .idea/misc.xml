@@ -10,5 +10,9 @@
     <sourceRoots>
       <file path="$PROJECT_DIR$/hw_1" />
     </sourceRoots>
+    <excludeRoots>
+      <file path="$PROJECT_DIR$/hw_1/build" />
+      <file path="$PROJECT_DIR$/hw_1/cmake-build-debug" />
+    </excludeRoots>
   </component>
 </project>

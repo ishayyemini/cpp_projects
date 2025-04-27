@@ -5,7 +5,7 @@
 
 #include "Board.h"
 #include "Logger.h"
-#include "../board_elements/BoardElementFactory.h"
+#include "../board_elements/GameObjectFactory.h"
 
 bool InputParser::parseDimensions(std::ifstream &inFile) {
     if (!(inFile >> width >> height) || width <= 0 || height <= 0) {
@@ -40,7 +40,7 @@ bool InputParser::populateBoard(std::ifstream &inFile) {
             if (symbol != '1' && symbol != '2' && symbol != '@' && symbol != '#' && symbol != ' ') {
                 error_messages.push_back("Unknown symbol '" + std::string{symbol} + "'");
             }
-            std::unique_ptr<GameObject> newElement = BoardElementFactory::create(symbol, Position(col, row));
+            std::unique_ptr<GameObject> newElement = GameObjectFactory::create(symbol, Position(col, row));
             board->placeObject(std::move(newElement));
         }
 
