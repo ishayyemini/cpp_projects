@@ -350,7 +350,7 @@ Action GameState::rotateTowards(const Position to) const {
 }
 
 Action GameState::rotateTowards(const Direction::DirectionType from, const Direction::DirectionType to) const {
-    if (from == to) return MOVE_FORWARD;
+    if (from == to) return NONE;
 
     // Find the shortest rotation path
     if (int diff = (from - to + 360) % 360; diff > 180) {
