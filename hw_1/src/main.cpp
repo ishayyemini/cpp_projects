@@ -13,7 +13,7 @@ int main(const int argc, char *argv[]) {
         return EXIT_FAILURE;
     }
 
-    Logger::getInstance().init("./out.txt", "./err.txt");
+    Logger::getInstance().init();
 
     const bool visual = argc == 3 && strcmp(argv[1], "-g") == 0;
     const std::string path = argc == 2 ? argv[1] : argv[2];

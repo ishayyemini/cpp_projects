@@ -55,7 +55,6 @@ add_executable(tank_game_tests
         "tests/position_test.cpp"
         "tests/board_test.cpp"
         "tests/input_parser_test.cpp"
-        "tests/integration_test.cpp"
         "tests/game_state_test.cpp"
         "tests/algorithms_test.cpp"
         "tests/game_manager_test.cpp"

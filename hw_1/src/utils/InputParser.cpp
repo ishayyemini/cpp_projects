@@ -37,7 +37,7 @@ bool InputParser::populateBoard(std::ifstream &inFile) {
                 error_messages.push_back("Multiple Tank 1");
                 continue;
             }
-            if (symbol != '1' && symbol != '2' && symbol != '@' && symbol != '#') {
+            if (symbol != '1' && symbol != '2' && symbol != '@' && symbol != '#' && symbol != ' ') {
                 error_messages.push_back("Unknown symbol '" + std::string{symbol} + "'");
             }
             std::unique_ptr<GameObject> newElement = BoardElementFactory::create(symbol, Position(col, row));
@@ -81,6 +81,11 @@ Board *InputParser::parseInputFile(const std::string &file_name) {
     populateBoard(inFile);
     Logger::getInstance().log("Board loaded successfully");
     inFile.close();
+
+    for (auto msg: error_messages) {
+        Logger::getInstance().inputError(msg);
+    }
+
     return board;
 }
 

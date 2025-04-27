@@ -16,23 +16,26 @@ Logger::~Logger() {
     close();
 }
 
-bool Logger::init(const std::string &logFilePath, const std::string &errFilePath) {
+bool Logger::init(const std::string &log_file_path, const std::string &err_file_path,
+                  const std::string &input_err_file_path) {
     if (initialized) {
         close();
     }
 
-    log_file.open(logFilePath, std::ios::out);
+    log_file.open(log_file_path, std::ios::out);
     if (!log_file.is_open()) {
-        std::cerr << "Failed to open log file: " << logFilePath << std::endl;
+        std::cerr << "Failed to open log file: " << log_file_path << std::endl;
         return false;
     }
 
-    err_file.open(errFilePath, std::ios::out);
+    err_file.open(err_file_path, std::ios::out);
     if (!err_file.is_open()) {
-        std::cerr << "Failed to open error file: " << errFilePath << std::endl;
+        std::cerr << "Failed to open error file: " << err_file_path << std::endl;
         log_file.close();
         return false;
     }
+
+    this->input_err_file_path = input_err_file_path;
 
     initialized = true;
     return true;
@@ -68,6 +71,19 @@ void Logger::error(const std::string &message) {
 
     err_file << getTimestamp() << " - " << message << std::endl;
     err_file.flush();
+}
+
+void Logger::inputError(const std::string &message) {
+    if (!input_err_file.is_open()) {
+        input_err_file.open(input_err_file_path, std::ios::out);
+    }
+
+    if (!input_err_file.is_open()) {
+        std::cerr << "Failed to open input errors file: " << input_err_file_path << std::endl;
+    }
+
+    input_err_file << message << std::endl;
+    input_err_file.flush();
 }
 
 std::string Logger::getTimestamp() const {
