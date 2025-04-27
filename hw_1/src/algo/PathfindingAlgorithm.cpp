@@ -45,15 +45,9 @@ std::vector<Direction::DirectionType> PathfindingAlgorithm::computeBFS(const Gam
             continue;
         }
 
-        for (int i = 0; i < 8; ++i) {
-            const Direction::DirectionType dir = Direction::getDirectionFromIndex(i);
+        for (const auto dir: state.getSafeDirections(pos)) {
             const Position next = state.getBoard().wrapPosition(pos + dir);
-            //
-            // if (next.x < 0 || next.x >= width || next.y < 0 || next.y >= height)
-            //     continue;
-
             if (visited.contains(next)) continue;
-            if (state.getBoard().isMine(next)) continue;
 
             std::vector<Direction::DirectionType> new_path = path;
             new_path.push_back(dir);

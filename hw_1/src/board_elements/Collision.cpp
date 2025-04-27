@@ -19,11 +19,13 @@ bool Collision::checkOkCollision() {
 
     for (auto it = elements.begin(); it != elements.end();) {
         if (auto *shellPtr = dynamic_cast<Shell *>(it->get())) {
+            if (shell != nullptr) break;
             setDirection(shellPtr->getDirection());
             shell.reset(shellPtr);
             it->release();
             it = elements.erase(it);
         } else if (auto *minePtr = dynamic_cast<Mine *>(it->get())) {
+            if (mine != nullptr) break;
             mine.reset(minePtr);
             it->release();
             it = elements.erase(it);
@@ -33,6 +35,8 @@ bool Collision::checkOkCollision() {
     }
 
     if (elements.size() == 0 && shell != nullptr && mine != nullptr) {
+        mine->setPosition(getPosition());
+        shell->setPosition(getPosition());
         return true;
     }
     if (mine != nullptr) elements.push_back(std::move(mine));

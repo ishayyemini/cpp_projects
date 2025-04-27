@@ -11,6 +11,19 @@
 GameObject *Board::placeObjectReal(std::unique_ptr<GameObject> element, const Position real_pos) {
     const auto [x, y] = wrapPositionReal(real_pos);
 
+    if (const auto tank = dynamic_cast<Tank *>(element.get())) {
+        tanks_pos[tank->getId()] = Position(x, y);
+        if (tank->getPlayerId() == 1) {
+            player_1_tank = tank->getId();
+        } else {
+            player_2_tank = tank->getId();
+        }
+    }
+
+    if (const auto shell = dynamic_cast<Shell *>(element.get())) {
+        shells_pos[shell->getId()] = Position(x, y);
+    }
+
     // Check for collision
     if (isOccupiedReal(real_pos)) {
         if (const auto collision = dynamic_cast<Collision *>(getObjectAtReal(real_pos))) {
@@ -24,19 +37,6 @@ GameObject *Board::placeObjectReal(std::unique_ptr<GameObject> element, const Po
     }
 
     GameObject *game_object = board[y][x].get();
-
-    if (const auto tank = dynamic_cast<Tank *>(game_object)) {
-        tanks_pos[tank->getId()] = Position(x, y);
-        if (tank->getPlayerId() == 1) {
-            player_1_tank = tank->getId();
-        } else {
-            player_2_tank = tank->getId();
-        }
-    }
-
-    if (const auto shell = dynamic_cast<Shell *>(game_object)) {
-        shells_pos[shell->getId()] = Position(x, y);
-    }
 
     if (x % 2 == 0 && y % 2 == 0) {
         game_object->setPosition(Position(x / 2, y / 2));
@@ -222,6 +222,11 @@ std::map<int, Shell *> Board::getShells() const {
     for (const auto [id, pos]: shells_pos) {
         if (const auto shell = dynamic_cast<Shell *>(getObjectAtReal(pos))) {
             shells[id] = shell;
+        }
+        if (const auto collision = dynamic_cast<Collision *>(getObjectAtReal(pos))) {
+            if (collision->checkOkCollision()) {
+                shells[id] = collision->getShellPtr();
+            }
         }
     }
     return shells;

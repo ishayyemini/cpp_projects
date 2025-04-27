@@ -24,11 +24,15 @@ public:
 
     std::unique_ptr<GameObject> popElement();
 
+    char getSymbol() const override { return 'X'; }
+
     void addElement(std::unique_ptr<GameObject> element) { elements.push_back(std::move(element)); }
 
     bool checkOkCollision();
 
     std::unique_ptr<Shell> getShell() { return std::move(shell); }
+
+    Shell *getShellPtr() const { return shell.get(); }
 
     std::unique_ptr<Mine> getMine() { return std::move(mine); }
 

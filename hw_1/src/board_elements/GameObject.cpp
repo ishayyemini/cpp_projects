@@ -25,7 +25,11 @@ std::ostream &operator<<(std::ostream &os, const GameObject &element) {
         case '@':
             os << "[  💣  ]";
             break;
-        default: ;
+        case 'X':
+            os << "[  💥  ]";
+            break;
+        default:
+            os << "[  ❔ ]";
     }
     return os;
 }
