@@ -163,10 +163,8 @@ void GameManager::tanksTurn() {
 }
 
 void GameManager::shellsTurn() const {
-    for (auto [id, shell_pos]: board.getShells()) {
-        if (const auto *shell = dynamic_cast<Shell *>(board.getObjectAt(shell_pos))) {
-            board.moveObject(shell->getPosition(), shell->getDirection());
-        }
+    for (auto [id, shell]: board.getShells()) {
+        board.moveObject(shell->getPosition(), shell->getDirection());
     }
 }
 
@@ -179,8 +177,8 @@ void GameManager::processStep() {
 
     std::cout << "Step " << game_step << std::endl;
 
-    tanksTurn();
     shellsTurn();
+    tanksTurn();
     board.finishMove();
 
     board.displayBoard();

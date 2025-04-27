@@ -220,7 +220,7 @@ bool GameState::isInLineOfSight(const Position from, const Direction::DirectionT
     for (int i = 1; i <= std::max(board.getWidth(), board.getHeight()); i++) {
         check = getBoard().wrapPosition(check + dir);
         if (target == check) return true;
-        if (board.isWall(check) || board.isTank(check)) return false;
+        if (board.isWall(check)) return false;
         // Only if shell is heading towards us
         if (board.isShell(check) && board.getObjectAt(check)->getDirection() == -dir) return false;
     }
@@ -338,6 +338,17 @@ Action GameState::rotateTowards(const Direction::DirectionType to) const {
     return rotateTowards(getPlayerTank()->getDirection(), to);
 }
 
+Action GameState::rotateTowards(const Position to) const {
+    if (!getPlayerTank()) return NONE;
+
+    const Direction::DirectionType curr_dir = getPlayerTank()->getDirection();
+    for (Direction::DirectionType dir: {curr_dir, curr_dir + 45, curr_dir - 45, curr_dir + 90, curr_dir - 90}) {
+        if (isInLineOfSight(getPlayerTank()->getPosition(), dir, to)) return rotateTowards(dir);
+    }
+
+    return ROTATE_RIGHT_QUARTER;
+}
+
 Action GameState::rotateTowards(const Direction::DirectionType from, const Direction::DirectionType to) const {
     if (from == to) return MOVE_FORWARD;
 
@@ -366,10 +377,8 @@ bool GameState::isShellApproaching() const {
 }
 
 bool GameState::isShellApproaching(const Position position) const {
-    for (auto [id, pos]: board.getShells()) {
-        if (!board.isShell(pos)) continue;
-        const Direction::DirectionType dir = board.getObjectAt(pos)->getDirection();
-        if (isInLineOfSight(pos, dir, position)) {
+    for (auto [id, shell]: board.getShells()) {
+        if (isInLineOfSight(shell->getPosition(), shell->getDirection(), position)) {
             return true;
         }
     }

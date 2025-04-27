@@ -85,7 +85,7 @@ public:
 
     void finishMove();
 
-    std::map<int, Position> getShells() const;
+    std::map<int, Shell *> getShells() const;
 
     bool isWall(const Position pos) const { return isOccupied(pos) && getObjectAt(pos)->isWall(); }
 

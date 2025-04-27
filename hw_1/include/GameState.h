@@ -42,6 +42,8 @@ public:
 
     Action rotateTowards(Direction::DirectionType to) const;
 
+    Action rotateTowards(Position to) const;
+
     Action rotateTowards(Direction::DirectionType from, Direction::DirectionType to) const;
 
     bool isShellApproaching() const;

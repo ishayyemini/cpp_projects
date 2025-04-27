@@ -217,11 +217,11 @@ void Board::finishMove() {
     checkCollisions();
 }
 
-std::map<int, Position> Board::getShells() const {
-    std::map<int, Position> shells;
+std::map<int, Shell *> Board::getShells() const {
+    std::map<int, Shell *> shells;
     for (const auto [id, pos]: shells_pos) {
-        if (pos.x % 2 == 0 && pos.y % 2 == 0) {
-            shells[id] = pos / 2;
+        if (const auto shell = dynamic_cast<Shell *>(getObjectAtReal(pos))) {
+            shells[id] = shell;
         }
     }
     return shells;

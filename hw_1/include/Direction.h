@@ -129,8 +129,20 @@ public:
         return getDirection(dir + 180);
     }
 
+    friend DirectionType operator+(const DirectionType dir, const DirectionType other) {
+        return getDirection(static_cast<int>(dir) + static_cast<int>(other));
+    }
+
     friend DirectionType operator-(const DirectionType dir, const DirectionType other) {
         return getDirection(static_cast<int>(dir) - static_cast<int>(other));
+    }
+
+    friend DirectionType operator+(const DirectionType dir, const int degrees) {
+        return dir + getDirection(degrees);
+    }
+
+    friend DirectionType operator-(const DirectionType dir, const int degrees) {
+        return dir - getDirection(degrees);
     }
 
     friend std::ostream &operator<<(std::ostream &os, const DirectionType dir) {
