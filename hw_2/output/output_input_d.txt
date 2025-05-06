@@ -1,0 +1,274 @@
+2025-04-27 18:04:04 - Dimensions read from file input/input_d.txt: 10x9
+2025-04-27 18:04:04 - Board loaded successfully
+2025-04-27 18:04:04 - Player 1: Checking shooting condition - canShoot: false
+2025-04-27 18:04:04 - Player 1: Enemy in direction 7, turning toward it.
+2025-04-27 18:04:04 - Player 2: Doing nothing.
+2025-04-27 18:04:04 - Player 1 Action: Rotate Right Eighth
+2025-04-27 18:04:04 - Player 2 Action: None
+2025-04-27 18:04:04 - Player 1: Checking shooting condition - canShoot: true
+2025-04-27 18:04:04 - Player 1: Enemy in direction 315. Shooting now.
+2025-04-27 18:04:04 - Player 2: Doing nothing.
+2025-04-27 18:04:04 - Player 1 Action: Shoot
+2025-04-27 18:04:04 - Player 2 Action: None
+2025-04-27 18:04:04 - Player 1: Checking shooting condition - canShoot: false
+2025-04-27 18:04:04 - Player 1: Computing BFS (reason: empty)
+2025-04-27 18:04:04 - Player 1: BFS: starting BFS from position (7,7)
+2025-04-27 18:04:04 - Player 1: Stuck, rotating randomly
+2025-04-27 18:04:04 - Player 2: Threatened by shells.
+2025-04-27 18:04:04 - Player 1 Action: Rotate Right Eighth
+2025-04-27 18:04:04 - Player 2 Action: Move Forward
+2025-04-27 18:04:04 - Player 1: Checking shooting condition - canShoot: false
+2025-04-27 18:04:04 - Player 1: Computing BFS (reason: empty)
+2025-04-27 18:04:04 - Player 1: BFS: starting BFS from position (7,7)
+2025-04-27 18:04:04 - Player 1: Stuck, rotating randomly
+2025-04-27 18:04:04 - Player 2: Doing nothing.
+2025-04-27 18:04:04 - Player 1 Action: Rotate Right Eighth
+2025-04-27 18:04:04 - Player 2 Action: None
+2025-04-27 18:04:04 - Player 1: Checking shooting condition - canShoot: false
+2025-04-27 18:04:04 - Player 1: Computing BFS (reason: empty)
+2025-04-27 18:04:04 - Player 1: BFS: starting BFS from position (7,7)
+2025-04-27 18:04:04 - Player 1: Stuck, rotating randomly
+2025-04-27 18:04:04 - Player 2: Doing nothing.
+2025-04-27 18:04:04 - Player 1 Action: Rotate Right Eighth
+2025-04-27 18:04:04 - Player 2 Action: None
+2025-04-27 18:04:04 - Player 1: Checking shooting condition - canShoot: false
+2025-04-27 18:04:04 - Player 1: Computing BFS (reason: empty)
+2025-04-27 18:04:04 - Player 1: BFS: starting BFS from position (7,7)
+2025-04-27 18:04:04 - Player 1: Stuck, rotating randomly
+2025-04-27 18:04:04 - Player 1: Shooting randomly due to stuck state
+2025-04-27 18:04:04 - Player 2: Doing nothing.
+2025-04-27 18:04:04 - Player 1 Action: Shoot
+2025-04-27 18:04:04 - Player 2 Action: None
+2025-04-27 18:04:04 - Player 1: Checking shooting condition - canShoot: false
+2025-04-27 18:04:04 - Player 1: Computing BFS (reason: empty)
+2025-04-27 18:04:04 - Player 1: BFS: starting BFS from position (7,7)
+2025-04-27 18:04:04 - Player 1: Stuck, rotating randomly
+2025-04-27 18:04:04 - Player 2: Doing nothing.
+2025-04-27 18:04:04 - Player 1 Action: Rotate Right Eighth
+2025-04-27 18:04:04 - Player 2 Action: None
+2025-04-27 18:04:04 - Player 1: Checking shooting condition - canShoot: false
+2025-04-27 18:04:04 - Player 1: Computing BFS (reason: empty)
+2025-04-27 18:04:04 - Player 1: BFS: starting BFS from position (7,7)
+2025-04-27 18:04:04 - Player 1: Stuck, rotating randomly
+2025-04-27 18:04:04 - Player 2: Doing nothing.
+2025-04-27 18:04:04 - Player 1 Action: Rotate Right Eighth
+2025-04-27 18:04:04 - Player 2 Action: None
+2025-04-27 18:04:04 - Player 1: Checking shooting condition - canShoot: false
+2025-04-27 18:04:04 - Player 1: Computing BFS (reason: empty)
+2025-04-27 18:04:04 - Player 1: BFS: starting BFS from position (7,7)
+2025-04-27 18:04:04 - Player 1: Stuck, rotating randomly
+2025-04-27 18:04:04 - Player 2: Doing nothing.
+2025-04-27 18:04:04 - Player 1 Action: Rotate Right Eighth
+2025-04-27 18:04:04 - Player 2 Action: None
+2025-04-27 18:04:04 - Player 1: Checking shooting condition - canShoot: false
+2025-04-27 18:04:04 - Player 1: Computing BFS (reason: empty)
+2025-04-27 18:04:04 - Player 1: BFS: starting BFS from position (7,7)
+2025-04-27 18:04:04 - Player 1: Rotating from 225 to 315
+2025-04-27 18:04:04 - Player 2: Doing nothing.
+2025-04-27 18:04:04 - Player 1 Action: Rotate Right Quarter
+2025-04-27 18:04:04 - Player 2 Action: None
+2025-04-27 18:04:04 - Player 1: Checking shooting condition - canShoot: false
+2025-04-27 18:04:04 - Player 1: Moving forward to (6,6)
+2025-04-27 18:04:04 - Player 2: Doing nothing.
+2025-04-27 18:04:04 - Player 1 Action: Move Forward
+2025-04-27 18:04:04 - Player 2 Action: None
+2025-04-27 18:04:04 - Player 1: Checking shooting condition - canShoot: false
+2025-04-27 18:04:04 - Player 1: Enemy in direction 5, turning toward it.
+2025-04-27 18:04:04 - Player 2: Doing nothing.
+2025-04-27 18:04:04 - Player 1 Action: Rotate Left Quarter
+2025-04-27 18:04:04 - Player 2 Action: None
+2025-04-27 18:04:04 - Player 1: Checking shooting condition - canShoot: true
+2025-04-27 18:04:04 - Player 1: Enemy in direction 225. Shooting now.
+2025-04-27 18:04:04 - Player 2: Doing nothing.
+2025-04-27 18:04:04 - Player 1 Action: Shoot
+2025-04-27 18:04:04 - Player 2 Action: None
+2025-04-27 18:04:04 - Player 1: Checking shooting condition - canShoot: false
+2025-04-27 18:04:04 - Player 1: Computing BFS (reason: empty)
+2025-04-27 18:04:04 - Player 1: BFS: starting BFS from position (6,6)
+2025-04-27 18:04:04 - Player 1: Stuck, rotating randomly
+2025-04-27 18:04:04 - Player 2: Threatened by shells.
+2025-04-27 18:04:04 - Player 1 Action: Rotate Right Eighth
+2025-04-27 18:04:04 - Player 2 Action: Move Forward
+2025-04-27 18:04:04 - Player 1: Checking shooting condition - canShoot: false
+2025-04-27 18:04:04 - Player 1: Computing BFS (reason: empty)
+2025-04-27 18:04:04 - Player 1: BFS: starting BFS from position (6,6)
+2025-04-27 18:04:04 - Player 1: Stuck, rotating randomly
+2025-04-27 18:04:04 - Player 2: Doing nothing.
+2025-04-27 18:04:04 - Player 1 Action: Rotate Right Eighth
+2025-04-27 18:04:04 - Player 2 Action: None
+2025-04-27 18:04:04 - Player 1: Checking shooting condition - canShoot: false
+2025-04-27 18:04:04 - Player 1: Computing BFS (reason: empty)
+2025-04-27 18:04:04 - Player 1: BFS: starting BFS from position (6,6)
+2025-04-27 18:04:04 - Player 1: Stuck, rotating randomly
+2025-04-27 18:04:04 - Player 2: Doing nothing.
+2025-04-27 18:04:04 - Player 1 Action: Rotate Right Eighth
+2025-04-27 18:04:04 - Player 2 Action: None
+2025-04-27 18:04:04 - Player 1: Checking shooting condition - canShoot: false
+2025-04-27 18:04:04 - Player 1: Computing BFS (reason: empty)
+2025-04-27 18:04:04 - Player 1: BFS: starting BFS from position (6,6)
+2025-04-27 18:04:04 - Player 1: Rotating from 0 to 225
+2025-04-27 18:04:04 - Player 2: Doing nothing.
+2025-04-27 18:04:04 - Player 1 Action: Rotate Left Quarter
+2025-04-27 18:04:04 - Player 2 Action: None
+2025-04-27 18:04:04 - Player 1: Checking shooting condition - canShoot: false
+2025-04-27 18:04:04 - Player 1: Rotating from 270 to 225
+2025-04-27 18:04:04 - Player 2: Doing nothing.
+2025-04-27 18:04:04 - Player 1 Action: Rotate Left Eighth
+2025-04-27 18:04:04 - Player 2 Action: None
+2025-04-27 18:04:04 - Player 1: Checking shooting condition - canShoot: false
+2025-04-27 18:04:04 - Player 1: Moving forward to (5,7)
+2025-04-27 18:04:04 - Player 2: Doing nothing.
+2025-04-27 18:04:04 - Player 1 Action: Move Forward
+2025-04-27 18:04:04 - Player 2 Action: None
+2025-04-27 18:04:04 - Player 1: Checking shooting condition - canShoot: false
+2025-04-27 18:04:04 - Player 1: Rotating from 225 to 270
+2025-04-27 18:04:04 - Player 2: Doing nothing.
+2025-04-27 18:04:04 - Player 1 Action: Rotate Right Eighth
+2025-04-27 18:04:04 - Player 2 Action: None
+2025-04-27 18:04:04 - Player 1: Checking shooting condition - canShoot: false
+2025-04-27 18:04:04 - Player 1: Moving forward to (4,7)
+2025-04-27 18:04:04 - Player 2: Doing nothing.
+2025-04-27 18:04:04 - Player 1 Action: Move Forward
+2025-04-27 18:04:04 - Player 2 Action: None
+2025-04-27 18:04:04 - Player 1: Checking shooting condition - canShoot: false
+2025-04-27 18:04:04 - Player 1: Moving forward to (3,7)
+2025-04-27 18:04:04 - Player 2: Doing nothing.
+2025-04-27 18:04:04 - Player 1 Action: Move Forward
+2025-04-27 18:04:04 - Player 2 Action: None
+2025-04-27 18:04:04 - Player 1: Checking shooting condition - canShoot: false
+2025-04-27 18:04:04 - Player 1: Enemy in direction 0, turning toward it.
+2025-04-27 18:04:04 - Player 2: Doing nothing.
+2025-04-27 18:04:04 - Player 1 Action: Rotate Right Quarter
+2025-04-27 18:04:04 - Player 2 Action: None
+2025-04-27 18:04:04 - Player 1: Checking shooting condition - canShoot: true
+2025-04-27 18:04:04 - Player 1: Enemy in direction 0. Shooting now.
+2025-04-27 18:04:04 - Player 2: Doing nothing.
+2025-04-27 18:04:04 - Player 1 Action: Shoot
+2025-04-27 18:04:04 - Player 2 Action: None
+2025-04-27 18:04:04 - Player 1: Threatened by shells.
+2025-04-27 18:04:04 - Player 2: Threatened by shells.
+2025-04-27 18:04:04 - Player 1 Action: Rotate Right Eighth
+2025-04-27 18:04:04 - Player 2 Action: Move Forward
+2025-04-27 18:04:04 - Player 1: Threatened by shells.
+2025-04-27 18:04:04 - Player 2: Doing nothing.
+2025-04-27 18:04:04 - Player 1 Action: Move Forward
+2025-04-27 18:04:04 - Player 2 Action: None
+2025-04-27 18:04:04 - Player 1: Checking shooting condition - canShoot: false
+2025-04-27 18:04:04 - Player 1: Computing BFS (reason: empty)
+2025-04-27 18:04:04 - Player 1: BFS: starting BFS from position (4,6)
+2025-04-27 18:04:04 - Player 1: Stuck, rotating randomly
+2025-04-27 18:04:04 - Player 2: Doing nothing.
+2025-04-27 18:04:04 - Player 1 Action: Rotate Right Eighth
+2025-04-27 18:04:04 - Player 2 Action: None
+2025-04-27 18:04:04 - Player 1: Checking shooting condition - canShoot: false
+2025-04-27 18:04:04 - Player 1: Enemy in direction 0, turning toward it.
+2025-04-27 18:04:04 - Player 2: Doing nothing.
+2025-04-27 18:04:04 - Player 1 Action: Rotate Left Quarter
+2025-04-27 18:04:04 - Player 2 Action: None
+2025-04-27 18:04:04 - Player 1: Checking shooting condition - canShoot: true
+2025-04-27 18:04:04 - Player 1: Enemy in direction 0. Shooting now.
+2025-04-27 18:04:04 - Player 2: Doing nothing.
+2025-04-27 18:04:04 - Player 1 Action: Shoot
+2025-04-27 18:04:04 - Player 2 Action: None
+2025-04-27 18:04:04 - Player 1: Threatened by shells.
+2025-04-27 18:04:04 - Player 2: Threatened by shells.
+2025-04-27 18:04:04 - Player 1 Action: Rotate Right Eighth
+2025-04-27 18:04:04 - Player 2 Action: Move Forward
+2025-04-27 18:04:04 - Player 1: Threatened by shells.
+2025-04-27 18:04:04 - Player 2: Doing nothing.
+2025-04-27 18:04:04 - Player 1 Action: Move Forward
+2025-04-27 18:04:04 - Player 2 Action: None
+2025-04-27 18:04:04 - Player 1: Checking shooting condition - canShoot: false
+2025-04-27 18:04:04 - Player 1: Computing BFS (reason: empty)
+2025-04-27 18:04:04 - Player 1: BFS: starting BFS from position (5,5)
+2025-04-27 18:04:04 - Player 1: Stuck, rotating randomly
+2025-04-27 18:04:04 - Player 2: Doing nothing.
+2025-04-27 18:04:04 - Player 1 Action: Rotate Right Eighth
+2025-04-27 18:04:04 - Player 2 Action: None
+2025-04-27 18:04:04 - Player 1: Checking shooting condition - canShoot: false
+2025-04-27 18:04:04 - Player 1: Enemy in direction 0, turning toward it.
+2025-04-27 18:04:04 - Player 2: Doing nothing.
+2025-04-27 18:04:04 - Player 1 Action: Rotate Left Quarter
+2025-04-27 18:04:04 - Player 2 Action: None
+2025-04-27 18:04:04 - Player 1: Checking shooting condition - canShoot: true
+2025-04-27 18:04:04 - Player 1: Enemy in direction 0. Shooting now.
+2025-04-27 18:04:04 - Player 2: Doing nothing.
+2025-04-27 18:04:04 - Player 1 Action: Shoot
+2025-04-27 18:04:04 - Player 2 Action: None
+2025-04-27 18:04:04 - Player 1: Threatened by shells.
+2025-04-27 18:04:04 - Player 2: Threatened by shells.
+2025-04-27 18:04:04 - Player 1 Action: Rotate Right Quarter
+2025-04-27 18:04:04 - Player 2 Action: Move Forward
+2025-04-27 18:04:04 - Player 1: Threatened by shells.
+2025-04-27 18:04:04 - Player 2: Doing nothing.
+2025-04-27 18:04:04 - Player 1 Action: Move Forward
+2025-04-27 18:04:04 - Player 2 Action: None
+2025-04-27 18:04:04 - Player 1: Checking shooting condition - canShoot: false
+2025-04-27 18:04:04 - Player 1: Computing BFS (reason: empty)
+2025-04-27 18:04:04 - Player 1: BFS: starting BFS from position (6,5)
+2025-04-27 18:04:04 - Player 1: Stuck, rotating randomly
+2025-04-27 18:04:04 - Player 2: Doing nothing.
+2025-04-27 18:04:04 - Player 1 Action: Rotate Right Eighth
+2025-04-27 18:04:04 - Player 2 Action: None
+2025-04-27 18:04:04 - Player 1: Checking shooting condition - canShoot: false
+2025-04-27 18:04:04 - Player 1: Enemy in direction 0, turning toward it.
+2025-04-27 18:04:04 - Player 2: Doing nothing.
+2025-04-27 18:04:04 - Player 1 Action: Rotate Left Quarter
+2025-04-27 18:04:04 - Player 2 Action: None
+2025-04-27 18:04:04 - Player 1: Checking shooting condition - canShoot: false
+2025-04-27 18:04:04 - Player 1: Enemy in direction 0, turning toward it.
+2025-04-27 18:04:04 - Player 2: Doing nothing.
+2025-04-27 18:04:04 - Player 1 Action: Rotate Left Eighth
+2025-04-27 18:04:04 - Player 2 Action: None
+2025-04-27 18:04:04 - Player 1: Checking shooting condition - canShoot: true
+2025-04-27 18:04:04 - Player 1: Enemy in direction 0. Shooting now.
+2025-04-27 18:04:04 - Player 2: Doing nothing.
+2025-04-27 18:04:04 - Player 1 Action: Shoot
+2025-04-27 18:04:04 - Player 2 Action: None
+2025-04-27 18:04:04 - Player 1: Threatened by shells.
+2025-04-27 18:04:04 - Player 2: Threatened by shells.
+2025-04-27 18:04:04 - Player 1 Action: Rotate Right Quarter
+2025-04-27 18:04:04 - Player 2 Action: Move Forward
+2025-04-27 18:04:04 - Player 1: Threatened by shells.
+2025-04-27 18:04:04 - Player 2: Doing nothing.
+2025-04-27 18:04:04 - Player 1 Action: Move Forward
+2025-04-27 18:04:04 - Player 2 Action: None
+2025-04-27 18:04:04 - Player 1: Checking shooting condition - canShoot: false
+2025-04-27 18:04:04 - Player 1: Computing BFS (reason: empty)
+2025-04-27 18:04:04 - Player 1: BFS: starting BFS from position (7,5)
+2025-04-27 18:04:04 - Player 1: Stuck, rotating randomly
+2025-04-27 18:04:04 - Player 2: Doing nothing.
+2025-04-27 18:04:04 - Player 1 Action: Rotate Right Eighth
+2025-04-27 18:04:04 - Player 2 Action: None
+2025-04-27 18:04:04 - Player 1: Checking shooting condition - canShoot: false
+2025-04-27 18:04:04 - Player 1: Enemy in direction 0, turning toward it.
+2025-04-27 18:04:04 - Player 2: Doing nothing.
+2025-04-27 18:04:04 - Player 1 Action: Rotate Left Quarter
+2025-04-27 18:04:04 - Player 2 Action: None
+2025-04-27 18:04:04 - Player 1: Checking shooting condition - canShoot: false
+2025-04-27 18:04:04 - Player 1: Enemy in direction 0, turning toward it.
+2025-04-27 18:04:04 - Player 2: Doing nothing.
+2025-04-27 18:04:04 - Player 1 Action: Rotate Left Eighth
+2025-04-27 18:04:04 - Player 2 Action: None
+2025-04-27 18:04:04 - Player 1: Checking shooting condition - canShoot: true
+2025-04-27 18:04:04 - Player 1: Enemy in direction 0. Shooting now.
+2025-04-27 18:04:04 - Player 2: Doing nothing.
+2025-04-27 18:04:04 - Player 1 Action: Shoot
+2025-04-27 18:04:04 - Player 2 Action: None
+2025-04-27 18:04:04 - Player 1: Threatened by shells.
+2025-04-27 18:04:04 - Player 2: Threatened by shells.
+2025-04-27 18:04:04 - Player 1 Action: None
+2025-04-27 18:04:04 - Player 2 Action: Move Forward
+2025-04-27 18:04:04 - Player 1: Threatened by shells.
+2025-04-27 18:04:04 - Player 2: Doing nothing.
+2025-04-27 18:04:04 - Player 1 Action: None
+2025-04-27 18:04:04 - Player 2 Action: None
+2025-04-27 18:04:04 - Player 1: Threatened by shells.
+2025-04-27 18:04:04 - Player 2: Doing nothing.
+2025-04-27 18:04:04 - Player 1 Action: None
+2025-04-27 18:04:04 - Player 2 Action: None
+2025-04-27 18:04:04 - Player 1: Threatened by shells.
+2025-04-27 18:04:04 - Player 2: Doing nothing.
+2025-04-27 18:04:04 - Player 1 Action: None
+2025-04-27 18:04:04 - Player 2 Action: None
+2025-04-27 18:04:04 - Player 2 wins
