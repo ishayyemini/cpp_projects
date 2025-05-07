@@ -1,7 +1,10 @@
-#include "../../include/Collision.h"
+#include "Collision.h"
 
 #include "Tank.h"
 #include "Wall.h"
+
+#include <vector>
+#include <memory>
 
 std::unique_ptr<GameObject> Collision::popElement() {
     if (elements.size() == 0) return nullptr;

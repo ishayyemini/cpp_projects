@@ -5,7 +5,6 @@
 #include "Action.h"
 
 constexpr int MAX_SHELL = 16;
-static int tank_count = 0;
 
 class Tank final : public GameObject {
     int player_id;

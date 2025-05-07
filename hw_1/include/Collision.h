@@ -6,6 +6,9 @@
 #include "Shell.h"
 #include "Wall.h"
 
+#include <vector>
+#include <memory>
+
 class Collision final : public GameObject {
     std::vector<std::unique_ptr<GameObject> > elements;
     std::unique_ptr<Shell> shell = nullptr;
