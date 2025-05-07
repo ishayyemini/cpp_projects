@@ -2,6 +2,7 @@
 
 #include <queue>
 #include <set>
+#include <limits>
 
 #include "Logger.h"
 
