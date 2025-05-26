@@ -3,21 +3,23 @@
 
 #include <string>
 
-#include "GameState.h"
+#include "MyBattleInfo.h"
 #include "TankAlgorithm.h"
 
 class MyTankAlgorithm : public TankAlgorithm {
 public:
     MyTankAlgorithm() = default;
 
-    virtual std::string getName() const { return "Algorithm"; };
-
-    virtual ActionRequest decideAction(const GameState &_) { return ActionRequest::DoNothing; }
+    virtual std::string getName() const { return "Algorithm"; }
 
     virtual ~MyTankAlgorithm() = default;
 
 protected:
-    ActionRequest moveIfThreatened(const GameState &state) const;
+    ActionRequest moveIfThreatened(const MyBattleInfo &state) const;
+
+    int turn_number = 0;
+
+    MyBattleInfo state;
 };
 
 #endif //ALGORITHM_H

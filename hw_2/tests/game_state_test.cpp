@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "../include/GameState.h"
+#include "../include/MyBattleInfo.h"
 #include "../include/Board.h"
 #include "../include/Tank.h"
 #include "../include/Shell.h"
@@ -38,7 +38,7 @@ protected:
 };
 
 TEST_F(GameStateTest, ConstructorAndGetters) {
-    GameState state(*board, 1);
+    MyBattleInfo state(*board, 1);
 
     EXPECT_EQ(&state.getBoard(), board);
     EXPECT_EQ(state.getPlayerTank(), tank1);
@@ -55,8 +55,8 @@ TEST_F(GameStateTest, IsInLineOfSight_ClearPath) {
     board->removeObject(wall1->getPosition());
     board->removeObject(wall2->getPosition());
 
-    GameState state1(*board, 1);
-    GameState state2(*board, 2);
+    MyBattleInfo state1(*board, 1);
+    MyBattleInfo state2(*board, 2);
 
     // Tank1 should be able to see tank2
     EXPECT_TRUE(state1.isInLineOfSight(tank2->getPosition()));
@@ -78,7 +78,7 @@ TEST_F(GameStateTest, IsInLineOfSight_Blocked) {
     // Place a wall between them
     board->placeObject(std::make_unique<Wall>(Position(4, 7)));
 
-    GameState state(*board, 1);
+    MyBattleInfo state(*board, 1);
 
     // Wall should block line of sight
     EXPECT_FALSE(state.isInLineOfSight(tank2->getPosition()));
@@ -88,8 +88,8 @@ TEST_F(GameStateTest, IsShellApproaching) {
     // Create a shell heading toward tank1
     board->placeObject(std::make_unique<Shell>(Position(5, 2), Direction::LEFT, 2));
 
-    GameState state1(*board, 1);
-    GameState state2(*board, 2);
+    MyBattleInfo state1(*board, 1);
+    MyBattleInfo state2(*board, 2);
 
     // Shell is approaching tank1
     EXPECT_TRUE(state1.isShellApproaching());
@@ -105,7 +105,7 @@ TEST_F(GameStateTest, IsShellApproaching) {
 }
 
 TEST_F(GameStateTest, GetNearbyEmptyPositions) {
-    GameState state(*board, 1);
+    MyBattleInfo state(*board, 1);
 
     // Get empty positions around tank1
     std::vector<Position> emptyPositions = state.getNearbyEmptyPositions(tank1->getPosition());
@@ -120,7 +120,7 @@ TEST_F(GameStateTest, GetNearbyEmptyPositions) {
 }
 
 TEST_F(GameStateTest, IsSafePosition) {
-    GameState state(*board, 1);
+    MyBattleInfo state(*board, 1);
 
     // Empty position should be safe
     EXPECT_TRUE(state.isSafePosition(Position(1, 1)));

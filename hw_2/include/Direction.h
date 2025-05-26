@@ -4,7 +4,7 @@
 #include <array>
 #include <ostream>
 
-#include "Action.h"
+#include "ActionRequest.h"
 
 class Direction;
 enum class DirectionType : int;
@@ -94,15 +94,15 @@ public:
         return getDirection(mod_dir);
     }
 
-    static DirectionType getDirectionAfterAction(const DirectionType dir, const Action action) {
+    static DirectionType getDirectionAfterAction(const DirectionType dir, const ActionRequest action) {
         switch (action) {
-            case ROTATE_LEFT_EIGHTH:
+            case ActionRequest::RotateLeft45:
                 return rotateDirection(dir, false, false);
-            case ROTATE_RIGHT_EIGHTH:
+            case ActionRequest::RotateRight45:
                 return rotateDirection(dir, true, false);
-            case ROTATE_LEFT_QUARTER:
+            case ActionRequest::RotateLeft90:
                 return rotateDirection(dir, false, true);
-            case ROTATE_RIGHT_QUARTER:
+            case ActionRequest::RotateRight90:
                 return rotateDirection(dir, true, true);
             default:
                 return dir;

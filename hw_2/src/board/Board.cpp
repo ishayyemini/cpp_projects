@@ -12,12 +12,8 @@ GameObject *Board::placeObjectReal(std::unique_ptr<GameObject> element, const Po
     const auto [x, y] = wrapPositionReal(real_pos);
 
     if (const auto tank = dynamic_cast<Tank *>(element.get())) {
-        tanks_pos[tank->getId()] = Position(x, y);
-        if (tank->getPlayerId() == 1) {
-            player_1_tank = tank->getId();
-        } else {
-            player_2_tank = tank->getId();
-        }
+        // TODO ensure!!
+        tanks_pos[{tank->getPlayerIndex(), tank->getTankIndex()}] = Position(x, y);
     }
 
     if (const auto shell = dynamic_cast<Shell *>(element.get())) {
@@ -97,12 +93,8 @@ void Board::removeIndices(GameObject *game_object) {
     if (game_object == nullptr) return;
 
     if (const auto tank = dynamic_cast<Tank *>(game_object)) {
-        tanks_pos.erase(tank->getId());
-        if (tank->getPlayerId() == 1) {
-            player_1_tank = -1;
-        } else {
-            player_2_tank = -1;
-        }
+        // TODO ensure this doesn't fuck anything up
+        tanks_pos.erase({tank->getPlayerIndex(), tank->getTankIndex()});
     }
 
     if (const auto shell = dynamic_cast<Shell *>(game_object)) {
@@ -150,6 +142,17 @@ GameObject *Board::getObjectAt(const Position pos) const {
     return getObjectAtReal(pos * 2);
 }
 
+std::vector<Tank *> Board::getTanks() const {
+    std::vector<Tank *> tanks;
+    for (auto pos: tanks_pos) {
+        GameObject *b = getObjectAtReal(pos.second);
+        if (auto t = dynamic_cast<Tank *>(b)) {
+            tanks.push_back(t);
+        }
+    }
+    return tanks;
+}
+
 GameObject *Board::replaceObject(const Position from, const Position to) {
     return replaceObjectReal(from * 2, to * 2);
 }
@@ -159,19 +162,19 @@ GameObject *Board::moveObject(const Position from, const Direction::DirectionTyp
     return moveObjectReal(from * 2, dir);
 }
 
-// This takes into account there being only one tank per player
-Tank *Board::getPlayerTank(const int player_id) const {
-    int tank_id;
-    if (player_id == 1) {
-        tank_id = player_1_tank;
-    } else {
-        tank_id = player_2_tank;
-    }
-    if (!tanks_pos.contains(tank_id)) return nullptr;
-    GameObject *b = getObjectAtReal(tanks_pos.at(tank_id));
-    if (const auto t = dynamic_cast<Tank *>(b)) return t;
-    return nullptr;
-}
+// // This takes into account there being only one tank per player
+// Tank *Board::getPlayerTank(const int player_id) const {
+//     int tank_id;
+//     if (player_id == 1) {
+//         tank_id = player_1_tank;
+//     } else {
+//         tank_id = player_2_tank;
+//     }
+//     if (!tanks_pos.contains(tank_id)) return nullptr;
+//     GameObject *b = getObjectAtReal(tanks_pos.at(tank_id));
+//     if (const auto t = dynamic_cast<Tank *>(b)) return t;
+//     return nullptr;
+// }
 
 void Board::displayBoard() const {
     for (int i = 0; i < height; i += 2) {

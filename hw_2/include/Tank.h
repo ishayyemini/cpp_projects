@@ -2,13 +2,13 @@
 #define TANK_H
 #include "GameObject.h"
 #include "Direction.h"
-#include "Action.h"
 
 constexpr int MAX_SHELL = 16;
 static int tank_count = 0;
 
 class Tank final : public GameObject {
-    int player_id;
+    int player_index;
+    int tank_index;
     int backwards_counter = 3;
     int shooting_cooldown = 0;
     int shell = MAX_SHELL;
@@ -17,14 +17,16 @@ public:
     explicit Tank(Position position, int player_id): GameObject(position, player_id == 1
                                                                               ? Direction::LEFT
                                                                               : Direction::RIGHT),
-                                                     player_id(player_id) {
+                                                     player_index(player_id) {
     }
 
-    [[nodiscard]] char getSymbol() const override { return player_id == 1 ? '1' : '2'; }
+    [[nodiscard]] char getSymbol() const override { return player_index == 1 ? '1' : '2'; }
 
     int getAmmunition() const { return shell; }
 
-    [[nodiscard]] int getPlayerId() const { return player_id; }
+    [[nodiscard]] int getPlayerIndex() const { return player_index; }
+
+    int getTankIndex() const { return tank_index; }
 
     int getBackwardsCounter() const { return backwards_counter; }
 

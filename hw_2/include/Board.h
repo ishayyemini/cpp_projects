@@ -27,9 +27,7 @@ class Board {
     int width = 2;
     int height = 2;
     std::vector<std::vector<std::unique_ptr<GameObject> > > board;
-    std::map<int, Position> tanks_pos;
-    int player_1_tank = -1;
-    int player_2_tank = -1;
+    std::map<std::pair<int, int>, Position> tanks_pos;
     std::map<int, Position> shells_pos;
     std::map<int, Position> collisions_pos;
     std::map<int, Position> moving_pos;
@@ -77,9 +75,11 @@ public:
 
     GameObject *getObjectAt(Position pos) const;
 
+    std::vector<Tank *> getTanks() const;
+
     // [[nodiscard]] Tank *getPlayerTank(int player_id, int tank_id) const;
     //
-    [[nodiscard]] Tank *getPlayerTank(int player_id) const;
+    // [[nodiscard]] Tank *getPlayerTank(int player_id) const;
 
     void displayBoard() const;
 

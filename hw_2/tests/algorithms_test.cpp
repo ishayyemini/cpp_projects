@@ -4,7 +4,7 @@
 #include "../include/Direction.h"
 #include "../include/SimpleAlgorithm.h"
 #include "../include/PathfindingAlgorithm.h"
-#include "../include/GameState.h"
+#include "../include/MyBattleInfo.h"
 #include "../include/Board.h"
 #include "../include/Tank.h"
 #include "../include/Shell.h"
@@ -72,7 +72,7 @@ TEST_F(AlgorithmsTest, SimpleAlgorithm_ShootWhenInLineOfSight) {
     board->replaceObject(Position(7, 7), Position(7, 5));
 
     // Create game state from tank1's perspective
-    GameState state(*board, 1);
+    MyBattleInfo state(*board, 1);
 
     // Algorithm should decide to shoot when in line of sight
     Action action = simpleAlgo->decideAction(state);
@@ -84,7 +84,7 @@ TEST_F(AlgorithmsTest, SimpleAlgorithm_EvadeApproachingShell) {
     addShell(5, 2, Direction::LEFT, 2);
 
     // Create game state from tank1's perspective
-    GameState state(*board, 1);
+    MyBattleInfo state(*board, 1);
 
     // Algorithm should decide to evade
     Action action = simpleAlgo->decideAction(state);
@@ -119,7 +119,7 @@ TEST_F(AlgorithmsTest, PathfindingAlgorithm_FindPathToEnemy) {
     addWall(6, 4);
 
     // Create game state from tank1's perspective
-    GameState state(*board, 1);
+    MyBattleInfo state(*board, 1);
 
     // Algorithm should find a path around walls
     Action action = pathAlgo->decideAction(state);
@@ -140,7 +140,7 @@ TEST_F(AlgorithmsTest, PathfindingAlgorithm_ShootWhenInLineOfSight) {
     board->replaceObject(Position(7, 7), Position(7, 5));
 
     // Create game state from tank1's perspective
-    GameState state(*board, 1);
+    MyBattleInfo state(*board, 1);
 
     // Algorithm should decide to shoot when in line of sight
     Action action = pathAlgo->decideAction(state);
@@ -152,7 +152,7 @@ TEST_F(AlgorithmsTest, PathfindingAlgorithm_EvadeApproachingShell) {
     addShell(5, 2, Direction::LEFT, 2);
 
     // Create game state from tank1's perspective
-    GameState state(*board, 1);
+    MyBattleInfo state(*board, 1);
 
     // Algorithm should decide to evade
     Action action = pathAlgo->decideAction(state);
@@ -164,7 +164,7 @@ TEST_F(AlgorithmsTest, BothAlgorithms_NoneWhenNoTank) {
     tank1->destroy();
     tank2->destroy();
 
-    GameState state(*board, 1);
+    MyBattleInfo state(*board, 1);
 
     // Both algorithms should return NONE for destroyed tanks
     EXPECT_EQ(simpleAlgo->decideAction(state), Action::NONE);

@@ -1,8 +1,8 @@
 #include "MyTankAlgorithm.h"
 
 
-Action Algorithm::moveIfThreatened(const GameState &state) const {
-    if (!state.getPlayerTank()) return NONE;
+ActionRequest MyTankAlgorithm::moveIfThreatened(const MyBattleInfo &state) const {
+    if (!state.getPlayerTank()) return ActionRequest::DoNothing;
 
     Position player_pos = state.getPlayerTank()->getPosition();
     Direction::DirectionType player_dir = state.getPlayerTank()->getDirection();
@@ -11,7 +11,7 @@ Action Algorithm::moveIfThreatened(const GameState &state) const {
     Position forward_pos = state.getBoard().wrapPosition(player_pos + player_dir);
 
     if (state.isSafePosition(forward_pos)) {
-        return MOVE_FORWARD;
+        return ActionRequest::MoveForward;
     }
 
     // If we can't move forward in the current direction, we'll find a safe cell around us and rotate towards it
@@ -24,9 +24,9 @@ Action Algorithm::moveIfThreatened(const GameState &state) const {
     }
 
     if (state.isSafePosition(forward_pos, true)) {
-        return MOVE_FORWARD;
+        return ActionRequest::MoveForward;
     }
 
-    return NONE;
+    return ActionRequest::DoNothing;
 }
 

@@ -1,4 +1,4 @@
-#include "GameState.h"
+#include "MyBattleInfo.h"
 
 #include <limits>
 #include <set>
@@ -6,21 +6,39 @@
 #include "Direction.h"
 #include "SimpleAlgorithm.h"
 
-GameState::GameState(Board &board, const int player_id): board(board), player_id(player_id) {
+MyBattleInfo::MyBattleInfo(Board &board, const int player_id): board(board), player_id(player_id) {
 }
 
-Board &GameState::getBoard() const { return board; }
+Board &MyBattleInfo::getBoard() const { return board; }
 
-Tank *GameState::getPlayerTank() const { return board.getPlayerTank(player_id); }
+Tank *MyBattleInfo::getPlayerTank() const {
+    // TODO which tank???
+    for (const auto tank: board.getTanks()) {
+        if (tank->getPlayerIndex() == player_id) {
+            return tank;
+        }
+    }
 
-bool GameState::canShoot() const {
+    return nullptr;
+}
+
+bool MyBattleInfo::canShoot() const {
     if (auto t = getPlayerTank()) return t->getAmmunition() > 0 && t->getCooldown() == 0;
     return false;
 }
 
-Tank *GameState::getEnemyTank() const { return board.getPlayerTank(player_id == 1 ? 2 : 1); }
+Tank *MyBattleInfo::getEnemyTank() const {
+    // TODO which tank???
+    for (const auto tank: board.getTanks()) {
+        if (tank->getPlayerIndex() != player_id) {
+            return tank;
+        }
+    }
 
-bool GameState::isSafePosition(const Position position, const bool immediate_safe) const {
+    return nullptr;
+}
+
+bool MyBattleInfo::isSafePosition(const Position position, const bool immediate_safe) const {
     if (board.isOccupied(position)) return false;
 
     // If only checking immediate safety, we're done
@@ -29,7 +47,7 @@ bool GameState::isSafePosition(const Position position, const bool immediate_saf
     return !isShellApproaching(position);
 }
 
-std::vector<Direction::DirectionType> GameState::getSafeDirections(const Position position) const {
+std::vector<Direction::DirectionType> MyBattleInfo::getSafeDirections(const Position position) const {
     std::vector<Direction::DirectionType> safe_directions;
 
     for (int i = 0; i < Direction::getDirectionSize(); i++) {
@@ -43,7 +61,7 @@ std::vector<Direction::DirectionType> GameState::getSafeDirections(const Positio
     return safe_directions;
 }
 
-std::vector<Position> GameState::getNearbyEmptyPositions(const Position position) const {
+std::vector<Position> MyBattleInfo::getNearbyEmptyPositions(const Position position) const {
     std::vector<Position> empty_positions;
 
     for (int i = 0; i < Direction::getDirectionSize(); i++) {
@@ -210,12 +228,13 @@ std::vector<Position> GameState::getNearbyEmptyPositions(const Position position
 //     return approaching_shells;
 // }
 
-bool GameState::isInLineOfSight(const Position target) const {
+bool MyBattleInfo::isInLineOfSight(const Position target) const {
     if (!getPlayerTank()) return false;
     return isInLineOfSight(getPlayerTank()->getPosition(), getPlayerTank()->getDirection(), target);
 }
 
-bool GameState::isInLineOfSight(const Position from, const Direction::DirectionType dir, const Position target) const {
+bool MyBattleInfo::isInLineOfSight(const Position from, const Direction::DirectionType dir,
+                                   const Position target) const {
     Position check = from;
     for (int i = 1; i <= std::max(board.getWidth(), board.getHeight()); i++) {
         check = getBoard().wrapPosition(check + dir);
@@ -312,71 +331,72 @@ bool GameState::isInLineOfSight(const Position from, const Direction::DirectionT
 //     return false;
 // }
 
-bool GameState::canShootEnemy() const {
+bool MyBattleInfo::canShootEnemy() const {
     if (!getPlayerTank()) return false;
     return canShootEnemy(getPlayerTank()->getPosition(), getPlayerTank()->getDirection());
 }
 
-bool GameState::canShootEnemy(const Position from) const {
+bool MyBattleInfo::canShootEnemy(const Position from) const {
     if (!getPlayerTank()) return false;
     return canShootEnemy(from, getPlayerTank()->getDirection());
 }
 
-bool GameState::canShootEnemy(const Direction::DirectionType dir) const {
+bool MyBattleInfo::canShootEnemy(const Direction::DirectionType dir) const {
     if (!getPlayerTank()) return false;
     return canShootEnemy(getPlayerTank()->getPosition(), dir);
 }
 
-bool GameState::canShootEnemy(const Position from, const Direction::DirectionType dir) const {
+bool MyBattleInfo::canShootEnemy(const Position from, const Direction::DirectionType dir) const {
     if (!canShoot()) return false;
     if (!getEnemyTank()) return false;
     return isInLineOfSight(from, dir, getEnemyTank()->getPosition());
 }
 
-Action GameState::rotateTowards(const Direction::DirectionType to) const {
-    if (!getPlayerTank()) return NONE;
+ActionRequest MyBattleInfo::rotateTowards(const Direction::DirectionType to) const {
+    if (!getPlayerTank()) return ActionRequest::DoNothing;
     return rotateTowards(getPlayerTank()->getDirection(), to);
 }
 
-Action GameState::rotateTowards(const Position to) const {
-    if (!getPlayerTank()) return NONE;
+ActionRequest MyBattleInfo::rotateTowards(const Position to) const {
+    if (!getPlayerTank()) return ActionRequest::DoNothing;
 
     const Direction::DirectionType curr_dir = getPlayerTank()->getDirection();
     for (Direction::DirectionType dir: {curr_dir, curr_dir + 45, curr_dir - 45, curr_dir + 90, curr_dir - 90}) {
         if (isInLineOfSight(getPlayerTank()->getPosition(), dir, to)) return rotateTowards(dir);
     }
 
-    return ROTATE_RIGHT_QUARTER;
+    return ActionRequest::RotateRight90;
 }
 
-Action GameState::rotateTowards(const Direction::DirectionType from, const Direction::DirectionType to) const {
-    if (from == to) return NONE;
+ActionRequest MyBattleInfo::rotateTowards(const Direction::DirectionType from,
+                                          const Direction::DirectionType to) const {
+    if (from == to) return ActionRequest::DoNothing;
 
     // Find the shortest rotation path
     if (int diff = (from - to + 360) % 360; diff > 180) {
         diff = 360 - diff;
         // Clockwise is shorter
-        if (diff == 45) return ROTATE_RIGHT_EIGHTH;
-        if (diff == 90) return ROTATE_RIGHT_QUARTER;
-        if (diff == 135) return ROTATE_RIGHT_QUARTER;
-        if (diff == 180) return ROTATE_RIGHT_QUARTER;
+        if (diff == 45) return ActionRequest::RotateRight45;
+        if (diff == 90) return ActionRequest::RotateRight90;
+        if (diff == 135) return ActionRequest::RotateRight90;
+        if (diff == 180) return ActionRequest::RotateRight90;
     } else {
         // Counter-clockwise is shorter or equal
-        if (diff == 45) return ROTATE_LEFT_EIGHTH;
-        if (diff == 90) return ROTATE_LEFT_QUARTER;
-        if (diff == 135) return ROTATE_LEFT_QUARTER;
-        if (diff == 180) return ROTATE_LEFT_QUARTER;
+        if (diff == 45) return ActionRequest::RotateLeft45;
+        if (diff == 90) return ActionRequest::RotateLeft90;
+        if (diff == 135) return ActionRequest::RotateLeft90;
+        if (diff == 180) return ActionRequest::RotateLeft90;
     }
 
-    return NONE;
+    return ActionRequest::DoNothing;
 }
 
-bool GameState::isShellApproaching() const {
+bool MyBattleInfo::isShellApproaching() const {
     if (!getPlayerTank()) return false;
     return isShellApproaching(getPlayerTank()->getPosition());
 }
 
-bool GameState::isShellApproaching(const Position position) const {
+bool MyBattleInfo::isShellApproaching(const Position position) const {
     for (auto [id, shell]: board.getShells()) {
         if (isInLineOfSight(shell->getPosition(), shell->getDirection(), position)) {
             return true;
@@ -386,7 +406,7 @@ bool GameState::isShellApproaching(const Position position) const {
     return false;
 }
 
-bool GameState::isEnemyNearby() const {
+bool MyBattleInfo::isEnemyNearby() const {
     if (!getPlayerTank() || !getEnemyTank()) return false;
     const Position player_pos = getPlayerTank()->getPosition();
     const Position enemy_pos = getEnemyTank()->getPosition();

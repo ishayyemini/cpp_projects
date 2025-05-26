@@ -93,14 +93,16 @@ Tank *InputParser::getTank1() {
     if (board == nullptr) {
         return nullptr;
     }
-    return board->getPlayerTank(1);
+    // TODO
+    return nullptr;
 }
 
 Tank *InputParser::getTank2() {
     if (board == nullptr) {
         return nullptr;
     }
-    return board->getPlayerTank(2);
+    // TODO
+    return nullptr;
 }
 
 

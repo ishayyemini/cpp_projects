@@ -2,11 +2,19 @@
 
 #include "Logger.h"
 
-Action SimpleAlgorithm::decideAction(const GameState &state) {
+ActionRequest SimpleAlgorithm::getAction() {
+    // TODO: maybe not just get battle info?
+    if (turn_number % 2 == 0) {
+        turn_number++;
+        return ActionRequest::GetBattleInfo;
+    }
+
+    turn_number++;
+
     if (!state.getPlayerTank() || state.getPlayerTank()->isDestroyed() ||
         !state.getEnemyTank() || state.getEnemyTank()->isDestroyed()) {
         Logger::getInstance().log("Player " + std::to_string(state.getPlayerId()) + ": Doing nothing since no tank(s)");
-        return NONE;
+        return ActionRequest::DoNothing;
     }
 
     if (state.isShellApproaching()) {
@@ -22,7 +30,7 @@ Action SimpleAlgorithm::decideAction(const GameState &state) {
     if (state.canShootEnemy()) {
         Logger::getInstance().log(
             "Player " + std::to_string(state.getPlayerId()) + ": Enemy in direct line of fire. Shooting now.");
-        return SHOOT;
+        return ActionRequest::Shoot;
     }
 
     if (state.getEnemyTank()->getAmmunition() == 0) {
@@ -33,7 +41,7 @@ Action SimpleAlgorithm::decideAction(const GameState &state) {
             Logger::getInstance().log(
                 "Player " + std::to_string(state.getPlayerId()) +
                 ": Trying to shoot towards the enemy because the enemy tank wasted its entire ammo.");
-            return SHOOT;
+            return ActionRequest::Shoot;
         }
         if (state.canShoot())
             Logger::getInstance().log(
@@ -43,5 +51,5 @@ Action SimpleAlgorithm::decideAction(const GameState &state) {
     }
 
     Logger::getInstance().log("Player " + std::to_string(state.getPlayerId()) + ": Doing nothing.");
-    return NONE;
+    return ActionRequest::DoNothing;
 }

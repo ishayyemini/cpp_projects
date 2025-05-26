@@ -3,7 +3,7 @@
 
 #include "MyTankAlgorithm.h"
 
-class SimpleAlgorithm final : public Algorithm {
+class SimpleAlgorithm : public MyTankAlgorithm {
 public:
     SimpleAlgorithm() = default;
 
@@ -11,7 +11,7 @@ public:
 
     std::string getName() const override { return "SimpleAlgorithm"; }
 
-    Action decideAction(const GameState &state) override;
+    ActionRequest getAction() override;
 };
 
 #endif //SIMPLEALGORITHM_H

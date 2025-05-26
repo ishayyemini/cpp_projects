@@ -3,14 +3,19 @@
 
 #include <vector>
 
+#include "ActionRequest.h"
+#include "BattleInfo.h"
 #include "Board.h"
 
-class GameState {
+
+class MyBattleInfo : public BattleInfo {
     Board &board;
     int player_id;
 
 public:
-    explicit GameState(Board &board, int player_id);
+    explicit MyBattleInfo();
+
+    explicit MyBattleInfo(Board &board, int player_id);
 
     Board &getBoard() const;
 
@@ -40,11 +45,11 @@ public:
 
     bool canShootEnemy(Position from, Direction::DirectionType dir) const;
 
-    Action rotateTowards(Direction::DirectionType to) const;
+    ActionRequest rotateTowards(Direction::DirectionType to) const;
 
-    Action rotateTowards(Position to) const;
+    ActionRequest rotateTowards(Position to) const;
 
-    Action rotateTowards(Direction::DirectionType from, Direction::DirectionType to) const;
+    ActionRequest rotateTowards(Direction::DirectionType from, Direction::DirectionType to) const;
 
     bool isShellApproaching() const;
 

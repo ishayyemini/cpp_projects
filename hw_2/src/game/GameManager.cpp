@@ -23,12 +23,12 @@ inline std::map<ActionRequest, std::string> action_strings = {
 };
 
 
-bool GameManager::tankAction(Tank &tank, const Action action) {
+bool GameManager::tankAction(Tank &tank, const ActionRequest action) {
     bool result = false;
     const int back_counter = tank.getBackwardsCounter();
     tank.decreaseShootingCooldown();
 
-    if (action == NONE) result = true;
+    if (action == ActionRequest::DoNothing) result = true;
 
     /* 3 -> "regular". Here, any action will perform normally, except for back, which will just dec the counter.
      * 2 -> "waiting". Don't move. If FORWARD, reset counter. Else, dec counter.
@@ -37,7 +37,7 @@ bool GameManager::tankAction(Tank &tank, const Action action) {
      */
 
     if (back_counter == 2) {
-        if (action == MOVE_FORWARD) {
+        if (action == ActionRequest::MoveForward) {
             tank.setBackwardsCounter(3);
         } else {
             tank.setBackwardsCounter(back_counter - 1);
@@ -45,7 +45,7 @@ bool GameManager::tankAction(Tank &tank, const Action action) {
     }
 
     if (back_counter == 1) {
-        if (action == MOVE_FORWARD) {
+        if (action == ActionRequest::MoveForward) {
             tank.setBackwardsCounter(3);
         } else {
             result = moveBackward(tank);
@@ -54,30 +54,30 @@ bool GameManager::tankAction(Tank &tank, const Action action) {
     }
 
     switch (action) {
-        case MOVE_FORWARD:
+        case ActionRequest::MoveForward:
             result = moveForward(tank);
             if (back_counter == 0) tank.setBackwardsCounter(3);
             break;
-        case MOVE_BACKWARD:
+        case ActionRequest::MoveBackward:
             if (back_counter == 0) {
                 result = moveBackward(tank);
             } else {
                 tank.setBackwardsCounter(back_counter - 1);
             }
             break;
-        case ROTATE_LEFT_EIGHTH:
+        case ActionRequest::RotateLeft45:
             result = rotate(tank, -45);
             break;
-        case ROTATE_RIGHT_EIGHTH:
+        case ActionRequest::RotateRight45:
             result = rotate(tank, 45);
             break;
-        case ROTATE_LEFT_QUARTER:
+        case ActionRequest::RotateLeft90:
             result = rotate(tank, -90);
             break;
-        case ROTATE_RIGHT_QUARTER:
+        case ActionRequest::RotateRight90:
             result = rotate(tank, 90);
             break;
-        case SHOOT:
+        case ActionRequest::Shoot:
             result = shoot(tank);
             break;
         default: ;
@@ -87,25 +87,25 @@ bool GameManager::tankAction(Tank &tank, const Action action) {
 }
 
 void GameManager::checkDeaths() {
-    // Check if tanks are both destroyed
-    const bool firstDead = board.getPlayerTank(1) == nullptr || board.getPlayerTank(1)->isDestroyed();
-    const bool secondDead = board.getPlayerTank(2) == nullptr || board.getPlayerTank(2)->isDestroyed();
-
-    if (firstDead && secondDead) {
-        winner = TIE;
-        game_over = true;
-        return;
-    }
-    if (firstDead) {
-        winner = PLAYER_2;
-        game_over = true;
-        return;
-    }
-    if (secondDead) {
-        winner = PLAYER_1;
-        game_over = true;
-        return;
-    }
+    // TODO Check if tanks are both destroyed
+    // const bool firstDead = board.getPlayerTank(1) == nullptr || board.getPlayerTank(1)->isDestroyed();
+    // const bool secondDead = board.getPlayerTank(2) == nullptr || board.getPlayerTank(2)->isDestroyed();
+    //
+    // if (firstDead && secondDead) {
+    //     winner = TIE;
+    //     game_over = true;
+    //     return;
+    // }
+    // if (firstDead) {
+    //     winner = PLAYER_2;
+    //     game_over = true;
+    //     return;
+    // }
+    // if (secondDead) {
+    //     winner = PLAYER_1;
+    //     game_over = true;
+    //     return;
+    // }
 
     if (empty_countdown == 0) {
         winner = TIE_AMMO;
@@ -149,31 +149,27 @@ bool GameManager::shoot(Tank &tank) {
 }
 
 void GameManager::tanksTurn() {
-    const auto game_state_1 = GameState(board, 1);
-    const auto game_state_2 = GameState(board, 2);
-
-    Tank *t1 = game_state_1.getPlayerTank();
-    if (t1 == nullptr) return;
-    const Action a1 = algo1->decideAction(game_state_1);
-
-    Tank *t2 = game_state_2.getPlayerTank();
-    if (t2 == nullptr) return;
-    const Action a2 = algo2->decideAction(game_state_2);
-
-    step_history.push_back(action_strings[a1]);
-    step_history.push_back(action_strings[a2]);
-
-    const bool g1 = tankAction(*t1, a1);
-    const bool g2 = tankAction(*t2, a2);
-
-    Logger::getInstance().log("Player 1 Action: " + action_strings[a1] + (!g1 ? " [Bad Step]" : ""));
-    Logger::getInstance().log("Player 2 Action: " + action_strings[a2] + (!g2 ? " [Bad Step]" : ""));
-
-
-    // Check if both tanks used their shells
-    if (empty_countdown == -1 && t1->getAmmunition() == 0 && t2->getAmmunition() == 0) {
-        empty_countdown = 40;
+    std::vector<ActionRequest> actions;
+    for (size_t i = 0; i < tanks.size(); ++i) {
+        actions.emplace_back(tanks[i]->getAction());
+        step_history.push_back(action_strings[actions.back()]);
     }
+
+    size_t i = 0;
+    for (const auto tank: board.getTanks()) {
+        if (actions.size() < i) {
+            tankAction(*tank, actions[i]);
+        }
+    }
+
+    // Logger::getInstance().log("Player 1 Action: " + action_strings[a1] + (!g1 ? " [Bad Step]" : ""));
+    // Logger::getInstance().log("Player 2 Action: " + action_strings[a2] + (!g2 ? " [Bad Step]" : ""));
+
+
+    // TODO Check if both players used their shells
+    // if (empty_countdown == -1 && t1->getAmmunition() == 0 && t2->getAmmunition() == 0) {
+    //     empty_countdown = 40;
+    // }
 
     if (empty_countdown != -1) {
         empty_countdown--;

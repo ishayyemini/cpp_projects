@@ -3,7 +3,7 @@
 
 #include "MyTankAlgorithm.h"
 
-class PathfindingAlgorithm final : public Algorithm {
+class PathfindingAlgorithm : public MyTankAlgorithm {
 public:
     explicit PathfindingAlgorithm() = default;
 
@@ -11,10 +11,10 @@ public:
 
     std::string getName() const override { return "PathfindingAlgorithm"; }
 
-    Action decideAction(const GameState &state) override;
+    ActionRequest getAction() override;
 
 private:
-    std::vector<Direction::DirectionType> computeBFS(const GameState &state);
+    std::vector<Direction::DirectionType> computeBFS(const MyBattleInfo &state);
 };
 
 
