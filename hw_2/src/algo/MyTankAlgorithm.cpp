@@ -1,4 +1,4 @@
-#include "Algorithm.h"
+#include "MyTankAlgorithm.h"
 
 
 Action Algorithm::moveIfThreatened(const GameState &state) const {

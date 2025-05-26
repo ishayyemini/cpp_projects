@@ -1,7 +1,7 @@
 #ifndef SIMPLEALGORITHM_H
 #define SIMPLEALGORITHM_H
 
-#include "Algorithm.h"
+#include "MyTankAlgorithm.h"
 
 class SimpleAlgorithm final : public Algorithm {
 public:

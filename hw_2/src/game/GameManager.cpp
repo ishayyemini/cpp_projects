@@ -7,8 +7,20 @@
 #include "Logger.h"
 #include "Mine.h"
 #include "Shell.h"
+#include "ActionRequest.h"
 
 using namespace std::chrono_literals;
+
+inline std::map<ActionRequest, std::string> action_strings = {
+    {ActionRequest::DoNothing, "None"},
+    {ActionRequest::MoveForward, "Move Forward"},
+    {ActionRequest::MoveBackward, "Move Backward"},
+    {ActionRequest::RotateLeft45, "Rotate Left Eighth"},
+    {ActionRequest::RotateRight45, "Rotate Right Eighth"},
+    {ActionRequest::RotateLeft90, "Rotate Left Quarter"},
+    {ActionRequest::RotateRight90, "Rotate Right Quarter"},
+    {ActionRequest::Shoot, "Shoot"},
+};
 
 
 bool GameManager::tankAction(Tank &tank, const Action action) {

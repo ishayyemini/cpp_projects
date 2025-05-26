@@ -12,7 +12,7 @@ add_compile_options(-Wall -Wextra -Werror -pedantic)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 # Add include directory
-include_directories(${PROJECT_SOURCE_DIR}/include ${PROJECT_SOURCE_DIR}/src)
+include_directories(${PROJECT_SOURCE_DIR}/include ${PROJECT_SOURCE_DIR}/src ${PROJECT_SOURCE_DIR}/common)
 
 # Add all source files (excluding main.cpp)
 file(GLOB_RECURSE SOURCES "${PROJECT_SOURCE_DIR}/src/*.cpp" "${PROJECT_SOURCE_DIR}/src/*.h")

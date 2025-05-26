@@ -1,7 +1,7 @@
 #ifndef PATHFINDINGALGORITHM_H
 #define PATHFINDINGALGORITHM_H
 
-#include "Algorithm.h"
+#include "MyTankAlgorithm.h"
 
 class PathfindingAlgorithm final : public Algorithm {
 public:

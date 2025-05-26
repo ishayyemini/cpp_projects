@@ -3,14 +3,15 @@
   <component name="CMakePythonSetting">
     <option name="pythonIntegrationState" value="YES" />
   </component>
-  <component name="CMakeWorkspace" PROJECT_DIR="$PROJECT_DIR$/hw_1">
+  <component name="CMakeWorkspace" PROJECT_DIR="$PROJECT_DIR$/hw_2">
     <contentRoot DIR="$PROJECT_DIR$" />
   </component>
   <component name="CidrRootsConfiguration">
     <sourceRoots>
-      <file path="$PROJECT_DIR$/hw_1" />
+      <file path="$PROJECT_DIR$/hw_2" />
     </sourceRoots>
     <excludeRoots>
+      <file path="$PROJECT_DIR$/hw_1" />
       <file path="$PROJECT_DIR$/hw_1/build" />
       <file path="$PROJECT_DIR$/hw_1/cmake-build-debug" />
     </excludeRoots>

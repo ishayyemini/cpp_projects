@@ -3,7 +3,7 @@
 
 #include <list>
 
-#include "Algorithm.h"
+#include "MyTankAlgorithm.h"
 #include "Board.h"
 #include "PathfindingAlgorithm.h"
 #include "SimpleAlgorithm.h"
