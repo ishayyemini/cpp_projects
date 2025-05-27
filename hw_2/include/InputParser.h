@@ -7,7 +7,7 @@ class InputParser {
     std::vector<std::string> error_messages;
     size_t width;
     size_t height;
-    Board *board;
+    std::unique_ptr<Board> board;
 
     bool parseDimensions(std::ifstream &inFile);
 
@@ -16,7 +16,7 @@ class InputParser {
 public:
     InputParser() = default;
 
-    Board *parseInputFile(const std::string &file_name);
+    std::unique_ptr<Board> parseInputFile(const std::string &file_name);
 
     Tank *getTank1();
 

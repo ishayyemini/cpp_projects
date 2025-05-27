@@ -3,7 +3,9 @@
 #include <thread>
 
 #include "Logger.h"
-#include "InputParser.h"
+#include "MyGameManager.h"
+#include "MyPlayerFactory.h"
+#include "MyTankAlgorithmFactory.h"
 
 using namespace std::chrono_literals;
 
@@ -24,25 +26,10 @@ int main(const int argc, char *argv[]) {
 
     Logger::getInstance().init("output_" + name + ".txt");
 
-    Board *board = InputParser().parseInputFile(path);
-
-    if (board == nullptr) {
-        std::cerr << "Can't open file " << path << std::endl;
-        return EXIT_FAILURE;
-    }
-
-    GameManager game_manager(*board, visual);
-    while (!game_manager.isGameOver()) {
-        game_manager.processStep();
-        if (visual) std::this_thread::sleep_for(200ms);
-    }
-
-    Logger::getInstance().log(game_manager.getGameResult());
-    if (visual) {
-        std::cout << game_manager.getGameResult() << std::endl;
-    }
-
-    delete board;
+    MyGameManager game(MyPlayerFactory{}, MyTankAlgorithmFactory{});
+    game.readBoard(path);
+    game.setVisual(visual);
+    game.run();
 
     return EXIT_SUCCESS;
 }

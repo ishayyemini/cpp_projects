@@ -13,8 +13,6 @@ class MyBattleInfo : public BattleInfo {
     int player_id;
 
 public:
-    explicit MyBattleInfo();
-
     explicit MyBattleInfo(Board &board, int player_id);
 
     Board &getBoard() const;

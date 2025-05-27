@@ -10,9 +10,7 @@
 
 class Player {
 public:
-    Player(int player_index,
-           size_t x, size_t y,
-           size_t max_steps, size_t num_shells) {
+    Player(int, size_t, size_t, size_t, size_t) {
     }
 
     virtual ~Player() {

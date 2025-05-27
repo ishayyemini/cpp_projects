@@ -10,7 +10,7 @@ bool tried_path_without_success = false;
 Position last_enemy_pos = {-1, -1}; // invalid value for the start
 std::vector<Direction::DirectionType> current_path; // the current path we got from the BFS computation
 
-std::vector<Direction::DirectionType> PathfindingAlgorithm::computeBFS(const MyBattleInfo &state) {
+std::vector<Direction::DirectionType> PathfindingAlgorithm::computeBFS() {
     struct Node {
         Position pos;
         std::vector<Direction::DirectionType> path;
@@ -20,13 +20,13 @@ std::vector<Direction::DirectionType> PathfindingAlgorithm::computeBFS(const MyB
     };
 
     Logger::getInstance().log(
-        "Player " + std::to_string(state.getPlayerId()) + ": BFS: starting BFS from position (" +
-        std::to_string(state.getPlayerTank()->getPosition().x) + "," + std::to_string(
-            state.getPlayerTank()->getPosition().y) + ")");
+        "Player " + std::to_string(state->getPlayerId()) + ": BFS: starting BFS from position (" +
+        std::to_string(state->getPlayerTank()->getPosition().x) + "," + std::to_string(
+            state->getPlayerTank()->getPosition().y) + ")");
 
     std::queue<Node> q;
     std::set<Position> visited;
-    q.push(Node(state.getPlayerTank()->getPosition(), {}));
+    q.push(Node(state->getPlayerTank()->getPosition(), {}));
 
     std::vector<Direction::DirectionType> best_path;
     size_t shortest_length = std::numeric_limits<size_t>::max();
@@ -37,7 +37,7 @@ std::vector<Direction::DirectionType> PathfindingAlgorithm::computeBFS(const MyB
         if (visited.contains(pos)) continue;
         visited.insert(pos);
         // checking if the next step in the queue can lead to shooting the enemy directly
-        if (state.canShootEnemy(pos)) {
+        if (state->canShootEnemy(pos)) {
             if (path.size() < shortest_length) {
                 best_path = path;
                 shortest_length = path.size();
@@ -45,8 +45,8 @@ std::vector<Direction::DirectionType> PathfindingAlgorithm::computeBFS(const MyB
             continue;
         }
 
-        for (const auto dir: state.getSafeDirections(pos)) {
-            const Position next = state.getBoard().wrapPosition(pos + dir);
+        for (const auto dir: state->getSafeDirections(pos)) {
+            const Position next = state->getBoard().wrapPosition(pos + dir);
             if (visited.contains(next)) continue;
 
             std::vector<Direction::DirectionType> new_path = path;
@@ -58,29 +58,29 @@ std::vector<Direction::DirectionType> PathfindingAlgorithm::computeBFS(const MyB
 }
 
 ActionRequest PathfindingAlgorithm::getAction() {
-    if (!state.getPlayerTank() || state.getPlayerTank()->isDestroyed() ||
-        !state.getEnemyTank() || state.getEnemyTank()->isDestroyed()) {
+    if (!state->getPlayerTank() || state->getPlayerTank()->isDestroyed() ||
+        !state->getEnemyTank() || state->getEnemyTank()->isDestroyed()) {
         return ActionRequest::DoNothing;
     }
 
-    if (state.isShellApproaching(state.getPlayerTank()->getPosition())) {
-        Logger::getInstance().log("Player " + std::to_string(state.getPlayerId()) + ": Threatened by shells.");
-        return moveIfThreatened(state);
+    if (state->isShellApproaching(state->getPlayerTank()->getPosition())) {
+        Logger::getInstance().log("Player " + std::to_string(state->getPlayerId()) + ": Threatened by shells.");
+        return moveIfThreatened();
     }
 
-    if (state.getPlayerTank()->getAmmunition() == 0) {
-        Logger::getInstance().log("Player " + std::to_string(state.getPlayerId()) + ": No ammo.");
+    if (state->getPlayerTank()->getAmmunition() == 0) {
+        Logger::getInstance().log("Player " + std::to_string(state->getPlayerId()) + ": No ammo.");
         return ActionRequest::DoNothing;
     }
 
     Logger::getInstance().log(
-        "Player " + std::to_string(state.getPlayerId()) + ": Checking shooting condition - canShoot: " +
-        std::string(state.canShootEnemy() ? "true" : "false"));
+        "Player " + std::to_string(state->getPlayerId()) + ": Checking shooting condition - canShoot: " +
+        std::string(state->canShootEnemy() ? "true" : "false"));
 
-    if (state.canShootEnemy()) {
+    if (state->canShootEnemy()) {
         Logger::getInstance().log(
-            "Player " + std::to_string(state.getPlayerId()) + ": Enemy in direction " + std::to_string(
-                state.getPlayerTank()->getDirection()) + ". Shooting now.");
+            "Player " + std::to_string(state->getPlayerId()) + ": Enemy in direction " + std::to_string(
+                state->getPlayerTank()->getDirection()) + ". Shooting now.");
         tried_path_without_success = false;
         return ActionRequest::Shoot;
     }
@@ -88,65 +88,66 @@ ActionRequest PathfindingAlgorithm::getAction() {
 
     for (int dir_index = 0; dir_index < 8; ++dir_index) {
         Direction::DirectionType dir = Direction::getDirectionFromIndex(dir_index);
-        if (state.getPlayerTank()->getDirection() == dir) continue;
-        if (state.canShootEnemy(dir)) {
+        if (state->getPlayerTank()->getDirection() == dir) continue;
+        if (state->canShootEnemy(dir)) {
             Logger::getInstance().log(
-                "Player " + std::to_string(state.getPlayerId()) + ": Enemy in direction " + std::to_string(dir_index) +
+                "Player " + std::to_string(state->getPlayerId()) + ": Enemy in direction " + std::to_string(dir_index) +
                 ", turning toward it.");
             current_path.clear();
             tried_path_without_success = false;
-            return state.rotateTowards(dir);
+            return state->rotateTowards(dir);
         }
     }
 
-    const bool enemy_moved = state.getEnemyTank()->getPosition() != last_enemy_pos;
+    const bool enemy_moved = state->getEnemyTank()->getPosition() != last_enemy_pos;
 
     if (current_path.empty() || enemy_moved || tried_path_without_success) {
         const std::string reason = current_path.empty()
                                        ? "empty"
                                        : (enemy_moved ? "enemy moved" : "triedPathWithoutSuccess");
         Logger::getInstance().log(
-            "Player " + std::to_string(state.getPlayerId()) + ": Computing BFS (reason: " + reason + ")");
-        current_path = computeBFS(state);
+            "Player " + std::to_string(state->getPlayerId()) + ": Computing BFS (reason: " + reason + ")");
+        current_path = computeBFS();
         tried_path_without_success = current_path.empty();
-        last_enemy_pos = state.getEnemyTank()->getPosition();
+        last_enemy_pos = state->getEnemyTank()->getPosition();
     }
 
     if (current_path.empty()) {
-        if (!state.canShootEnemy()) {
-            Logger::getInstance().log("Player " + std::to_string(state.getPlayerId()) + ": Stuck, rotating randomly");
+        if (!state->canShootEnemy()) {
+            Logger::getInstance().log("Player " + std::to_string(state->getPlayerId()) + ": Stuck, rotating randomly");
             tried_path_without_success = true;
 
-            if (state.canShoot()) {
+            if (state->canShoot()) {
                 Logger::getInstance().log(
-                    "Player " + std::to_string(state.getPlayerId()) + ": Shooting randomly due to stuck state");
+                    "Player " + std::to_string(state->getPlayerId()) + ": Shooting randomly due to stuck state");
                 return ActionRequest::Shoot;
             }
 
             return ActionRequest::RotateLeft45;
         }
 
-        Logger::getInstance().log("Player " + std::to_string(state.getPlayerId()) + ": No path but can shoot directly");
+        Logger::getInstance().
+                log("Player " + std::to_string(state->getPlayerId()) + ": No path but can shoot directly");
         tried_path_without_success = false;
         return ActionRequest::Shoot;
     }
 
     Direction::DirectionType target_dir = current_path.front();
-    if (state.getPlayerTank()->getDirection() == target_dir) {
-        const Position next_pos = state.getBoard().wrapPosition(state.getPlayerTank()->getPosition() + target_dir);
+    if (state->getPlayerTank()->getDirection() == target_dir) {
+        const Position next_pos = state->getBoard().wrapPosition(state->getPlayerTank()->getPosition() + target_dir);
 
-        if (state.getBoard().isMine(next_pos)) {
+        if (state->getBoard().isMine(next_pos)) {
             Logger::getInstance().log(
-                "Player " + std::to_string(state.getPlayerId()) + ": Mine ahead – aborting move and resetting path");
+                "Player " + std::to_string(state->getPlayerId()) + ": Mine ahead – aborting move and resetting path");
             current_path.clear();
             tried_path_without_success = true;
             return ActionRequest::DoNothing;
         }
 
-        if (state.getBoard().isWall(next_pos)) {
-            if (state.canShoot()) {
+        if (state->getBoard().isWall(next_pos)) {
+            if (state->canShoot()) {
                 Logger::getInstance().log(
-                    "Player " + std::to_string(state.getPlayerId()) + ": Wall ahead – shooting it");
+                    "Player " + std::to_string(state->getPlayerId()) + ": Wall ahead – shooting it");
                 tried_path_without_success = false;
                 return ActionRequest::Shoot;
             }
@@ -156,17 +157,18 @@ ActionRequest PathfindingAlgorithm::getAction() {
 
         current_path.erase(current_path.begin());
         Logger::getInstance().log(
-            "Player " + std::to_string(state.getPlayerId()) + ": Moving forward to (" + std::to_string(next_pos.x) + ","
+            "Player " + std::to_string(state->getPlayerId()) + ": Moving forward to (" + std::to_string(next_pos.x) +
+            ","
             + std::to_string(next_pos.y) + ")");
         tried_path_without_success = false;
         return ActionRequest::MoveForward;
     }
     // if he isn't able to do anything, just rotate and maybe it will help in the next steps
     Logger::getInstance().log(
-        "Player " + std::to_string(state.getPlayerId()) + ": Rotating from " + std::to_string(
-            state.getPlayerTank()->getDirection()) + " to " +
+        "Player " + std::to_string(state->getPlayerId()) + ": Rotating from " + std::to_string(
+            state->getPlayerTank()->getDirection()) + " to " +
         std::to_string(target_dir));
     tried_path_without_success = false;
-    return state.rotateTowards(target_dir);
+    return state->rotateTowards(target_dir);
 }
 

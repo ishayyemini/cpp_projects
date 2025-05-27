@@ -1,4 +1,4 @@
-#include "GameManager.h"
+#include "MyGameManager.h"
 
 #include <iostream>
 #include <thread>
@@ -8,22 +8,32 @@
 #include "Mine.h"
 #include "Shell.h"
 #include "ActionRequest.h"
+#include "InputParser.h"
 
 using namespace std::chrono_literals;
 
-inline std::map<ActionRequest, std::string> action_strings = {
-    {ActionRequest::DoNothing, "None"},
-    {ActionRequest::MoveForward, "Move Forward"},
-    {ActionRequest::MoveBackward, "Move Backward"},
-    {ActionRequest::RotateLeft45, "Rotate Left Eighth"},
-    {ActionRequest::RotateRight45, "Rotate Right Eighth"},
-    {ActionRequest::RotateLeft90, "Rotate Left Quarter"},
-    {ActionRequest::RotateRight90, "Rotate Right Quarter"},
-    {ActionRequest::Shoot, "Shoot"},
-};
+void MyGameManager::readBoard(const std::string &file_name) {
+    board = InputParser().parseInputFile(file_name);
+
+    if (board == nullptr) {
+        std::cerr << "Can't open file " << file_name << std::endl;
+    }
+}
+
+void MyGameManager::run() {
+    while (!isGameOver()) {
+        processStep();
+        if (visual) std::this_thread::sleep_for(200ms);
+    }
+
+    Logger::getInstance().log(getGameResult());
+    if (visual) {
+        std::cout << getGameResult() << std::endl;
+    }
+}
 
 
-bool GameManager::tankAction(Tank &tank, const ActionRequest action) {
+bool MyGameManager::tankAction(Tank &tank, const ActionRequest action) {
     bool result = false;
     const int back_counter = tank.getBackwardsCounter();
     tank.decreaseShootingCooldown();
@@ -86,7 +96,7 @@ bool GameManager::tankAction(Tank &tank, const ActionRequest action) {
     return result;
 }
 
-void GameManager::checkDeaths() {
+void MyGameManager::checkDeaths() {
     // TODO Check if tanks are both destroyed
     // const bool firstDead = board.getPlayerTank(1) == nullptr || board.getPlayerTank(1)->isDestroyed();
     // const bool secondDead = board.getPlayerTank(2) == nullptr || board.getPlayerTank(2)->isDestroyed();
@@ -113,27 +123,27 @@ void GameManager::checkDeaths() {
     }
 }
 
-bool GameManager::moveForward(Tank &tank) {
-    if (const auto obj = board.getObjectAt(tank.getPosition() + tank.getDirection())) {
+bool MyGameManager::moveForward(Tank &tank) {
+    if (const auto obj = board->getObjectAt(tank.getPosition() + tank.getDirection())) {
         if (obj->getSymbol() == '#') return false;
     }
-    return board.moveObject(tank.getPosition(), tank.getDirection());
+    return board->moveObject(tank.getPosition(), tank.getDirection());
 }
 
-bool GameManager::moveBackward(Tank &tank) {
-    if (const auto obj = board.getObjectAt(tank.getPosition() + tank.getDirection())) {
+bool MyGameManager::moveBackward(Tank &tank) {
+    if (const auto obj = board->getObjectAt(tank.getPosition() + tank.getDirection())) {
         if (obj->getSymbol() == '#') return false;
     }
-    return board.moveObject(tank.getPosition(), -tank.getDirection());
+    return board->moveObject(tank.getPosition(), -tank.getDirection());
 }
 
-bool GameManager::rotate(Tank &tank, const int turn) {
+bool MyGameManager::rotate(Tank &tank, const int turn) {
     const int new_direction = tank.getDirection() + turn;
     tank.setDirection(Direction::getDirection(new_direction));
     return true;
 }
 
-bool GameManager::shoot(Tank &tank) {
+bool MyGameManager::shoot(Tank &tank) {
     if (tank.getAmmunition() == 0) {
         return false;
     }
@@ -143,12 +153,12 @@ bool GameManager::shoot(Tank &tank) {
 
     tank.decrementAmmunition();
     tank.setCooldown(3);
-    board.placeObject(std::make_unique<Shell>(tank.getPosition() + tank.getDirection(), tank.getDirection(),
-                                              tank.getId()));
+    board->placeObject(std::make_unique<Shell>(tank.getPosition() + tank.getDirection(), tank.getDirection(),
+                                               tank.getId()));
     return true;
 }
 
-void GameManager::tanksTurn() {
+void MyGameManager::tanksTurn() {
     std::vector<ActionRequest> actions;
     for (size_t i = 0; i < tanks.size(); ++i) {
         actions.emplace_back(tanks[i]->getAction());
@@ -156,7 +166,7 @@ void GameManager::tanksTurn() {
     }
 
     size_t i = 0;
-    for (const auto tank: board.getTanks()) {
+    for (const auto tank: board->getTanks()) {
         if (actions.size() < i) {
             tankAction(*tank, actions[i]);
         }
@@ -176,18 +186,18 @@ void GameManager::tanksTurn() {
     }
 }
 
-void GameManager::shellsTurn() const {
-    for (auto [id, shell]: board.getShells()) {
-        board.moveObject(shell->getPosition(), shell->getDirection());
+void MyGameManager::shellsTurn() const {
+    for (auto [id, shell]: board->getShells()) {
+        board->moveObject(shell->getPosition(), shell->getDirection());
     }
 }
 
-void GameManager::processStep() {
+void MyGameManager::processStep() {
     if (game_over) return;
     game_step++;
 
     shellsTurn();
-    board.finishMove();
+    board->finishMove();
 
     if (visual) {
         std::cout << "Step " << game_step << std::endl;
@@ -195,16 +205,16 @@ void GameManager::processStep() {
 
     shellsTurn();
     tanksTurn();
-    board.finishMove();
+    board->finishMove();
 
     if (visual) {
-        board.displayBoard();
+        board->displayBoard();
     }
 
     checkDeaths();
 }
 
-std::string GameManager::getGameResult() const {
+std::string MyGameManager::getGameResult() const {
     switch (winner) {
         case TIE:
             return "Tie - Both tanks are destroyed";

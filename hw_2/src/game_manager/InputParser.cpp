@@ -5,7 +5,7 @@
 
 #include "Board.h"
 #include "Logger.h"
-#include "../board_elements/GameObjectFactory.h"
+#include "GameObjectFactory.h"
 
 bool InputParser::parseDimensions(std::ifstream &inFile) {
     if (!(inFile >> width >> height) || width <= 0 || height <= 0) {
@@ -59,7 +59,7 @@ bool InputParser::populateBoard(std::ifstream &inFile) {
     return true;
 }
 
-Board *InputParser::parseInputFile(const std::string &file_name) {
+std::unique_ptr<Board> InputParser::parseInputFile(const std::string &file_name) {
     std::ifstream inFile(file_name);
 
     // check if file opened successfully
@@ -77,7 +77,7 @@ Board *InputParser::parseInputFile(const std::string &file_name) {
         "Dimensions read from file " + file_name + ": " + std::to_string(width) + "x" + std::to_string(height));
 
     // create Board object of size width x height
-    board = new Board(width, height);
+    board = std::make_unique<Board>(width, height);
     populateBoard(inFile);
     Logger::getInstance().log("Board loaded successfully");
     inFile.close();
@@ -86,7 +86,7 @@ Board *InputParser::parseInputFile(const std::string &file_name) {
         Logger::getInstance().inputError(msg);
     }
 
-    return board;
+    return std::move(board);
 }
 
 Tank *InputParser::getTank1() {

@@ -14,7 +14,7 @@ public:
     ActionRequest getAction() override;
 
 private:
-    std::vector<Direction::DirectionType> computeBFS(const MyBattleInfo &state);
+    std::vector<Direction::DirectionType> computeBFS();
 };
 
 

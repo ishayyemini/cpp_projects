@@ -1,6 +1,5 @@
 #include "MyBattleInfo.h"
 
-#include <limits>
 #include <set>
 
 #include "Direction.h"

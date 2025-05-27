@@ -8,18 +8,20 @@
 
 class MyTankAlgorithm : public TankAlgorithm {
 public:
-    MyTankAlgorithm() = default;
-
     virtual std::string getName() const { return "Algorithm"; }
+
+    void updateBattleInfo(BattleInfo &info) override {
+        (void) info;
+    }
 
     virtual ~MyTankAlgorithm() = default;
 
 protected:
-    ActionRequest moveIfThreatened(const MyBattleInfo &state) const;
+    ActionRequest moveIfThreatened() const;
 
     int turn_number = 0;
 
-    MyBattleInfo state;
+    std::unique_ptr<MyBattleInfo> state;
 };
 
 #endif //ALGORITHM_H
