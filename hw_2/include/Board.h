@@ -5,6 +5,7 @@
 #ifndef BOARD_H
 #define BOARD_H
 
+#include <iostream>
 #include <map>
 #include <unordered_set>
 #include <memory>
@@ -24,9 +25,12 @@ enum ObjectType {
 };
 
 class Board {
+    std::string desc;
+    size_t max_steps;
+    size_t num_shells;
     int width = 2;
     int height = 2;
-    std::vector<std::vector<std::unique_ptr<GameObject> > > board;
+    std::vector<std::vector<std::unique_ptr<GameObject>>> board;
     std::map<int, Position> tanks_pos;
     int player_1_tank = -1;
     int player_2_tank = -1;
@@ -53,10 +57,14 @@ class Board {
 
     void checkCollisions();
 
+    void print_info() {
+        std::cout << "Description: " << desc << ", max_steps: "<< max_steps << ", num_shells: " << num_shells <<std::endl;
+    }
+
 public:
     Board();
 
-    Board(int width, int height);
+    Board(std::string desc, size_t max_steps, size_t num_shells, int width, int height);
 
     [[nodiscard]] int getHeight() const { return height / 2; }
 
@@ -97,16 +105,6 @@ public:
 
     bool isMine(const Position pos) const { return isOccupied(pos) && getObjectAt(pos)->isMine(); }
 
-    // void addShell(std::unique_ptr<Shell> shell);
-    //
-    //
-    // [[nodiscard]] Shell *getShell(const std::pair<int, int> &pos) const;
-    //
-    // void removeElement(const std::pair<int, int> &pos);
-    //
-    // void removeShell(int shell_index);
-    //
-    // int getShellsCount() const { return shells.size(); }
 };
 
 template<typename T>

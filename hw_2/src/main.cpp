@@ -1,5 +1,7 @@
 #include <GameManager.h>
 #include <iostream>
+#include <string.h>
+#include <string>
 #include <thread>
 
 #include "Logger.h"
@@ -8,13 +10,13 @@
 using namespace std::chrono_literals;
 
 int main(const int argc, char *argv[]) {
-    if (argc != 2 && (argc != 3 || strcmp(argv[1], "-g"))) {
+    if (argc != 2 && (argc != 3 || strcmp(argv[1], "-g") != 0)) {
         std::cerr << "Usage: " << argv[0] << " [-g] <game-file>" << std::endl;
         return EXIT_FAILURE;
     }
 
     const bool visual = argc == 3 && strcmp(argv[1], "-g") == 0;
-    const std::string path = argc == 2 ? argv[1] : argv[2];
+    const std::string path = (argc == 2) ? argv[1] : argv[2];
 
     int last_dot = path.find_last_of(".");
     int last_slash = path.find_last_of("/");
@@ -24,9 +26,9 @@ int main(const int argc, char *argv[]) {
 
     Logger::getInstance().init("output_" + name + ".txt");
 
-    Board *board = InputParser().parseInputFile(path);
+    std::unique_ptr<Board> board = InputParser().parseInputFile(path);
 
-    if (board == nullptr) {
+    if (!board) {
         std::cerr << "Can't open file " << path << std::endl;
         return EXIT_FAILURE;
     }
@@ -42,8 +44,5 @@ int main(const int argc, char *argv[]) {
         std::cout << game_manager.getGameResult() << std::endl;
     }
 
-    delete board;
-
     return EXIT_SUCCESS;
 }
-

@@ -120,13 +120,14 @@ void Board::removeIndices(GameObject *game_object) {
     moving_pos.erase(game_object->getId());
 }
 
-Board::Board() {
+Board::Board(): max_steps(0), num_shells(0) {
 }
 
-Board::Board(const int width, const int height) : width(width * 2),
-                                                  height(height * 2),
-                                                  board(std::vector<std::vector<std::unique_ptr<GameObject> > >(
-                                                      height * 2)) {
+Board::Board(const std::string desc, const size_t max_steps, const size_t num_shells, int width,
+              int height) : desc(desc), max_steps(max_steps), num_shells((num_shells)), width(width * 2),
+                                    height(height * 2),
+                                    board(std::vector<std::vector<std::unique_ptr<GameObject> > >(
+                                        height * 2)) {
     for (int i = 0; i < this->height; i++) {
         for (int j = 0; j < this->width; j++) {
             board[i].push_back(nullptr);

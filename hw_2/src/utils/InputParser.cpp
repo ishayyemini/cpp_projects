@@ -3,104 +3,134 @@
 #include <fstream>
 #include <iostream>
 
-#include "Board.h"
 #include "Logger.h"
+#include "StringUtils.h"
 #include "../board_elements/GameObjectFactory.h"
 
-bool InputParser::parseDimensions(std::ifstream &inFile) {
-    if (!(inFile >> width >> height) || width <= 0 || height <= 0) {
-        error_messages.push_back("Failed to extract board dimensions");
+void InputParser::addErrorMessage(const std::string &message) {
+    error_messages.push_back(message);
+}
+
+
+bool InputParser::parseBoardConfig(std::ifstream& inFile,
+                            size_t& retrieved_data,
+                            const std::string& expected_field_name) {
+    std::string line;
+    if (!std::getline(inFile, line)) {
+        addErrorMessage("Failed to extract line from file.");
         return false;
     }
-    std::string dummy;
-    std::getline(inFile, dummy);
+    const char delimiter = '=';
+    auto split_line = StringUtils::split_and_trim(line, delimiter);
+
+    const bool format_valid = (split_line.size() == 2 && split_line[0] == expected_field_name);
+    if (!format_valid) {
+        addErrorMessage("Invalid format for \"" + expected_field_name + "\" in line: \"" + line + "\"");
+        return false;
+    }
+
+    retrieved_data = std::stoi(split_line[1]); // Set to the extracted value
     return true;
 }
 
-// if there are more char we ignore them, but there needs to be at lead width * height
-bool InputParser::populateBoard(std::ifstream &inFile) {
-    std::string line;
 
+void InputParser::populateBoard(std::ifstream& inFile, Board* board){
+    std::string line;
     for (size_t row = 0; row < height; ++row) {
         if (!std::getline(inFile, line)) {
-            error_messages.push_back("Map is shorter than specified height");
+            addErrorMessage("Map is shorter than specified height");
             line = " ";
         }
-
-        for (size_t col = 0; col < width; ++col) {
-            const char symbol = col < line.length() ? line[col] : ' ';
-            if (symbol == '1' && getTank1() != nullptr) {
-                error_messages.push_back("Multiple Tank 1");
-                continue;
-            }
-            if (symbol == '2' && getTank2() != nullptr) {
-                error_messages.push_back("Multiple Tank 1");
-                continue;
-            }
-            if (symbol != '1' && symbol != '2' && symbol != '@' && symbol != '#' && symbol != ' ') {
-                error_messages.push_back("Unknown symbol '" + std::string{symbol} + "'");
-            }
-            std::unique_ptr<GameObject> newElement = GameObjectFactory::create(symbol, Position(col, row));
-            board->placeObject(std::move(newElement));
-        }
-
-        if (line.length() > width) {
-            error_messages.push_back("Line " + std::to_string(row + 1) + " is longer than specified width");
-        }
-        if (line.length() < width) {
-            error_messages.push_back("Line " + std::to_string(row + 1) + " is shorter than specified width");
-        }
+        processLine(row, line, board);
+        validateLineLength(row, line);
     }
-
     if (std::getline(inFile, line)) {
-        error_messages.push_back("Map is longer than specified height");
+        addErrorMessage("Map is longer than specified height");
+    }
+}
+
+void InputParser::processLine(size_t row, const std::string& line, Board* board) {
+    for (size_t col = 0; col < width; ++col) {
+        char symbol = col < line.length() ? line[col] : ' ';
+
+        if (!isValidSymbol(symbol)) {
+            addErrorMessage("Unknown symbol '" + std::string{symbol} + "'");
+            symbol = default_symbol;
+        }
+
+        auto obj = GameObjectFactory::create(symbol, Position(col, row));
+        board->placeObject(std::move(obj));
+    }
+}
+
+bool InputParser::isValidSymbol(char c) {
+    return validSymbols.contains(c);
+}
+
+void InputParser::validateLineLength(size_t row, const std::string& line) {
+    if (line.length() > width) {
+        addErrorMessage("Line " + std::to_string(row + 1) + " is longer than specified width");
+    } else if (line.length() < width) {
+        addErrorMessage("Line " + std::to_string(row + 1) + " is shorter than specified width");
+    }
+}
+
+bool InputParser::parseBoardInfo(std::ifstream &inFile) {
+    std::string board_info;
+
+    if (!std::getline(inFile, board_description)) {
+        addErrorMessage("Failed to extract board info (board title + board description).");
+        return false;
     }
 
+    board_info += "Board description: " + board_description;
+
+    auto checkParse = [this, &inFile, &board_info](size_t& field, const std::string& field_name) {
+        if (!parseBoardConfig(inFile, field, field_name)) {
+            addErrorMessage("Failed to extract " + field_name + " from file.");
+            return false;
+        }
+        board_info += ", " + field_name + ": " + std::to_string(field);
+        return true;
+    };
+    if (!checkParse(max_steps, "MaxSteps") ||
+        !checkParse(num_shells, "NumShells") ||
+        !checkParse(height, "Rows") ||
+        !checkParse(width, "Cols")) {
+        return false;
+        }
+    Logger::getInstance().log("Board Info Read: " + board_info);
     return true;
 }
 
-Board *InputParser::parseInputFile(const std::string &file_name) {
-    std::ifstream inFile(file_name);
+void InputParser::addErrorMessagesToLog() {
+    for (const std::string& msg: error_messages) {
+        Logger::getInstance().inputError(msg);
+    }
+}
 
-    // check if file opened successfully
+Board* InputParser::parseInputFile(const std::string &file_name) {
+    Logger::getInstance().log("Parsing file:  " + file_name);
+    std::ifstream inFile(file_name);
     if (!inFile) {
         std::cerr << "Error: Failed to create board. Could not open file " << file_name << " for reading.\n";
-        error_messages.push_back("Error opening file " + file_name);
-        return nullptr; // TODO maybe include a default map?
+        addErrorMessage("Error opening file " + file_name);
+        return nullptr;
     }
-
-    if (!parseDimensions(inFile)) {
+    if (!parseBoardInfo(inFile)) {
         return nullptr;
     }
 
-    Logger::getInstance().log(
-        "Dimensions read from file " + file_name + ": " + std::to_string(width) + "x" + std::to_string(height));
-
-    // create Board object of size width x height
-    board = new Board(width, height);
-    populateBoard(inFile);
+    //todo: don't initialize board with new
+    Board* board_instance = new Board(board_description, max_steps, num_shells, width, height);
+    populateBoard(inFile, board_instance);
     Logger::getInstance().log("Board loaded successfully");
     inFile.close();
 
-    for (auto msg: error_messages) {
-        Logger::getInstance().inputError(msg);
-    }
-
-    return board;
+    addErrorMessagesToLog();
+    return board_instance;
 }
 
-Tank *InputParser::getTank1() {
-    if (board == nullptr) {
-        return nullptr;
-    }
-    return board->getPlayerTank(1);
-}
 
-Tank *InputParser::getTank2() {
-    if (board == nullptr) {
-        return nullptr;
-    }
-    return board->getPlayerTank(2);
-}
 
 
