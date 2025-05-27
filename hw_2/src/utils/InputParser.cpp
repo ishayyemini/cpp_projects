@@ -121,7 +121,7 @@ Board* InputParser::parseInputFile(const std::string &file_name) {
         return nullptr;
     }
 
-    //todo: don't initialize board with new
+    //todo: don't initialize board with new. remember to change this
     Board* board_instance = new Board(board_description, max_steps, num_shells, width, height);
     populateBoard(inFile, board_instance);
     Logger::getInstance().log("Board loaded successfully");
