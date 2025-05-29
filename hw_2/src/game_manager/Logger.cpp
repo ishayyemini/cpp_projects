@@ -1,11 +1,9 @@
-#include "../../include/Logger.h"
+#include "Logger.h"
+
 #include <iostream>
 #include <chrono>
 #include <iomanip>
 #include <sstream>
-#include <vector>
-#include <vector>
-#include <vector>
 #include <vector>
 
 Logger &Logger::getInstance() {
