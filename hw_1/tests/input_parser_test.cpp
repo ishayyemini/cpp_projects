@@ -43,7 +43,7 @@ TEST_F(InputParserTest, ParseValidBoard) {
     std::string filename = createTempBoardFile(boardContent);
 
     // Parse the board
-    Board *board = parser->parseInputFile(filename);
+    std::unique_ptr<Board> board = parser->parseInputFile(filename);
 
     // Check that parsing succeeded
     ASSERT_NE(board, nullptr);

@@ -3,24 +3,30 @@
 
 #include "Board.h"
 
+//todo: implement rule of 5
 class InputParser {
     std::vector<std::string> error_messages;
-    size_t width;
-    size_t height;
-    std::unique_ptr<Board> board;
+    std::string board_description;
+    size_t width{};
+    size_t height{};
+    size_t max_steps{};
+    size_t num_shells{};
+    const char default_symbol = ' ';
+    const std::unordered_set<char> validSymbols = {'1', '2', '@', '#', ' '};
 
-    bool parseDimensions(std::ifstream &inFile);
-
-    bool populateBoard(std::ifstream &inFile);
+    bool parseBoardConfig(std::ifstream& inFile, size_t& retrieved_data, const std::string& expected_field_name);
+    void populateBoard(std::ifstream& inFile, Board* board);
+    void addErrorMessage(const std::string &message);
+    void processLine(size_t row, const std::string& line, Board* board);
+    bool isValidSymbol(char c) ;
+    void validateLineLength(size_t row, const std::string& line);
+    bool parseBoardInfo(std::ifstream &inFile);
+    void addErrorMessagesToLog();
 
 public:
     InputParser() = default;
 
     std::unique_ptr<Board> parseInputFile(const std::string &file_name);
-
-    Tank *getTank1();
-
-    Tank *getTank2();
 
     bool hasErrors() const { return !error_messages.empty(); }
 
