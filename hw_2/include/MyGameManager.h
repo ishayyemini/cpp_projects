@@ -45,6 +45,8 @@ private:
 
     bool tankAction(Tank &tank, ActionRequest action);
 
+    bool checkNoTanks(int player_index) const;
+
     void checkDeaths();
 
     bool moveForward(Tank &tank);
@@ -54,6 +56,8 @@ private:
     bool rotate(Tank &tank, int turn);
 
     bool shoot(Tank &tank);
+
+    bool allEmptyAmmo() const;
 
     void tanksTurn();
 

@@ -164,19 +164,17 @@ GameObject *Board::moveObject(const Position from, const Direction::DirectionTyp
     return moveObjectReal(from * 2, dir);
 }
 
-// // This takes into account there being only one tank per player
-// Tank *Board::getPlayerTank(const int player_id) const {
-//     int tank_id;
-//     if (player_id == 1) {
-//         tank_id = player_1_tank;
-//     } else {
-//         tank_id = player_2_tank;
-//     }
-//     if (!tanks_pos.contains(tank_id)) return nullptr;
-//     GameObject *b = getObjectAtReal(tanks_pos.at(tank_id));
-//     if (const auto t = dynamic_cast<Tank *>(b)) return t;
-//     return nullptr;
-// }
+std::vector<Tank *> Board::getPlayerTanks(const int player_index) const {
+    std::vector<Tank *> tanks;
+    for (auto pos: tanks_pos) {
+        if (pos.first.first != player_index) continue;
+        GameObject *b = getObjectAtReal(pos.second);
+        if (auto t = dynamic_cast<Tank *>(b)) {
+            tanks.push_back(t);
+        }
+    }
+    return tanks;
+}
 
 void Board::displayBoard() const {
     for (int i = 0; i < height; i += 2) {

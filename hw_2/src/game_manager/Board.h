@@ -80,6 +80,8 @@ public:
 
     GameObject *moveObject(Position from, Direction::DirectionType dir);
 
+    std::vector<Tank *> getPlayerTanks(int player_index) const;
+
     Position wrapPosition(Position pos) const;
 
     GameObject *getObjectAt(Position pos) const;

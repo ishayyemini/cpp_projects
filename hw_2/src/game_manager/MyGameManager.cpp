@@ -105,26 +105,33 @@ bool MyGameManager::tankAction(Tank &tank, const ActionRequest action) {
     return result;
 }
 
+bool MyGameManager::checkNoTanks(const int player_index) const {
+    if (!board) return true;
+    for (const auto tank: board->getPlayerTanks(player_index)) {
+        if (!tank->isDestroyed()) return false;
+    }
+    return true;
+}
+
 void MyGameManager::checkDeaths() {
-    // TODO Check if tanks are both destroyed
-    // const bool firstDead = board.getPlayerTank(1) == nullptr || board.getPlayerTank(1)->isDestroyed();
-    // const bool secondDead = board.getPlayerTank(2) == nullptr || board.getPlayerTank(2)->isDestroyed();
-    //
-    // if (firstDead && secondDead) {
-    //     winner = TIE;
-    //     game_over = true;
-    //     return;
-    // }
-    // if (firstDead) {
-    //     winner = PLAYER_2;
-    //     game_over = true;
-    //     return;
-    // }
-    // if (secondDead) {
-    //     winner = PLAYER_1;
-    //     game_over = true;
-    //     return;
-    // }
+    const bool firstDead = checkNoTanks(1);
+    const bool secondDead = checkNoTanks(2);
+
+    if (firstDead && secondDead) {
+        winner = TIE;
+        game_over = true;
+        return;
+    }
+    if (firstDead) {
+        winner = PLAYER_2;
+        game_over = true;
+        return;
+    }
+    if (secondDead) {
+        winner = PLAYER_1;
+        game_over = true;
+        return;
+    }
 
     if (empty_countdown == 0) {
         winner = TIE_AMMO;
@@ -167,6 +174,14 @@ bool MyGameManager::shoot(Tank &tank) {
     return true;
 }
 
+bool MyGameManager::allEmptyAmmo() const {
+    if (!board) return true;
+    for (const auto tank: board->getTanks()) {
+        if (tank->getAmmunition() == 0) return false;
+    }
+    return true;
+}
+
 void MyGameManager::tanksTurn() {
     std::vector<ActionRequest> actions;
     for (const auto &tank: tanks) {
@@ -185,11 +200,10 @@ void MyGameManager::tanksTurn() {
 
     // Logger::getInstance().log("Player 2 Action: " + action_strings[a2] + (!g2 ? " [Bad Step]" : ""));
 
-
-    // TODO Check if both players used their shells
-    // if (empty_countdown == -1 && t1->getAmmunition() == 0 && t2->getAmmunition() == 0) {
-    //     empty_countdown = 40;
-    // }
+    if (empty_countdown == -1 && allEmptyAmmo()) {
+        // TODO update with max steps
+        empty_countdown = 40;
+    }
 
     if (empty_countdown != -1) {
         empty_countdown--;
