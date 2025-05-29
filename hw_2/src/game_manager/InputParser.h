@@ -12,6 +12,7 @@ class InputParser {
     size_t height{};
     size_t max_steps{};
     size_t num_shells{};
+    std::vector<std::pair<int, int> > tanks;
     const char default_symbol = ' ';
     const std::unordered_set<char> validSymbols = {'1', '2', '@', '#', ' '};
 
@@ -37,6 +38,8 @@ public:
     std::unique_ptr<Board> parseInputFile(const std::string &file_name);
 
     bool hasErrors() const { return !error_messages.empty(); }
+
+    std::vector<std::pair<int, int> > getTanks() const { return tanks; }
 
     const std::vector<std::string> &getErrorMessages() const { return error_messages; }
 

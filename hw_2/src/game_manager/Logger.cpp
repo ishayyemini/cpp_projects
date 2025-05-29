@@ -16,10 +16,16 @@ Logger::~Logger() {
     close();
 }
 
-bool Logger::init(const std::string &log_file_path, const std::string &err_file_path,
+bool Logger::init(const std::string &out_file_path, const std::string &log_file_path, const std::string &err_file_path,
                   const std::string &input_err_file_path) {
     if (initialized) {
         close();
+    }
+
+    out_file.open(out_file_path, std::ios::out);
+    if (!out_file.is_open()) {
+        std::cerr << "Failed to open out file: " << out_file_path << std::endl;
+        return false;
     }
 
     log_file.open(log_file_path, std::ios::out);
@@ -42,6 +48,10 @@ bool Logger::init(const std::string &log_file_path, const std::string &err_file_
 }
 
 void Logger::close() {
+    if (out_file.is_open()) {
+        out_file.close();
+    }
+
     if (log_file.is_open()) {
         log_file.close();
     }
@@ -61,6 +71,22 @@ void Logger::log(const std::string &message) {
 
     log_file << getTimestamp() << " - " << message << std::endl;
     log_file.flush();
+}
+
+void Logger::logActions(std::vector<std::tuple<ActionRequest, bool, bool> > actions) {
+    if (!initialized) {
+        std::cerr << "Logger not initialized" << std::endl;
+        return;
+    }
+
+    size_t i = 0;
+    for (const auto &[action, ignored, dead]: actions) {
+        out_file << action_strings[action];
+        if (ignored) out_file << " (ignored)";
+        if (dead) out_file << " (killed)";
+        if (i++ < actions.size() - 1) out_file << ", ";
+        else out_file << std::endl;
+    }
 }
 
 void Logger::error(const std::string &message) {

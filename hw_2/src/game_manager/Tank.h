@@ -4,20 +4,23 @@
 #include "Direction.h"
 
 constexpr int MAX_SHELL = 16;
-static int tank_count = 0;
+static auto tank_count = std::array<int, 9>{};
 
 class Tank final : public GameObject {
     int player_index;
     int tank_index;
+    int tank_algo_index;
     int backwards_counter = 3;
     int shooting_cooldown = 0;
     int shell = MAX_SHELL;
 
 public:
-    explicit Tank(Position position, int player_id): GameObject(position, player_id == 1
-                                                                              ? Direction::LEFT
-                                                                              : Direction::RIGHT),
-                                                     player_index(player_id) {
+    explicit Tank(Position position, int player_id, int tank_algo_index): GameObject(position, player_id == 1
+                                                                                      ? Direction::LEFT
+                                                                                      : Direction::RIGHT),
+                                                                          player_index(player_id),
+                                                                          tank_index(tank_count[player_id]++),
+                                                                          tank_algo_index(tank_algo_index) {
     }
 
     [[nodiscard]] char getSymbol() const override { return player_index == 1 ? '1' : '2'; }
@@ -27,6 +30,8 @@ public:
     [[nodiscard]] int getPlayerIndex() const { return player_index; }
 
     int getTankIndex() const { return tank_index; }
+
+    int getTankAlgoIndex() const { return tank_algo_index; }
 
     int getBackwardsCounter() const { return backwards_counter; }
 

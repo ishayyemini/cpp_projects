@@ -14,7 +14,9 @@
 using namespace std::chrono_literals;
 
 void MyGameManager::readBoard(const std::string &file_name) {
-    board = InputParser().parseInputFile(file_name);
+    auto input_parser = InputParser();
+
+    board = input_parser.parseInputFile(file_name);
 
     if (board == nullptr) {
         board = make_unique<Board>();
@@ -25,8 +27,8 @@ void MyGameManager::readBoard(const std::string &file_name) {
         players.emplace_back(playerFactory.create(i, board->getWidth(), board->getHeight(), board->getMaxSteps(),
                                                   board->getNumShells()));
 
-    for (const auto tank: board->getTanks()) {
-        tanks.emplace_back(tankAlgorithmFactory.create(tank->getPlayerIndex(), tank->getTankIndex()));
+    for (auto [player_i, tank_i]: input_parser.getTanks()) {
+        tanks.emplace_back(tankAlgorithmFactory.create(player_i, tank_i));
     }
 }
 
@@ -43,7 +45,7 @@ void MyGameManager::run() {
 }
 
 
-bool MyGameManager::tankAction(Tank &tank, const size_t tank_algo_i, const ActionRequest action) {
+bool MyGameManager::tankAction(Tank &tank, const ActionRequest action) {
     bool result = false;
     const int back_counter = tank.getBackwardsCounter();
     tank.decreaseShootingCooldown();
@@ -101,7 +103,7 @@ bool MyGameManager::tankAction(Tank &tank, const size_t tank_algo_i, const Actio
             result = shoot(tank);
             break;
         case ActionRequest::GetBattleInfo:
-            result = getBattleInfo(tank_algo_i, tank.getPlayerIndex());
+            result = getBattleInfo(tank.getTankAlgoIndex(), tank.getPlayerIndex());
             break;
         default: ;
     }
@@ -194,22 +196,19 @@ bool MyGameManager::allEmptyAmmo() const {
 }
 
 void MyGameManager::tanksTurn() {
-    std::vector<ActionRequest> actions;
-    for (const auto &tank: tanks) {
-        actions.emplace_back(tank->getAction());
-        step_history.push_back(action_strings[actions.back()]);
-        Logger::getInstance().log("Action: " + action_strings[actions.back()]);
-    }
+    auto actions = std::vector<std::tuple<ActionRequest, bool, bool> >(
+        tanks.size(), {ActionRequest::DoNothing, false, false}
+    );
 
-    size_t i = 0;
     for (const auto tank: board->getTanks()) {
-        if (i < actions.size()) {
-            tankAction(*tank, i, actions[i]);
-        }
-        i++;
+        const int i = tank->getTankAlgoIndex();
+        ActionRequest action = tanks[i]->getAction();
+        bool ignored = !tankAction(*tank, std::get<0>(actions[i]));
+        bool dead = tank->isDestroyed();
+        actions[i] = {action, ignored, dead};
     }
 
-    // Logger::getInstance().log("Player 2 Action: " + action_strings[a2] + (!g2 ? " [Bad Step]" : ""));
+    Logger::getInstance().logActions(actions);
 
     if (empty_countdown == -1 && allEmptyAmmo()) {
         // TODO update with max steps

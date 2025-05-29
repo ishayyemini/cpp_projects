@@ -43,7 +43,7 @@ private:
     std::vector<std::unique_ptr<Player> > players;
     std::vector<std::unique_ptr<TankAlgorithm> > tanks;
 
-    bool tankAction(Tank &tank, size_t tank_algo_i, ActionRequest action);
+    bool tankAction(Tank &tank, ActionRequest action);
 
     bool checkNoTanks(int player_index) const;
 
@@ -71,18 +71,5 @@ private:
 
     std::string getGameResult() const;
 };
-
-inline map<ActionRequest, std::string> action_strings = {
-    {ActionRequest::DoNothing, "None"},
-    {ActionRequest::MoveForward, "Move Forward"},
-    {ActionRequest::MoveBackward, "Move Backward"},
-    {ActionRequest::RotateLeft45, "Rotate Left Eighth"},
-    {ActionRequest::RotateRight45, "Rotate Right Eighth"},
-    {ActionRequest::RotateLeft90, "Rotate Left Quarter"},
-    {ActionRequest::RotateRight90, "Rotate Right Quarter"},
-    {ActionRequest::Shoot, "Shoot"},
-    {ActionRequest::GetBattleInfo, "Get Battle Info"},
-};
-
 
 #endif //MYGAMEMANAGER_H

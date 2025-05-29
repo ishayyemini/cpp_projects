@@ -12,7 +12,6 @@ void InputParser::addErrorMessage(const std::string &message) {
     error_messages.push_back(message);
 }
 
-
 bool InputParser::parseBoardConfig(std::ifstream &inFile,
                                    size_t &retrieved_data,
                                    const std::string &expected_field_name) {
@@ -33,7 +32,6 @@ bool InputParser::parseBoardConfig(std::ifstream &inFile,
     retrieved_data = std::stoi(split_line[1]); // Set to the extracted value
     return true;
 }
-
 
 void InputParser::populateBoard(std::ifstream &inFile) {
     std::string line;
@@ -60,6 +58,9 @@ void InputParser::processLine(size_t row, const std::string &line) {
         }
 
         auto obj = GameObjectFactory::create(symbol, Position(col, row));
+        if (const auto t = dynamic_cast<Tank *>(obj.get())) {
+            tanks.push_back({t->getPlayerIndex(), t->getTankIndex()});
+        }
         board->placeObject(std::move(obj));
     }
 }
