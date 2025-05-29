@@ -9,13 +9,14 @@
 #include "TankAlgorithmFactory.h"
 
 class GameManager {
-    const PlayerFactory *playerFactory;
-    const TankAlgorithmFactory *tankAlgorithmFactory;
+protected:
+    const PlayerFactory &playerFactory;
+    const TankAlgorithmFactory &tankAlgorithmFactory;
 
 public:
     GameManager(const PlayerFactory &player_factory,
-                const TankAlgorithmFactory &tank_algorithm_factory): playerFactory(&player_factory),
-                                                                     tankAlgorithmFactory(&tank_algorithm_factory) {
+                const TankAlgorithmFactory &tank_algorithm_factory): playerFactory(player_factory),
+                                                                     tankAlgorithmFactory(tank_algorithm_factory) {
     }
 
     void readBoard(const std::string &file_name);

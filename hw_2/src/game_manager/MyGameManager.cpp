@@ -19,6 +19,14 @@ void MyGameManager::readBoard(const std::string &file_name) {
         board = make_unique<Board>();
         std::cerr << "Can't parse file " << file_name << std::endl;
     }
+
+    for (int i = 1; i <= 2; i++)
+        players.emplace_back(playerFactory.create(i, board->getWidth(), board->getHeight(), board->getMaxSteps(),
+                                                  board->getNumShells()));
+
+    for (const auto tank: board->getTanks()) {
+        tanks.emplace_back(tankAlgorithmFactory.create(tank->getPlayerIndex(), tank->getTankIndex()));
+    }
 }
 
 void MyGameManager::run() {
@@ -161,19 +169,20 @@ bool MyGameManager::shoot(Tank &tank) {
 
 void MyGameManager::tanksTurn() {
     std::vector<ActionRequest> actions;
-    for (size_t i = 0; i < tanks.size(); ++i) {
-        actions.emplace_back(tanks[i]->getAction());
+    for (const auto &tank: tanks) {
+        actions.emplace_back(tank->getAction());
         step_history.push_back(action_strings[actions.back()]);
+        Logger::getInstance().log("Action: " + action_strings[actions.back()]);
     }
 
     size_t i = 0;
     for (const auto tank: board->getTanks()) {
-        if (actions.size() < i) {
+        if (i < actions.size()) {
             tankAction(*tank, actions[i]);
         }
+        i++;
     }
 
-    // Logger::getInstance().log("Player 1 Action: " + action_strings[a1] + (!g1 ? " [Bad Step]" : ""));
     // Logger::getInstance().log("Player 2 Action: " + action_strings[a2] + (!g2 ? " [Bad Step]" : ""));
 
 

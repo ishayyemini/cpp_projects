@@ -40,6 +40,7 @@ private:
     std::unique_ptr<Board> board;
     int empty_countdown = -1;
     std::vector<std::string> step_history;
+    std::vector<std::unique_ptr<Player> > players;
     std::vector<std::unique_ptr<TankAlgorithm> > tanks;
 
     bool tankAction(Tank &tank, ActionRequest action);

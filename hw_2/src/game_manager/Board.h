@@ -105,6 +105,10 @@ public:
     bool isCollision(const Position pos) const { return isOccupied(pos) && getObjectAt(pos)->isCollision(); }
 
     bool isMine(const Position pos) const { return isOccupied(pos) && getObjectAt(pos)->isMine(); }
+
+    size_t getNumShells() const { return num_shells; }
+
+    size_t getMaxSteps() const { return max_steps; }
 };
 
 template<typename T>

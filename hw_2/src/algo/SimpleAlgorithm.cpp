@@ -11,7 +11,7 @@ ActionRequest SimpleAlgorithm::getAction() {
 
     turn_number++;
 
-    return ActionRequest::DoNothing;
+    return ActionRequest::MoveForward;
 
     // TODO correct
     // if (!state->getPlayerTank() || state->getPlayerTank()->isDestroyed() ||
