@@ -56,7 +56,8 @@ class Board {
     void checkCollisions();
 
     void print_info() {
-        std::cout << "Description: " << desc << ", max_steps: "<< max_steps << ", num_shells: " << num_shells <<std::endl;
+        std::cout << "Description: " << desc << ", max_steps: " << max_steps << ", num_shells: " << num_shells <<
+                std::endl;
     }
 
 public:
@@ -104,7 +105,6 @@ public:
     bool isCollision(const Position pos) const { return isOccupied(pos) && getObjectAt(pos)->isCollision(); }
 
     bool isMine(const Position pos) const { return isOccupied(pos) && getObjectAt(pos)->isMine(); }
-
 };
 
 template<typename T>
