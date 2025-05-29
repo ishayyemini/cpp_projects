@@ -144,14 +144,33 @@ GameObject *Board::getObjectAt(const Position pos) const {
     return getObjectAtReal(pos * 2);
 }
 
+std::vector<Tank *> Board::getAliveTanks() const {
+    std::vector<Tank *> tanks;
+    for (auto pos: tanks_pos) {
+        GameObject *b = getObjectAtReal(pos.second);
+        if (auto t = dynamic_cast<Tank *>(b)) {
+            if (!t->isDestroyed()) tanks.push_back(t);
+        }
+    }
+    return tanks;
+}
+
 std::vector<Tank *> Board::getTanks() const {
     std::vector<Tank *> tanks;
+
     for (auto pos: tanks_pos) {
         GameObject *b = getObjectAtReal(pos.second);
         if (auto t = dynamic_cast<Tank *>(b)) {
             tanks.push_back(t);
         }
     }
+
+    for (auto &obj: destroyed) {
+        if (auto t = dynamic_cast<Tank *>(obj.get())) {
+            tanks.push_back(t);
+        }
+    }
+
     return tanks;
 }
 
@@ -164,16 +183,27 @@ GameObject *Board::moveObject(const Position from, const Direction::DirectionTyp
     return moveObjectReal(from * 2, dir);
 }
 
-std::vector<Tank *> Board::getPlayerTanks(const int player_index) const {
+std::vector<Tank *> Board::getPlayerAliveTanks(int player_index) const {
     std::vector<Tank *> tanks;
-    for (auto pos: tanks_pos) {
-        if (pos.first.first != player_index) continue;
-        GameObject *b = getObjectAtReal(pos.second);
-        if (auto t = dynamic_cast<Tank *>(b)) {
-            tanks.push_back(t);
-        }
+    for (auto tank: getAliveTanks()) {
+        if (tank->getPlayerIndex() == player_index) tanks.push_back(tank);
     }
     return tanks;
+}
+
+std::vector<Tank *> Board::getPlayerTanks(const int player_index) const {
+    std::vector<Tank *> tanks;
+    for (auto tank: getTanks()) {
+        if (tank->getPlayerIndex() == player_index) tanks.push_back(tank);
+    }
+    return tanks;
+}
+
+Tank *Board::getPlayerTank(int player_index, int tank_index) const {
+    for (const auto tank: getPlayerTanks(player_index)) {
+        if (tank->getTankIndex() == tank_index) return tank;
+    }
+    return nullptr;
 }
 
 void Board::displayBoard() const {

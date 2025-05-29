@@ -3,6 +3,10 @@
 #include <chrono>
 #include <iomanip>
 #include <sstream>
+#include <vector>
+#include <vector>
+#include <vector>
+#include <vector>
 
 Logger &Logger::getInstance() {
     static Logger instance;
@@ -73,20 +77,36 @@ void Logger::log(const std::string &message) {
     log_file.flush();
 }
 
-void Logger::logActions(std::vector<std::tuple<ActionRequest, bool, bool> > actions) {
+void Logger::logActions(std::vector<std::tuple<bool, ActionRequest, bool, bool> > actions) {
     if (!initialized) {
         std::cerr << "Logger not initialized" << std::endl;
         return;
     }
 
     size_t i = 0;
-    for (const auto &[action, ignored, dead]: actions) {
-        out_file << action_strings[action];
-        if (ignored) out_file << " (ignored)";
-        if (dead) out_file << " (killed)";
+    for (const auto &[gone, action, result, killed]: actions) {
+        if (gone) {
+            out_file << "killed";
+        } else {
+            out_file << action_strings[action];
+            if (!result) out_file << " (ignored)";
+            if (killed) out_file << " (killed)";
+        }
         if (i++ < actions.size() - 1) out_file << ", ";
         else out_file << std::endl;
     }
+
+    out_file.flush();
+}
+
+void Logger::logResult(const std::string &message) {
+    if (!initialized) {
+        std::cerr << "Logger not initialized" << std::endl;
+        return;
+    }
+
+    out_file << message << std::endl;
+    out_file.flush();
 }
 
 void Logger::error(const std::string &message) {

@@ -18,6 +18,7 @@ void MyGameManager::readBoard(const std::string &file_name) {
 
     board = input_parser.parseInputFile(file_name);
 
+
     if (board == nullptr) {
         board = make_unique<Board>();
         std::cerr << "Can't parse file " << file_name << std::endl;
@@ -29,6 +30,7 @@ void MyGameManager::readBoard(const std::string &file_name) {
 
     for (auto [player_i, tank_i]: input_parser.getTanks()) {
         tanks.emplace_back(tankAlgorithmFactory.create(player_i, tank_i));
+        tank_status.push_back({false, ActionRequest::DoNothing, true, false});
     }
 }
 
@@ -38,12 +40,11 @@ void MyGameManager::run() {
         if (visual) std::this_thread::sleep_for(200ms);
     }
 
-    Logger::getInstance().log(getGameResult());
+    Logger::getInstance().logResult(getGameResult());
     if (visual) {
         std::cout << getGameResult() << std::endl;
     }
 }
-
 
 bool MyGameManager::tankAction(Tank &tank, const ActionRequest action) {
     bool result = false;
@@ -111,17 +112,9 @@ bool MyGameManager::tankAction(Tank &tank, const ActionRequest action) {
     return result;
 }
 
-bool MyGameManager::checkNoTanks(const int player_index) const {
-    if (!board) return true;
-    for (const auto tank: board->getPlayerTanks(player_index)) {
-        if (!tank->isDestroyed()) return false;
-    }
-    return true;
-}
-
 void MyGameManager::checkDeaths() {
-    const bool firstDead = checkNoTanks(1);
-    const bool secondDead = checkNoTanks(2);
+    const bool firstDead = board->getPlayerAliveTanks(1).empty();
+    const bool secondDead = board->getPlayerAliveTanks(2).empty();
 
     if (firstDead && secondDead) {
         winner = TIE;
@@ -141,6 +134,12 @@ void MyGameManager::checkDeaths() {
 
     if (empty_countdown == 0) {
         winner = TIE_AMMO;
+        game_over = true;
+        return;
+    }
+
+    if (game_step == board->getMaxSteps()) {
+        winner = TIE_STEPS;
         game_over = true;
     }
 }
@@ -189,30 +188,22 @@ bool MyGameManager::getBattleInfo(const size_t tank_algo_i, const size_t player_
 
 bool MyGameManager::allEmptyAmmo() const {
     if (!board) return true;
-    for (const auto tank: board->getTanks()) {
+    for (const auto tank: board->getAliveTanks()) {
         if (tank->getAmmunition() == 0) return false;
     }
     return true;
 }
 
 void MyGameManager::tanksTurn() {
-    auto actions = std::vector<std::tuple<ActionRequest, bool, bool> >(
-        tanks.size(), {ActionRequest::DoNothing, false, false}
-    );
-
-    for (const auto tank: board->getTanks()) {
+    for (const auto tank: board->getAliveTanks()) {
         const int i = tank->getTankAlgoIndex();
-        ActionRequest action = tanks[i]->getAction();
-        bool ignored = !tankAction(*tank, std::get<0>(actions[i]));
-        bool dead = tank->isDestroyed();
-        actions[i] = {action, ignored, dead};
+        const ActionRequest action = tanks[i]->getAction();
+        const bool res = tankAction(*tank, action);
+        tank_status[i] = {false, action, res, false};
     }
 
-    Logger::getInstance().logActions(actions);
-
     if (empty_countdown == -1 && allEmptyAmmo()) {
-        // TODO update with max steps
-        empty_countdown = 40;
+        empty_countdown = max_steps_empty_ammo;
     }
 
     if (empty_countdown != -1) {
@@ -246,19 +237,45 @@ void MyGameManager::processStep() {
     }
 
     checkDeaths();
+    logStep();
 }
 
 std::string MyGameManager::getGameResult() const {
+    std::string p1_tanks = std::to_string(board->getPlayerAliveTanks(1).size());
+    std::string p2_tanks = std::to_string(board->getPlayerAliveTanks(2).size());
+    std::string max_steps = std::to_string(board->getMaxSteps());
+    std::string empty_ammo = std::to_string(max_steps_empty_ammo);
+
     switch (winner) {
         case TIE:
-            return "Tie - Both tanks are destroyed";
+            return "Tie, both players have zero tanks";
+        case TIE_STEPS:
+            return "Tie, reached max steps = " + max_steps + ", player 1 has " + p1_tanks + " tanks, player 2 has " +
+                   p2_tanks + " tanks";
         case TIE_AMMO:
-            return "Tie - No more ammunition";
+            return "Tie, both players have zero shells for " + empty_ammo + " steps";
         case PLAYER_1:
-            return "Player 1 wins";
+            return "Player 1 won with " + p1_tanks + " tanks still alive";
         case PLAYER_2:
-            return "Player 2 wins";
+            return "Player 2 won with " + p2_tanks + " tanks still alive";
         default:
             return "Bad result";
+    }
+}
+
+void MyGameManager::logStep() {
+    for (const auto tank: board->getTanks()) {
+        if (tank->isDestroyed()) {
+            std::get<3>(tank_status[tank->getTankAlgoIndex()]) = true;
+        }
+    }
+
+    Logger::getInstance().logActions(tank_status);
+
+    // Update deaths
+    for (size_t i = 0; i < tank_status.size(); i++) {
+        if (std::get<3>(tank_status[i])) {
+            std::get<0>(tank_status[i]) = true;
+        }
     }
 }

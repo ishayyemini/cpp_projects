@@ -15,8 +15,9 @@ public:
     // Log a message to the log file
     void log(const std::string &message);
 
-    // Log a message to the log file
-    void logActions(std::vector<std::tuple<ActionRequest, bool, bool> > actions);
+    void logActions(std::vector<std::tuple<bool, ActionRequest, bool, bool> > actions);
+
+    void logResult(const std::string &message);
 
     // Log an error to the error file
     void error(const std::string &message);

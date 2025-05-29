@@ -81,17 +81,19 @@ public:
 
     GameObject *moveObject(Position from, Direction::DirectionType dir);
 
+    std::vector<Tank *> getPlayerAliveTanks(int player_index) const;
+
     std::vector<Tank *> getPlayerTanks(int player_index) const;
+
+    Tank *getPlayerTank(int player_index, int tank_index) const;
 
     Position wrapPosition(Position pos) const;
 
     GameObject *getObjectAt(Position pos) const;
 
-    std::vector<Tank *> getTanks() const;
+    std::vector<Tank *> getAliveTanks() const;
 
-    // [[nodiscard]] Tank *getPlayerTank(int player_id, int tank_id) const;
-    //
-    // [[nodiscard]] Tank *getPlayerTank(int player_id) const;
+    std::vector<Tank *> getTanks() const;
 
     void displayBoard() const;
 

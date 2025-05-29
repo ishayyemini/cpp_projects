@@ -14,6 +14,7 @@
 
 enum Winner {
     TIE_AMMO,
+    TIE_STEPS,
     TIE,
     PLAYER_1,
     PLAYER_2,
@@ -33,19 +34,19 @@ public:
     void setVisual(bool visual) { this->visual = visual; }
 
 private:
+    static constexpr int max_steps_empty_ammo = 40;
+
     bool visual = false;
-    int game_step = 0;
+    size_t game_step = 0;
     bool game_over = false;
     Winner winner = NO_WINNER;
     std::unique_ptr<Board> board;
     int empty_countdown = -1;
-    std::vector<std::string> step_history;
+    std::vector<std::tuple<bool, ActionRequest, bool, bool> > tank_status;
     std::vector<std::unique_ptr<Player> > players;
     std::vector<std::unique_ptr<TankAlgorithm> > tanks;
 
     bool tankAction(Tank &tank, ActionRequest action);
-
-    bool checkNoTanks(int player_index) const;
 
     void checkDeaths();
 
@@ -70,6 +71,8 @@ private:
     bool isGameOver() const { return game_over; }
 
     std::string getGameResult() const;
+
+    void logStep();
 };
 
 #endif //MYGAMEMANAGER_H
