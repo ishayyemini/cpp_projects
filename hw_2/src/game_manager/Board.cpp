@@ -45,9 +45,9 @@ GameObject *Board::placeObjectReal(std::unique_ptr<GameObject> element, const Po
 }
 
 Position Board::wrapPositionReal(const Position real_pos) const {
-    const int mod_x = (real_pos.x % width + width) % width;
-    const int mod_y = (real_pos.y % height + height) % height;
-    return Position(mod_x, mod_y);
+    const size_t mod_x = (real_pos.x % width + width) % width;
+    const size_t mod_y = (real_pos.y % height + height) % height;
+    return {mod_x, mod_y};
 }
 
 GameObject *Board::getObjectAtReal(const Position real_pos) const {
@@ -116,13 +116,13 @@ void Board::removeIndices(GameObject *game_object) {
 Board::Board(): max_steps(0), num_shells(0) {
 }
 
-Board::Board(std::string desc, const size_t max_steps, const size_t num_shells, int width,
-             int height) : desc(std::move(desc)), max_steps(max_steps), num_shells((num_shells)), width(width * 2),
-                           height(height * 2),
-                           board(std::vector<std::vector<std::unique_ptr<GameObject> > >(
-                               height * 2)) {
-    for (int i = 0; i < this->height; i++) {
-        for (int j = 0; j < this->width; j++) {
+Board::Board(std::string desc, const size_t max_steps, const size_t num_shells, size_t width,
+             size_t height) : desc(std::move(desc)), max_steps(max_steps), num_shells((num_shells)), width(width * 2),
+                              height(height * 2),
+                              board(std::vector<std::vector<std::unique_ptr<GameObject> > >(
+                                  height * 2)) {
+    for (size_t i = 0; i < this->height; i++) {
+        for (size_t j = 0; j < this->width; j++) {
             board[i].push_back(nullptr);
         }
     }
@@ -177,8 +177,8 @@ std::vector<Tank *> Board::getPlayerTanks(const int player_index) const {
 }
 
 void Board::displayBoard() const {
-    for (int i = 0; i < height; i += 2) {
-        for (int j = 0; j < width; j += 2) {
+    for (size_t i = 0; i < height; i += 2) {
+        for (size_t j = 0; j < width; j += 2) {
             if (board[i][j] != nullptr) {
                 std::cout << *board[i][j];
             } else {
@@ -233,4 +233,17 @@ std::map<int, Shell *> Board::getShells() const {
         }
     }
     return shells;
+}
+
+void Board::fillSatelliteView(MySatelliteView &satellite_view) const {
+    for (size_t i = 0; i < width; i++) {
+        for (size_t j = 0; j < height; j++) {
+            if (isCollision({i, j}))
+                satellite_view.setObjectAt(i, j, '*'); // We can only have mine-shell collisions here
+            if (isOccupied({i, j}))
+                satellite_view.setObjectAt(i, j, getObjectAt({i, j})->getSymbol());
+            else
+                satellite_view.setObjectAt(i, j, ' ');
+        }
+    }
 }

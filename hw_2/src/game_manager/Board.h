@@ -13,6 +13,7 @@
 
 #include "GameObject.h"
 #include "Mine.h"
+#include "MySatelliteView.h"
 #include "Shell.h"
 #include "Tank.h"
 #include "Wall.h"
@@ -28,8 +29,8 @@ class Board {
     std::string desc;
     size_t max_steps;
     size_t num_shells;
-    int width = 2;
-    int height = 2;
+    size_t width = 2;
+    size_t height = 2;
     std::vector<std::vector<std::unique_ptr<GameObject> > > board;
     std::map<std::pair<int, int>, Position> tanks_pos;
     std::map<int, Position> shells_pos;
@@ -63,7 +64,7 @@ class Board {
 public:
     Board();
 
-    Board(std::string desc, size_t max_steps, size_t num_shells, int width, int height);
+    Board(std::string desc, size_t max_steps, size_t num_shells, size_t width, size_t height);
 
     [[nodiscard]] int getHeight() const { return height / 2; }
 
@@ -111,6 +112,8 @@ public:
     size_t getNumShells() const { return num_shells; }
 
     size_t getMaxSteps() const { return max_steps; }
+
+    void fillSatelliteView(MySatelliteView &satellite_view) const;
 };
 
 template<typename T>

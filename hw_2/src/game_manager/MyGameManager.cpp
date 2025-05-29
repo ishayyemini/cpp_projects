@@ -9,6 +9,7 @@
 #include "Shell.h"
 #include "ActionRequest.h"
 #include "InputParser.h"
+#include "MySatelliteView.h"
 
 using namespace std::chrono_literals;
 
@@ -42,7 +43,7 @@ void MyGameManager::run() {
 }
 
 
-bool MyGameManager::tankAction(Tank &tank, const ActionRequest action) {
+bool MyGameManager::tankAction(Tank &tank, const size_t tank_algo_i, const ActionRequest action) {
     bool result = false;
     const int back_counter = tank.getBackwardsCounter();
     tank.decreaseShootingCooldown();
@@ -98,6 +99,9 @@ bool MyGameManager::tankAction(Tank &tank, const ActionRequest action) {
             break;
         case ActionRequest::Shoot:
             result = shoot(tank);
+            break;
+        case ActionRequest::GetBattleInfo:
+            result = getBattleInfo(tank_algo_i, tank.getPlayerIndex());
             break;
         default: ;
     }
@@ -174,6 +178,13 @@ bool MyGameManager::shoot(Tank &tank) {
     return true;
 }
 
+bool MyGameManager::getBattleInfo(const size_t tank_algo_i, const size_t player_i) {
+    auto satellite_view = MySatelliteView(board->getWidth(), board->getHeight());
+    board->fillSatelliteView(satellite_view);
+    players[player_i - 1]->updateTankWithBattleInfo(*tanks[tank_algo_i], satellite_view);
+    return true;
+}
+
 bool MyGameManager::allEmptyAmmo() const {
     if (!board) return true;
     for (const auto tank: board->getTanks()) {
@@ -193,7 +204,7 @@ void MyGameManager::tanksTurn() {
     size_t i = 0;
     for (const auto tank: board->getTanks()) {
         if (i < actions.size()) {
-            tankAction(*tank, actions[i]);
+            tankAction(*tank, i, actions[i]);
         }
         i++;
     }

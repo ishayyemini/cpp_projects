@@ -6,11 +6,11 @@
 #define MYGAMEMANAGER_H
 #include <map>
 
-#include "../src/game_manager/Board.h"
+#include "Board.h"
 #include "GameManager.h"
 #include "MyPlayerFactory.h"
 #include "MyTankAlgorithmFactory.h"
-#include "../src/game_manager/Tank.h"
+#include "Tank.h"
 
 enum Winner {
     TIE_AMMO,
@@ -43,7 +43,7 @@ private:
     std::vector<std::unique_ptr<Player> > players;
     std::vector<std::unique_ptr<TankAlgorithm> > tanks;
 
-    bool tankAction(Tank &tank, ActionRequest action);
+    bool tankAction(Tank &tank, size_t tank_algo_i, ActionRequest action);
 
     bool checkNoTanks(int player_index) const;
 
@@ -56,6 +56,8 @@ private:
     bool rotate(Tank &tank, int turn);
 
     bool shoot(Tank &tank);
+
+    bool getBattleInfo(size_t tank_algo_i, size_t player_i);
 
     bool allEmptyAmmo() const;
 
@@ -79,6 +81,7 @@ inline map<ActionRequest, std::string> action_strings = {
     {ActionRequest::RotateLeft90, "Rotate Left Quarter"},
     {ActionRequest::RotateRight90, "Rotate Right Quarter"},
     {ActionRequest::Shoot, "Shoot"},
+    {ActionRequest::GetBattleInfo, "Get Battle Info"},
 };
 
 

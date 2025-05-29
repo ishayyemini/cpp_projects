@@ -53,6 +53,9 @@ struct Position {
 
     constexpr Position(const int row, const int col): x(row), y(col) {
     }
+
+    constexpr Position(const size_t row, const size_t col): x(row), y(col) {
+    }
 };
 
 
