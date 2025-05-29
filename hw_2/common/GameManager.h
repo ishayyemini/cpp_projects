@@ -9,8 +9,8 @@
 #include "TankAlgorithmFactory.h"
 
 class GameManager {
-    PlayerFactory *playerFactory;
-    TankAlgorithmFactory *tankAlgorithmFactory;
+    const PlayerFactory *playerFactory;
+    const TankAlgorithmFactory *tankAlgorithmFactory;
 
 public:
     GameManager(const PlayerFactory &player_factory,

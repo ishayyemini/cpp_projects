@@ -3,7 +3,7 @@
 
 #include <memory>
 
-#include "../include/GameObject.h"
+#include "GameObject.h"
 
 class GameObjectFactory {
 public:

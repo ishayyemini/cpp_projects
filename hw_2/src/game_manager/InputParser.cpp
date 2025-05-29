@@ -4,7 +4,7 @@
 #include <iostream>
 
 #include "Board.h"
-#include "Logger.h"
+#include "../../include/Logger.h"
 #include "GameObjectFactory.h"
 
 bool InputParser::parseDimensions(std::ifstream &inFile) {

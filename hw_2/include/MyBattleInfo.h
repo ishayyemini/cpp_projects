@@ -1,29 +1,30 @@
 #ifndef GAMESTATE_H
 #define GAMESTATE_H
 
+#include <list>
 #include <vector>
 
 #include "ActionRequest.h"
 #include "BattleInfo.h"
-#include "Board.h"
+#include "Direction.h"
 
 
 class MyBattleInfo : public BattleInfo {
-    Board &board;
+    std::list<std::list<char> > board;
     int player_id;
 
 public:
-    explicit MyBattleInfo(Board &board, int player_id);
-
-    Board &getBoard() const;
+    explicit MyBattleInfo(): player_id(0) {
+    }
 
     int getPlayerId() const { return player_id; }
 
-    Tank *getPlayerTank() const;
+    // TODO change
+    nullptr_t *getPlayerTank() const { return nullptr; }
 
     bool canShoot() const;
 
-    Tank *getEnemyTank() const;
+    // Tank *getEnemyTank() const;
 
     bool isSafePosition(Position position, bool immediate_safe = false) const;
 

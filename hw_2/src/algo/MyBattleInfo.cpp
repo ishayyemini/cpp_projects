@@ -5,40 +5,16 @@
 #include "Direction.h"
 #include "SimpleAlgorithm.h"
 
-MyBattleInfo::MyBattleInfo(Board &board, const int player_id): board(board), player_id(player_id) {
-}
-
-Board &MyBattleInfo::getBoard() const { return board; }
-
-Tank *MyBattleInfo::getPlayerTank() const {
-    // TODO which tank???
-    for (const auto tank: board.getTanks()) {
-        if (tank->getPlayerIndex() == player_id) {
-            return tank;
-        }
-    }
-
-    return nullptr;
-}
-
 bool MyBattleInfo::canShoot() const {
-    if (auto t = getPlayerTank()) return t->getAmmunition() > 0 && t->getCooldown() == 0;
+    // TODO correct
+    // if (auto t = getPlayerTank()) return t->getAmmunition() > 0 && t->getCooldown() == 0;
     return false;
 }
 
-Tank *MyBattleInfo::getEnemyTank() const {
-    // TODO which tank???
-    for (const auto tank: board.getTanks()) {
-        if (tank->getPlayerIndex() != player_id) {
-            return tank;
-        }
-    }
-
-    return nullptr;
-}
-
 bool MyBattleInfo::isSafePosition(const Position position, const bool immediate_safe) const {
-    if (board.isOccupied(position)) return false;
+    return false;
+    // TODO correct
+    // if (board.isOccupied(position)) return false;
 
     // If only checking immediate safety, we're done
     if (immediate_safe) return true;
@@ -60,188 +36,39 @@ std::vector<Direction::DirectionType> MyBattleInfo::getSafeDirections(const Posi
     return safe_directions;
 }
 
-std::vector<Position> MyBattleInfo::getNearbyEmptyPositions(const Position position) const {
+std::vector<Position> MyBattleInfo::getNearbyEmptyPositions(const Position) const {
+    // TODO correct
     std::vector<Position> empty_positions;
-
-    for (int i = 0; i < Direction::getDirectionSize(); i++) {
-        auto direction = Direction::getDirectionFromIndex(i);
-        Position next_position = position + direction;
-        if (!board.isOccupied(next_position)) {
-            empty_positions.push_back(next_position);
-        }
-    }
-
+    //
+    // for (int i = 0; i < Direction::getDirectionSize(); i++) {
+    //     auto direction = Direction::getDirectionFromIndex(i);
+    //     Position next_position = position + direction;
+    //     if (!board.isOccupied(next_position)) {
+    //         empty_positions.push_back(next_position);
+    //     }
+    // }
+    //
     return empty_positions;
 }
 
-// std::vector<Position> GameState::getNearbyEmptyPositions(Position position, int steps_num) const {
-//     std::vector<Position> result;
-//     std::set<Position> visited;
-//
-//     struct State {
-//         Position pos;
-//         int steps;
-//     };
-//
-//     std::queue<State> queue;
-//     queue.push({position, 0});
-//     visited.insert(position);
-//
-//     while (!queue.empty()) {
-//         auto current = queue.front();
-//         queue.pop();
-//
-//         // If we've used all steps, don't explore further
-//         if (current.steps >= steps_num) continue;
-//
-//         // Try all directions
-//         for (int i = 0; i < Direction::getDirectionSize(); i++) {
-//             auto dir = Direction::getDirectionFromIndex(i);
-//             Position next_pos = board.wrapPosition(current.pos + Direction::getDirectionDelta(dir));
-//
-//             // Check if position is valid and empty
-//             if (visited.find(next_pos) == visited.end() && isEmptyPosition(next_pos)) {
-//                 result.push_back(next_pos);
-//                 visited.insert(next_pos);
-//                 queue.push({next_pos, current.steps + 1});
-//             }
-//         }
-//     }
-//
-//     return result;
-// }
-
-// Action GameState::getActionToPosition(Position target_position) const {
-//     Position current = getPlayerTank()->getPosition();
-//     Direction::DirectionType current_dir = getPlayerTank()->getDirection();
-//
-//     // If already at the target
-//     if (current == target_position) {
-//         return NONE;
-//     }
-//
-//     // Calculate relative direction to target
-//     int dx = target_position.x - current.x;
-//     int dy = target_position.y - current.y;
-//
-//     // Handle board wrapping
-//     if (std::abs(dx) > board.getHeight() / 2) {
-//         dx = dx > 0 ? dx - board.getHeight() : dx + board.getHeight();
-//     }
-//     if (std::abs(dy) > board.getWidth() / 2) {
-//         dy = dy > 0 ? dy - board.getWidth() : dy + board.getWidth();
-//     }
-//
-//     // Determine target direction
-//     Direction::DirectionType target_dir;
-//     if (dx < 0 && dy == 0) target_dir = Direction::UP;
-//     else if (dx > 0 && dy == 0) target_dir = Direction::DOWN;
-//     else if (dx == 0 && dy < 0) target_dir = Direction::LEFT;
-//     else if (dx == 0 && dy > 0) target_dir = Direction::RIGHT;
-//     else if (dx < 0 && dy < 0) target_dir = Direction::UP_LEFT;
-//     else if (dx < 0 && dy > 0) target_dir = Direction::UP_RIGHT;
-//     else if (dx > 0 && dy < 0) target_dir = Direction::DOWN_LEFT;
-//     else target_dir = Direction::DOWN_RIGHT;
-//
-//     // If already facing the target direction, move forward
-//     if (current_dir == target_dir) {
-//         return MOVE_FORWARD;
-//     }
-//
-//     // Need to rotate - find shortest path
-//     int current_index = current_dir / 45;
-//     int target_index = target_dir / 45;
-//     int diff = (target_index - current_index + 8) % 8;
-//
-//     if (diff == 1) return ROTATE_RIGHT_EIGHTH;
-//     if (diff == 7) return ROTATE_LEFT_EIGHTH;
-//     if (diff == 2) return ROTATE_RIGHT_QUARTER;
-//     if (diff == 6) return ROTATE_LEFT_QUARTER;
-//
-//     // For larger rotations, take biggest step in correct direction
-//     return (diff <= 4) ? ROTATE_RIGHT_QUARTER : ROTATE_LEFT_QUARTER;
-// }
-
-// bool GameState::isShellApproaching(const int threat_threshold) const {
-//     return !getApproachingShellsPosition(threat_threshold).empty();
-// }
-
-// bool GameState::isObjectInLine(Position object_position, int distance) const {
-//     return areObjectsInLine(getPlayerTank()->getPosition(), getPlayerTank()->getDirection(), object_position,
-//                             distance);
-// }
-
-// bool GameState::canRotateToFaceEnemy() const {
-//     Tank *player = getPlayerTank();
-//     Tank *enemy = getEnemyTank();
-//     if (!player || !enemy) return false;
-//
-//     Position player_pos = player->getPosition();
-//     Position enemy_pos = enemy->getPosition();
-//     const std::vector possible_directions = {
-//         Direction::rotateDirection(player->getDirection(), true, false),
-//         Direction::rotateDirection(player->getDirection(), false, false),
-//         Direction::rotateDirection(player->getDirection(), true, true),
-//         Direction::rotateDirection(player->getDirection(), false, true)
-//     };
-//
-//     for (const auto &new_dir: possible_directions) {
-//         if (areObjectsInLine(player_pos, new_dir, enemy_pos, std::max(board.getWidth(), board.getHeight())) &&
-//             isLineOfSightClear(player_pos, enemy_pos, new_dir)) {
-//             return true;
-//         }
-//     }
-//
-//     return false;
-// }
-
-// bool GameState::isEmptyPosition(Position position) const {
-//     return board.getObjectAt(position) == nullptr;
-// }
-
-// std::vector<Position> GameState::getApproachingShellsPosition(int threat_threshold, bool get_closest) const {
-//     Position player_position = getPlayerTank()->getPosition();
-//     std::vector<Position> approaching_shells;
-//     std::vector<Position> closest_shells;
-//     int closest_distance = std::numeric_limits<int>::max();
-//
-//     for (const auto &shell_pos: board.getShells()) {
-//         int distance = getObjectsDistance(player_position, shell_pos.second);
-//         int max_distance = (threat_threshold == -1) ? distance : threat_threshold;
-//         Shell *shell = dynamic_cast<Shell *>(board.getObjectAt(shell_pos.second));
-//         if (shell == nullptr) continue;
-//
-//         Direction::DirectionType shell_direction = shell->getDirection();
-//         if (areObjectsInLine(shell_pos.second, shell_direction, player_position, max_distance)) {
-//             approaching_shells.push_back(shell_pos.second);
-//             if (distance < closest_distance) {
-//                 closest_distance = distance;
-//                 closest_shells.push_back(shell_pos.second);
-//             }
-//         }
-//     }
-//
-//     if (get_closest) {
-//         return closest_shells;
-//     }
-//     return approaching_shells;
-// }
-
-bool MyBattleInfo::isInLineOfSight(const Position target) const {
-    if (!getPlayerTank()) return false;
-    return isInLineOfSight(getPlayerTank()->getPosition(), getPlayerTank()->getDirection(), target);
+bool MyBattleInfo::isInLineOfSight(const Position) const {
+    return false;
+    // TODO implement
+    // if (!getPlayerTank()) return false;
+    // return isInLineOfSight(getPlayerTank()->getPosition(), getPlayerTank()->getDirection(), target);
 }
 
-bool MyBattleInfo::isInLineOfSight(const Position from, const Direction::DirectionType dir,
-                                   const Position target) const {
-    Position check = from;
-    for (int i = 1; i <= std::max(board.getWidth(), board.getHeight()); i++) {
-        check = getBoard().wrapPosition(check + dir);
-        if (target == check) return true;
-        if (board.isWall(check)) return false;
-        // Only if shell is heading towards us
-        if (board.isShell(check) && board.getObjectAt(check)->getDirection() == -dir) return false;
-    }
+bool MyBattleInfo::isInLineOfSight(const Position, const Direction::DirectionType,
+                                   const Position) const {
+    // TODO implement
+    // Position check = from;
+    // for (int i = 1; i <= std::max(board.getWidth(), board.getHeight()); i++) {
+    //     check = getBoard().wrapPosition(check + dir);
+    //     if (target == check) return true;
+    //     if (board.isWall(check)) return false;
+    //     // Only if shell is heading towards us
+    //     if (board.isShell(check) && board.getObjectAt(check)->getDirection() == -dir) return false;
+    // }
     return false;
 }
 
@@ -332,37 +159,48 @@ bool MyBattleInfo::isInLineOfSight(const Position from, const Direction::Directi
 
 bool MyBattleInfo::canShootEnemy() const {
     if (!getPlayerTank()) return false;
-    return canShootEnemy(getPlayerTank()->getPosition(), getPlayerTank()->getDirection());
+    // return canShootEnemy(getPlayerTank()->getPosition(), getPlayerTank()->getDirection());
+    // TODO
+    return false;
 }
 
-bool MyBattleInfo::canShootEnemy(const Position from) const {
+bool MyBattleInfo::canShootEnemy(const Position) const {
     if (!getPlayerTank()) return false;
-    return canShootEnemy(from, getPlayerTank()->getDirection());
+    // return canShootEnemy(from, getPlayerTank()->getDirection());
+    // TODO
+    return false;
 }
 
-bool MyBattleInfo::canShootEnemy(const Direction::DirectionType dir) const {
+bool MyBattleInfo::canShootEnemy(const Direction::DirectionType) const {
     if (!getPlayerTank()) return false;
-    return canShootEnemy(getPlayerTank()->getPosition(), dir);
+    // return canShootEnemy(getPlayerTank()->getPosition(), dir);
+    // TODO
+    return false;
 }
 
-bool MyBattleInfo::canShootEnemy(const Position from, const Direction::DirectionType dir) const {
+bool MyBattleInfo::canShootEnemy(const Position, const Direction::DirectionType) const {
     if (!canShoot()) return false;
-    if (!getEnemyTank()) return false;
-    return isInLineOfSight(from, dir, getEnemyTank()->getPosition());
+    // if (!getEnemyTank()) return false;
+    // return isInLineOfSight(from, dir, getEnemyTank()->getPosition());
+    // TODO
+    return false;
 }
 
-ActionRequest MyBattleInfo::rotateTowards(const Direction::DirectionType to) const {
+ActionRequest MyBattleInfo::rotateTowards(const Direction::DirectionType) const {
     if (!getPlayerTank()) return ActionRequest::DoNothing;
-    return rotateTowards(getPlayerTank()->getDirection(), to);
+    // return rotateTowards(getPlayerTank()->getDirection(), to);
+    // TODO
+    return ActionRequest::DoNothing;
 }
 
-ActionRequest MyBattleInfo::rotateTowards(const Position to) const {
+ActionRequest MyBattleInfo::rotateTowards(const Position) const {
     if (!getPlayerTank()) return ActionRequest::DoNothing;
 
-    const Direction::DirectionType curr_dir = getPlayerTank()->getDirection();
-    for (Direction::DirectionType dir: {curr_dir, curr_dir + 45, curr_dir - 45, curr_dir + 90, curr_dir - 90}) {
-        if (isInLineOfSight(getPlayerTank()->getPosition(), dir, to)) return rotateTowards(dir);
-    }
+    // const Direction::DirectionType curr_dir = getPlayerTank()->getDirection();
+    // for (Direction::DirectionType dir: {curr_dir, curr_dir + 45, curr_dir - 45, curr_dir + 90, curr_dir - 90}) {
+    //     if (isInLineOfSight(getPlayerTank()->getPosition(), dir, to)) return rotateTowards(dir);
+    // }
+    // TODO
 
     return ActionRequest::RotateRight90;
 }
@@ -392,32 +230,36 @@ ActionRequest MyBattleInfo::rotateTowards(const Direction::DirectionType from,
 
 bool MyBattleInfo::isShellApproaching() const {
     if (!getPlayerTank()) return false;
-    return isShellApproaching(getPlayerTank()->getPosition());
+    // TODO
+    // return isShellApproaching(getPlayerTank()->getPosition());
+    return false;
 }
 
-bool MyBattleInfo::isShellApproaching(const Position position) const {
-    for (auto [id, shell]: board.getShells()) {
-        if (isInLineOfSight(shell->getPosition(), shell->getDirection(), position)) {
-            return true;
-        }
-    }
+bool MyBattleInfo::isShellApproaching(const Position) const {
+    // for (auto [id, shell]: board.getShells()) {
+    //     if (isInLineOfSight(shell->getPosition(), shell->getDirection(), position)) {
+    //         return true;
+    //     }
+    // }
+    // TODO we need to think about this, how to predict shell's movement?
 
     return false;
 }
 
 bool MyBattleInfo::isEnemyNearby() const {
-    if (!getPlayerTank() || !getEnemyTank()) return false;
-    const Position player_pos = getPlayerTank()->getPosition();
-    const Position enemy_pos = getEnemyTank()->getPosition();
-    for (int i = 0; i < 8; ++i) {
-        const Direction::DirectionType dir = Direction::getDirectionFromIndex(i);
-        if (enemy_pos == player_pos + dir) {
-            return true;
-        }
-        if (enemy_pos == player_pos + dir + dir) {
-            return true;
-        }
-    }
+    // TODO
+    // if (!getPlayerTank() || !getEnemyTank()) return false;
+    // const Position player_pos = getPlayerTank()->getPosition();
+    // const Position enemy_pos = getEnemyTank()->getPosition();
+    // for (int i = 0; i < 8; ++i) {
+    //     const Direction::DirectionType dir = Direction::getDirectionFromIndex(i);
+    //     if (enemy_pos == player_pos + dir) {
+    //         return true;
+    //     }
+    //     if (enemy_pos == player_pos + dir + dir) {
+    //         return true;
+    //     }
+    // }
     return false;
 }
 

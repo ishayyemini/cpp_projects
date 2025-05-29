@@ -6,9 +6,11 @@
 #define MYGAMEMANAGER_H
 #include <map>
 
-#include "Board.h"
+#include "../src/game_manager/Board.h"
 #include "GameManager.h"
-#include "Tank.h"
+#include "MyPlayerFactory.h"
+#include "MyTankAlgorithmFactory.h"
+#include "../src/game_manager/Tank.h"
 
 enum Winner {
     TIE_AMMO,
