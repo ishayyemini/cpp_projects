@@ -1,7 +1,3 @@
-//
-// Created by Ishay Yemini on 26/05/2025.
-//
-
 #ifndef PLAYERFACTORY_H
 #define PLAYERFACTORY_H
 
@@ -13,8 +9,7 @@ using namespace std;
 
 class PlayerFactory {
 public:
-    virtual ~PlayerFactory() {
-    }
+    virtual ~PlayerFactory() {}
 
     virtual unique_ptr<Player> create(int player_index, size_t x, size_t y,
                                       size_t max_steps, size_t num_shells) const = 0;

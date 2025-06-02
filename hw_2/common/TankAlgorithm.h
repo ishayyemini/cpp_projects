@@ -1,7 +1,3 @@
-//
-// Created by Ishay Yemini on 26/05/2025.
-//
-
 #ifndef TANKALGORITHM_H
 #define TANKALGORITHM_H
 
@@ -10,8 +6,7 @@
 
 class TankAlgorithm {
 public:
-    virtual ~TankAlgorithm() {
-    }
+    virtual ~TankAlgorithm() {}
 
     virtual ActionRequest getAction() = 0;
 

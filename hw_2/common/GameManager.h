@@ -1,7 +1,3 @@
-//
-// Created by Ishay Yemini on 27/05/2025.
-//
-
 #ifndef GAMEMANAGER_H
 #define GAMEMANAGER_H
 

@@ -1,7 +1,3 @@
-//
-// Created by Ishay Yemini on 27/05/2025.
-//
-
 #include "MyPlayerFactory.h"
 
 #include "Player1.h"

@@ -1,7 +1,3 @@
-//
-// Created by Ishay Yemini on 27/05/2025.
-//
-
 #ifndef MYGAMEMANAGER_H
 #define MYGAMEMANAGER_H
 #include <map>
@@ -34,7 +30,7 @@ public:
     void setVisual(bool visual) { this->visual = visual; }
 
 private:
-    static constexpr int max_steps_empty_ammo = 40;
+    static constexpr int max_steps_empty_ammo = 40; //todo: who decided this?
 
     bool visual = false;
     size_t game_step = 0;
@@ -42,6 +38,7 @@ private:
     Winner winner = NO_WINNER;
     std::unique_ptr<Board> board;
     int empty_countdown = -1;
+    //todo: what tank_status keep track of?
     std::vector<std::tuple<bool, ActionRequest, bool, bool> > tank_status;
     std::vector<std::unique_ptr<Player> > players;
     std::vector<std::unique_ptr<TankAlgorithm> > tanks;

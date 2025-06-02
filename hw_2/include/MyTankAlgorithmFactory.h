@@ -1,7 +1,3 @@
-//
-// Created by Ishay Yemini on 27/05/2025.
-//
-
 #ifndef MYTANKALGORITHMFACTORY_H
 #define MYTANKALGORITHMFACTORY_H
 #include <list>
@@ -9,7 +5,7 @@
 #include "TankAlgorithmFactory.h"
 
 class MyTankAlgorithmFactory final : public TankAlgorithmFactory {
-    std::list<int> tanks_indices;
+    std::list<int> tanks_indices; //todo: what is this for?
 
 public:
     unique_ptr<TankAlgorithm> create(

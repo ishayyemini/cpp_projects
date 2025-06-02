@@ -1,7 +1,3 @@
-//
-// Created by Ishay Yemini on 26/05/2025.
-//
-
 #ifndef PLAYER_H
 #define PLAYER_H
 
@@ -10,15 +6,17 @@
 
 class Player {
 public:
-    Player(int, size_t, size_t, size_t, size_t) {
-    }
+    Player(int, size_t, size_t, size_t, size_t){}
 
-    virtual ~Player() {
-    }
+    virtual ~Player() = default;
 
-    virtual void updateTankWithBattleInfo
-    (TankAlgorithm &tank, SatelliteView &satellite_view) = 0;
+    Player(const Player&) = delete;
+    Player& operator=(const Player&) = delete;
+    Player(Player&&) = delete;
+    Player& operator=(Player&&) = delete;
+
+    virtual void updateTankWithBattleInfo(
+            TankAlgorithm &tank, SatelliteView &satellite_view) = 0;
 };
 
-
-#endif //PLAYER_H
+#endif // PLAYER_H

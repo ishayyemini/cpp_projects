@@ -15,15 +15,15 @@ using namespace std::chrono_literals;
 
 void MyGameManager::readBoard(const std::string &file_name) {
     auto input_parser = InputParser();
-
     board = input_parser.parseInputFile(file_name);
-
 
     if (board == nullptr) {
         board = make_unique<Board>();
         std::cerr << "Can't parse file " << file_name << std::endl;
     }
 
+    //todo: 2 is magic number? can we try to make it modular? maybe
+    //create 2 players
     for (int i = 1; i <= 2; i++)
         players.emplace_back(playerFactory.create(i, board->getWidth(), board->getHeight(), board->getMaxSteps(),
                                                   board->getNumShells()));
@@ -35,6 +35,7 @@ void MyGameManager::readBoard(const std::string &file_name) {
 }
 
 void MyGameManager::run() {
+    checkDeaths(); //check if one of the player doesn't have any tanks
     while (!isGameOver()) {
         processStep();
         if (visual) std::this_thread::sleep_for(200ms);
@@ -46,6 +47,7 @@ void MyGameManager::run() {
     }
 }
 
+//todo: make this function shorter
 bool MyGameManager::tankAction(Tank &tank, const ActionRequest action) {
     bool result = false;
     const int back_counter = tank.getBackwardsCounter();
@@ -179,7 +181,9 @@ bool MyGameManager::shoot(Tank &tank) {
     return true;
 }
 
+//todo: note that each time it creates MySatelliteView Object. should we reuse the same?
 bool MyGameManager::getBattleInfo(const size_t tank_algo_i, const size_t player_i) {
+    //todo: the player should get the an object of type SatelliteView? - If so we should cast this
     auto satellite_view = MySatelliteView(board->getWidth(), board->getHeight());
     board->fillSatelliteView(satellite_view);
     players[player_i - 1]->updateTankWithBattleInfo(*tanks[tank_algo_i], satellite_view);
@@ -194,6 +198,7 @@ bool MyGameManager::allEmptyAmmo() const {
     return true;
 }
 
+//todo: should it store all the action results and then perform them?
 void MyGameManager::tanksTurn() {
     for (const auto tank: board->getAliveTanks()) {
         const int i = tank->getTankAlgoIndex();

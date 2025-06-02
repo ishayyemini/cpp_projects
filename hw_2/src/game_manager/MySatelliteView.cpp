@@ -1,7 +1,3 @@
-//
-// Created by Ishay Yemini on 29/05/2025.
-//
-
 #include "MySatelliteView.h"
 
 char MySatelliteView::getObjectAt(size_t x, size_t y) const {
