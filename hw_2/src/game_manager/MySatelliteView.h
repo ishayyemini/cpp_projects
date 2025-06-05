@@ -1,11 +1,8 @@
-//
-// Created by Ishay Yemini on 29/05/2025.
-//
-
 #ifndef MYSATELLITEVIEW_H
 #define MYSATELLITEVIEW_H
 
 #include <list>
+#include <vector>
 
 #include "SatelliteView.h"
 

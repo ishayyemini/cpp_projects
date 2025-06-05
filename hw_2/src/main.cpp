@@ -1,3 +1,4 @@
+#include <cstring>
 #include <GameManager.h>
 #include <iostream>
 #include <thread>
@@ -33,4 +34,3 @@ int main(const int argc, char *argv[]) {
 
     return EXIT_SUCCESS;
 }
-

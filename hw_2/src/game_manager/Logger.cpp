@@ -1,5 +1,4 @@
 #include "Logger.h"
-
 #include <iostream>
 #include <chrono>
 #include <iomanip>
@@ -75,7 +74,7 @@ void Logger::log(const std::string &message) {
     log_file.flush();
 }
 
-void Logger::logActions(std::vector<std::tuple<bool, ActionRequest, bool, bool> > actions) {
+void Logger::logActions(std::vector<std::tuple<bool, ActionRequest, bool, bool>> actions) {
     if (!initialized) {
         std::cerr << "Logger not initialized" << std::endl;
         return;

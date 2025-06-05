@@ -22,6 +22,8 @@ list(FILTER SOURCES EXCLUDE REGEX ".*main\\.cpp$")
 add_executable(tank_game ${SOURCES} "${PROJECT_SOURCE_DIR}/src/main.cpp"
         include/MyActualPlayer.h
         src/algo/MyActualPlayer.cpp
+        include/MyBattleStatus.h
+        src/algo/MyBattleStatus.cpp
 )
 
 # Add the shared library for Python

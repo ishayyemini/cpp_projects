@@ -1,12 +1,18 @@
 #include "MyActualPlayer.h"
 
+#include "MyBattleInfo.h"
+
 void MyActualPlayer::updateTankWithBattleInfo(TankAlgorithm &tank, SatelliteView &satellite_view) {
-    // TODO actual update
-    (void) tank;
-    (void) satellite_view;
-    (void) player_index;
-    (void) x;
-    (void) y;
-    (void) max_steps;
-    (void) num_shells;
+    MyBattleInfo battle_info = MyBattleInfo(createBoardFromSatellite(satellite_view), max_steps, num_shells);
+    tank.updateBattleInfo(battle_info);
+}
+
+std::vector<std::vector<char>> MyActualPlayer::createBoardFromSatellite(const SatelliteView &satellite_view) const {
+    std::vector board(x, std::vector<char>(y));
+    for (auto i{0}; i < x; i++) {
+        for (auto j{0}; j < y; j++) {
+            board[i][j]= satellite_view.getObjectAt(i, j);
+        }
+    }
+    return board;
 }

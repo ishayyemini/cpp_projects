@@ -1,33 +1,69 @@
 #include "MyTankAlgorithm.h"
 
+#include "Logger.h"
+
+MyTankAlgorithm::MyTankAlgorithm(const int player_id, const int tank_index): player_id{player_id}, tank_index(tank_index),
+                                                                battle_status(MyBattleStatus(player_id, tank_index)) {
+}
+
+
+void MyTankAlgorithm::updateBattleInfo(BattleInfo &info) {
+    if (const MyBattleInfo* my_battle_info = dynamic_cast<MyBattleInfo*>(&info)) {
+        battle_status.updateBoard(my_battle_info->board);
+        battle_status.num_shells = my_battle_info->num_shells;
+        battle_status.max_steps = my_battle_info->max_steps;
+    }
+}
+
+void MyTankAlgorithm::printLogs(const std::string &msg) const {
+    Logger::getInstance().log("Player " + std::to_string(player_id) + " - Tank Index " +
+                              std::to_string(tank_index) + msg);
+}
+
+ActionRequest MyTankAlgorithm::getAction() {
+    ActionRequest request = ActionRequest::DoNothing;
+    std::string request_title = "Doing nothing";
+    calculateAction(&request, &request_title);
+    battle_status.turn_number++;
+    printLogs(request_title);
+    battle_status.updateBattleStatusBaseAction(request);
+    return request;
+}
+
+bool MyTankAlgorithm::isTankThreatened() const {
+    if (battle_status.isShellClose()) {
+        printLogs("Threatened by shells");
+        return true;
+    }
+    if (battle_status.isEnemyClose()) {
+        printLogs("Threatened by enemy");
+        return true;
+    }
+    return false;
+}
+
+
 
 ActionRequest MyTankAlgorithm::moveIfThreatened() const {
-    // TODO fix
-    // if (!state->getPlayerTank()) return ActionRequest::DoNothing;
-    //
-    // Position player_pos = state->getPlayerTank()->getPosition();
-    // Direction::DirectionType player_dir = state->getPlayerTank()->getDirection();
-    //
-    // // we'll try first moving forward in the current direction
-    // Position forward_pos = state->getBoard().wrapPosition(player_pos + player_dir);
-    //
-    // if (state->isSafePosition(forward_pos)) {
-    //     return ActionRequest::MoveForward;
-    // }
-    //
-    // // If we can't move forward in the current direction, we'll find a safe cell around us and rotate towards it
-    // for (int i = 0; i < 8; ++i) {
-    //     Direction::DirectionType try_dir = Direction::getDirectionFromIndex(i);
-    //     Position try_pos = state->getBoard().wrapPosition(player_pos + try_dir);
-    //     if (state->isSafePosition(try_pos)) {
-    //         return state->rotateTowards(try_dir);
-    //     }
-    // }
-    //
-    // if (state->isSafePosition(forward_pos, true)) {
-    //     return ActionRequest::MoveForward;
-    // }
+    // we'll try first moving forward in the current direction
+    Position forward_pos = wrapPosition(battle_status.tank_position + battle_status.tank_direction);
+
+    if (battle_status.isSafePosition(forward_pos)) {
+        return ActionRequest::MoveForward;
+    }
+
+    // If we can't move forward in the current direction, we'll find a safe cell around us and rotate towards it
+    for (int i = 0; i < 8; ++i) {
+        Direction::DirectionType possible_dir = Direction::getDirectionFromIndex(i);
+        Position possible_pos = wrapPosition(battle_status.tank_position + possible_dir);
+        if (battle_status.isSafePosition(possible_pos)) {
+            return battle_status.rotateTowards(possible_dir);
+        }
+    }
+
+    if (battle_status.isSafePosition(forward_pos, true)) {
+        return ActionRequest::MoveForward;
+    }
 
     return ActionRequest::DoNothing;
 }
-

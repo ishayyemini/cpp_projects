@@ -1,6 +1,9 @@
 #ifndef COLLISION_H
 #define COLLISION_H
 
+#include <memory>
+#include <vector>
+
 #include "GameObject.h"
 #include "Mine.h"
 #include "Shell.h"

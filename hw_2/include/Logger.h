@@ -4,6 +4,7 @@
 #include <fstream>
 #include <map>
 #include <string>
+#include <vector>
 
 #include "ActionRequest.h"
 
@@ -15,7 +16,7 @@ public:
     // Log a message to the log file
     void log(const std::string &message);
 
-    void logActions(std::vector<std::tuple<bool, ActionRequest, bool, bool> > actions);
+    void logActions(std::vector<std::tuple<bool, ActionRequest, bool, bool>> actions);
 
     void logResult(const std::string &message);
 

@@ -83,6 +83,21 @@ public:
         return getDirection(index * 45);
     }
 
+    static constexpr int getDistance(const Position &pos1, const Position &pos2) {
+        //todo: implement this
+        //todo: we need to check every possible direction. something similar to this
+        // for (int i = 0; i < 8; ++i) {
+        //     const Direction::DirectionType dir = Direction::getDirectionFromIndex(i);
+        //     if (enemy_pos == player_pos + dir) {
+        //         return true;
+        //     }
+        //     if (enemy_pos == player_pos + dir + dir) {
+        //         return true;
+        //     }
+        // }
+        return 43;
+    }
+
     static constexpr int getDirectionSize() {
         return kDirectionCount;
     }

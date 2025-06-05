@@ -1,15 +1,128 @@
 #include "PathfindingAlgorithm.h"
 
+#include <format>
 #include <queue>
 #include <set>
-
 #include "Logger.h"
 #include "Direction.h"
 
-bool tried_path_without_success = false;
+
 // a boolean to indicate if we are stuck in the current BFS path and need to recompute the path
-Position last_enemy_pos = {-1, -1}; // invalid value for the start
+bool tried_path_without_success = false;
 std::vector<Direction::DirectionType> current_path; // the current path we got from the BFS computation
+
+void PathfindingAlgorithm::initLatestEnemyPosition() {
+    last_enemy_positions = std::vector<Position>(battle_status.getEnemyTankCounts(), {-1, -1});
+}
+
+void PathfindingAlgorithm::updateLatestEnemyPosition() {
+    last_enemy_positions = battle_status.getEnemyPositions();
+}
+
+
+void PathfindingAlgorithm::handleTankThreatened(ActionRequest *request, std::string *request_title) {
+    //or shell is approaching or enemy tank is close
+    was_threatened = true;
+    if (battle_status.canTankShootEnemy(true)) {
+        *request = ActionRequest::Shoot;
+        *request_title = "Shoot threat";
+        return;
+    }
+    *request = moveIfThreatened();
+    *request_title = "Escape threat";
+}
+
+void PathfindingAlgorithm::tryShootEnemy(ActionRequest *request, std::string *request_title) {
+    if (battle_status.canTankShootEnemy()) {
+        tried_path_without_success = false;
+        *request = ActionRequest::Shoot;
+        *request_title = "Shoot Enemy";
+        return;
+    }
+    rotateToEnemy(request, request_title);
+}
+
+bool PathfindingAlgorithm::rotateToEnemy(ActionRequest *request, std::string *request_title) const {
+    for (auto dir_index = 0; dir_index < 8; ++dir_index) {
+        Direction::DirectionType dir = Direction::getDirectionFromIndex(dir_index);
+        if (battle_status.tank_direction == dir) continue;
+        if (battle_status.canTankShootEnemy(dir)) {
+            current_path.clear();
+            tried_path_without_success = false;
+            *request = battle_status.rotateTowards(dir);
+            *request_title = "Rotating " + std::to_string(dir_index) + " toward enemy";
+            return true;
+        }
+    }
+    return false;
+}
+
+void PathfindingAlgorithm::updatePathIfNeeded() {
+    const bool enemy_moved = hasEnemyMoved(last_enemy_positions); //todo: implement this
+    if (current_path.empty() || enemy_moved || tried_path_without_success) {
+        const std::string reason = current_path.empty()
+                                       ? "empty"
+                                       : (enemy_moved ? "enemy moved" : "triedPathWithoutSuccess");
+        std::string msg = "Computing BFS (reason: " + reason + ")";
+        current_path = computeBFS();
+        tried_path_without_success = current_path.empty();
+        updateLatestEnemyPosition();
+    }
+}
+
+void PathfindingAlgorithm::handleEmptyPath(ActionRequest *request, std::string *request_title) const {
+    if (battle_status.canTankShoot()) {
+        *request = ActionRequest::Shoot;
+        tried_path_without_success = !battle_status.canTankShootEnemy();
+        *request_title = (tried_path_without_success)
+                             ? "Shooting randomly due to stuck state"
+                             : "No path but can shoot directly";
+        return;
+    }
+    *request_title = "Stuck, rotating randomly";
+    *request = ActionRequest::RotateLeft45;
+    tried_path_without_success = true;
+}
+
+
+void PathfindingAlgorithm::followPathOrRotate(ActionRequest *request, std::string *request_title) {
+    Direction::DirectionType target_dir = current_path.front();
+    if (battle_status.tank_direction == target_dir) {
+        const Position next_pos = wrapPosition(battle_status.tank_position + target_dir);
+
+        if (battle_status.getBoardItem(next_pos) == '@') {
+            *request = ActionRequest::DoNothing;
+            *request_title = "Mine ahead – aborting move and resetting path";
+            current_path.clear();
+            tried_path_without_success = true;
+            return;
+        }
+
+        if (battle_status.getBoardItem(next_pos) == '#') {
+            if (battle_status.canTankShoot()) {
+                *request = ActionRequest::Shoot;
+                *request_title = "Wall ahead – shooting it";
+                tried_path_without_success = false;
+                return;
+            }
+            *request_title = "Wall ahead – Can't shoot. Do nothing";
+            *request = ActionRequest::DoNothing;
+            return;
+        }
+
+        current_path.erase(current_path.begin());
+        tried_path_without_success = false;
+        *request_title = "Moving forward to (" + std::to_string(next_pos.x) + "," + std::to_string(next_pos.y) + ")";
+        *request = ActionRequest::MoveForward;
+        return;
+    }
+
+    // if he isn't able to do anything, just rotate and maybe it will help in the next steps
+    tried_path_without_success = false;
+    *request_title = std::format("Rotating from direction {} to {}", battle_status.tank_direction, target_dir);
+    *request = battle_status.rotateTowards(target_dir);
+}
+
 
 std::vector<Direction::DirectionType> PathfindingAlgorithm::computeBFS() {
     struct Node {
@@ -20,160 +133,65 @@ std::vector<Direction::DirectionType> PathfindingAlgorithm::computeBFS() {
         }
     };
 
-    // Logger::getInstance().log(
-    //     "Player " + std::to_string(state->getPlayerId()) + ": BFS: starting BFS from position (" +
-    //     std::to_string(state->getPlayerTank()->getPosition().x) + "," + std::to_string(
-    //         state->getPlayerTank()->getPosition().y) + ")");
-    //
-    // std::queue<Node> q;
-    // std::set<Position> visited;
-    // q.push(Node(state->getPlayerTank()->getPosition(), {}));
-    //
-    // std::vector<Direction::DirectionType> best_path;
-    // size_t shortest_length = std::numeric_limits<size_t>::max();
-    //
-    // while (!q.empty()) {
-    //     auto [pos, path] = q.front();
-    //     q.pop();
-    //     if (visited.contains(pos)) continue;
-    //     visited.insert(pos);
-    //     // checking if the next step in the queue can lead to shooting the enemy directly
-    //     if (state->canShootEnemy(pos)) {
-    //         if (path.size() < shortest_length) {
-    //             best_path = path;
-    //             shortest_length = path.size();
-    //         }
-    //         continue;
-    //     }
-    //
-    //     for (const auto dir: state->getSafeDirections(pos)) {
-    //         const Position next = state->getBoard().wrapPosition(pos + dir);
-    //         if (visited.contains(next)) continue;
-    //
-    //         std::vector<Direction::DirectionType> new_path = path;
-    //         new_path.push_back(dir);
-    //         q.push(Node(next, new_path));
-    //     }
-    // }
-    // return best_path;
-    return {Direction::DirectionType::UP};
+    std::string msg = std::format("Performing BFS. Start Position = ({}, {})",
+                                  battle_status.tank_position.x,
+                                  battle_status.tank_position.y);
+    printLogs(msg);
+
+    std::queue<Node> q;
+    std::set<Position> visited;
+    q.push(Node(battle_status.tank_position, {}));
+
+    std::vector<Direction::DirectionType> best_path;
+    size_t shortest_length = std::numeric_limits<size_t>::max();
+
+    while (!q.empty()) {
+        auto [position, path] = q.front();
+        q.pop();
+        if (visited.contains(position)) continue;
+        visited.insert(position);
+        // checking if the next step in the queue can lead to shooting the enemy directly
+        if (battle_status.canTankShootEnemy(position)) {
+            if (path.size() < shortest_length) {
+                best_path = path;
+                shortest_length = path.size();
+            }
+            continue;
+        }
+
+        for (const auto dir: battle_status.getSafeDirections(position)) {
+            const Position next = wrapPosition(position + dir);
+            if (visited.contains(next)) continue;
+            std::vector<Direction::DirectionType> new_path = path;
+            new_path.push_back(dir);
+            q.push(Node(next, new_path));
+        }
+    }
+    return best_path;
 }
 
-ActionRequest PathfindingAlgorithm::getAction() {
-    return ActionRequest::DoNothing;
-    // TODO implement
-
-    // if (!state->getPlayerTank() || state->getPlayerTank()->isDestroyed() ||
-    //     !state->getEnemyTank() || state->getEnemyTank()->isDestroyed()) {
-    //     return ActionRequest::DoNothing;
-    // }
-    //
-    // if (state->isShellApproaching(state->getPlayerTank()->getPosition())) {
-    //     Logger::getInstance().log("Player " + std::to_string(state->getPlayerId()) + ": Threatened by shells.");
-    //     return moveIfThreatened();
-    // }
-    //
-    // if (state->getPlayerTank()->getAmmunition() == 0) {
-    //     Logger::getInstance().log("Player " + std::to_string(state->getPlayerId()) + ": No ammo.");
-    //     return ActionRequest::DoNothing;
-    // }
-    //
-    // Logger::getInstance().log(
-    //     "Player " + std::to_string(state->getPlayerId()) + ": Checking shooting condition - canShoot: " +
-    //     std::string(state->canShootEnemy() ? "true" : "false"));
-    //
-    // if (state->canShootEnemy()) {
-    //     Logger::getInstance().log(
-    //         "Player " + std::to_string(state->getPlayerId()) + ": Enemy in direction " + std::to_string(
-    //             state->getPlayerTank()->getDirection()) + ". Shooting now.");
-    //     tried_path_without_success = false;
-    //     return ActionRequest::Shoot;
-    // }
-    //
-    //
-    // for (int dir_index = 0; dir_index < 8; ++dir_index) {
-    //     Direction::DirectionType dir = Direction::getDirectionFromIndex(dir_index);
-    //     if (state->getPlayerTank()->getDirection() == dir) continue;
-    //     if (state->canShootEnemy(dir)) {
-    //         Logger::getInstance().log(
-    //             "Player " + std::to_string(state->getPlayerId()) + ": Enemy in direction " + std::to_string(dir_index) +
-    //             ", turning toward it.");
-    //         current_path.clear();
-    //         tried_path_without_success = false;
-    //         return state->rotateTowards(dir);
-    //     }
-    // }
-    //
-    // const bool enemy_moved = state->getEnemyTank()->getPosition() != last_enemy_pos;
-    //
-    // if (current_path.empty() || enemy_moved || tried_path_without_success) {
-    //     const std::string reason = current_path.empty()
-    //                                    ? "empty"
-    //                                    : (enemy_moved ? "enemy moved" : "triedPathWithoutSuccess");
-    //     Logger::getInstance().log(
-    //         "Player " + std::to_string(state->getPlayerId()) + ": Computing BFS (reason: " + reason + ")");
-    //     current_path = computeBFS();
-    //     tried_path_without_success = current_path.empty();
-    //     last_enemy_pos = state->getEnemyTank()->getPosition();
-    // }
-    //
-    // if (current_path.empty()) {
-    //     if (!state->canShootEnemy()) {
-    //         Logger::getInstance().log("Player " + std::to_string(state->getPlayerId()) + ": Stuck, rotating randomly");
-    //         tried_path_without_success = true;
-    //
-    //         if (state->canShoot()) {
-    //             Logger::getInstance().log(
-    //                 "Player " + std::to_string(state->getPlayerId()) + ": Shooting randomly due to stuck state");
-    //             return ActionRequest::Shoot;
-    //         }
-    //
-    //         return ActionRequest::RotateLeft45;
-    //     }
-    //
-    //     Logger::getInstance().
-    //             log("Player " + std::to_string(state->getPlayerId()) + ": No path but can shoot directly");
-    //     tried_path_without_success = false;
-    //     return ActionRequest::Shoot;
-    // }
-    //
-    // Direction::DirectionType target_dir = current_path.front();
-    // if (state->getPlayerTank()->getDirection() == target_dir) {
-    //     const Position next_pos = state->getBoard().wrapPosition(state->getPlayerTank()->getPosition() + target_dir);
-    //
-    //     if (state->getBoard().isMine(next_pos)) {
-    //         Logger::getInstance().log(
-    //             "Player " + std::to_string(state->getPlayerId()) + ": Mine ahead – aborting move and resetting path");
-    //         current_path.clear();
-    //         tried_path_without_success = true;
-    //         return ActionRequest::DoNothing;
-    //     }
-    //
-    //     if (state->getBoard().isWall(next_pos)) {
-    //         if (state->canShoot()) {
-    //             Logger::getInstance().log(
-    //                 "Player " + std::to_string(state->getPlayerId()) + ": Wall ahead – shooting it");
-    //             tried_path_without_success = false;
-    //             return ActionRequest::Shoot;
-    //         }
-    //
-    //         return ActionRequest::DoNothing;
-    //     }
-    //
-    //     current_path.erase(current_path.begin());
-    //     Logger::getInstance().log(
-    //         "Player " + std::to_string(state->getPlayerId()) + ": Moving forward to (" + std::to_string(next_pos.x) +
-    //         ","
-    //         + std::to_string(next_pos.y) + ")");
-    //     tried_path_without_success = false;
-    //     return ActionRequest::MoveForward;
-    // }
-    // // if he isn't able to do anything, just rotate and maybe it will help in the next steps
-    // Logger::getInstance().log(
-    //     "Player " + std::to_string(state->getPlayerId()) + ": Rotating from " + std::to_string(
-    //         state->getPlayerTank()->getDirection()) + " to " +
-    //     std::to_string(target_dir));
-    // tried_path_without_success = false;
-    // return state->rotateTowards(target_dir);
+void PathfindingAlgorithm::calculateAction(ActionRequest *request, std::string *request_title) {
+    if (battle_status.turn_number == 0 || was_threatened) {
+        was_threatened = false;
+        *request = ActionRequest::GetBattleInfo;
+        *request_title = "Requesting Battle Info (first turn or previously threatened)";
+        return;
+    }
+    if (isTankThreatened) {
+        handleTankThreatened(request, request_title);
+        return;
+    }
+    if (!battle_status.hasTankAmmo() || (battle_info_update < battle_status.turn_number)) {
+        battle_info_update = battle_status.turn_number + 1;
+        *request = ActionRequest::GetBattleInfo;
+        *request_title = "Requesting updated Battle Info";
+        return;
+    }
+    tryShootEnemy(request, request_title);
+    if (*request == ActionRequest::DoNothing) {
+        updatePathIfNeeded();
+        (current_path.empty())
+            ? handleEmptyPath(request, request_title)
+            : followPathOrRotate(request, request_title);
+    }
 }
-

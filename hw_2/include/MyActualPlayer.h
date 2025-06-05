@@ -1,5 +1,7 @@
 #ifndef TANK_GAME_MYACTUALPLAYER_H
 #define TANK_GAME_MYACTUALPLAYER_H
+#include <vector>
+
 #include "Player.h"
 
 //todo: make it abstract
@@ -9,6 +11,8 @@ class MyActualPlayer : public Player {
     size_t y;
     size_t max_steps;
     size_t num_shells;
+
+    std::vector<std::vector<char>> createBoardFromSatellite(const SatelliteView &satellite_view) const;
 
 public:
     MyActualPlayer(int player_index,
