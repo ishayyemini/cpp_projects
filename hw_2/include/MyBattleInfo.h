@@ -7,10 +7,10 @@
 class MyBattleInfo final : public BattleInfo {
 public:
     std::vector<std::vector<char> > board{};
-    int max_steps;;
-    int num_shells;
+    size_t max_steps;;
+    size_t num_shells;
 
-    explicit MyBattleInfo(const std::vector<std::vector<char> > &board, const int max_steps, const int num_shells): board(board),
+    explicit MyBattleInfo(const std::vector<std::vector<char> > &board, const size_t max_steps, const size_t num_shells): board(board),
         max_steps(max_steps),
         num_shells(num_shells) {
     }

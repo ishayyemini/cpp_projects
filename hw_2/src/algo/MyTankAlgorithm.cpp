@@ -1,9 +1,10 @@
 #include "MyTankAlgorithm.h"
 
 #include "Logger.h"
+#include "MyBattleInfo.h"
 
 MyTankAlgorithm::MyTankAlgorithm(const int player_id, const int tank_index): player_id{player_id}, tank_index(tank_index),
-                                                                battle_status(MyBattleStatus(player_id, tank_index)) {
+                                                                             battle_status(MyBattleStatus(player_id, tank_index)) {
 }
 
 
@@ -46,16 +47,16 @@ bool MyTankAlgorithm::isTankThreatened() const {
 
 ActionRequest MyTankAlgorithm::moveIfThreatened() const {
     // we'll try first moving forward in the current direction
-    Position forward_pos = wrapPosition(battle_status.tank_position + battle_status.tank_direction);
+    Position forward_pos = battle_status.wrapPosition(battle_status.tank_position + battle_status.tank_direction);
 
     if (battle_status.isSafePosition(forward_pos)) {
         return ActionRequest::MoveForward;
     }
 
     // If we can't move forward in the current direction, we'll find a safe cell around us and rotate towards it
-    for (int i = 0; i < 8; ++i) {
+    for (int i = 0; i < Direction::getDirectionSize(); ++i) {
         Direction::DirectionType possible_dir = Direction::getDirectionFromIndex(i);
-        Position possible_pos = wrapPosition(battle_status.tank_position + possible_dir);
+        Position possible_pos = battle_status.wrapPosition(battle_status.tank_position + possible_dir);
         if (battle_status.isSafePosition(possible_pos)) {
             return battle_status.rotateTowards(possible_dir);
         }

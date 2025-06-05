@@ -57,8 +57,17 @@ bool PathfindingAlgorithm::rotateToEnemy(ActionRequest *request, std::string *re
     return false;
 }
 
+bool PathfindingAlgorithm::hasEnemyMoved() const {
+    auto enemy_positions = battle_status.getEnemyPositions();
+    if (enemy_positions.size() != last_enemy_positions.size()) {
+        return true; // if the number of enemies changed, we definitely need to recompute the path
+    }
+    //todo: is there a better way to check? we don't really know the enemy's tank index so this is the best we can do i think
+    return enemy_positions == last_enemy_positions;
+}
+
 void PathfindingAlgorithm::updatePathIfNeeded() {
-    const bool enemy_moved = hasEnemyMoved(last_enemy_positions); //todo: implement this
+    const bool enemy_moved = hasEnemyMoved();
     if (current_path.empty() || enemy_moved || tried_path_without_success) {
         const std::string reason = current_path.empty()
                                        ? "empty"
@@ -88,7 +97,7 @@ void PathfindingAlgorithm::handleEmptyPath(ActionRequest *request, std::string *
 void PathfindingAlgorithm::followPathOrRotate(ActionRequest *request, std::string *request_title) {
     Direction::DirectionType target_dir = current_path.front();
     if (battle_status.tank_direction == target_dir) {
-        const Position next_pos = wrapPosition(battle_status.tank_position + target_dir);
+        const Position next_pos = battle_status.wrapPosition(battle_status.tank_position + target_dir);
 
         if (battle_status.getBoardItem(next_pos) == '@') {
             *request = ActionRequest::DoNothing;
@@ -160,7 +169,7 @@ std::vector<Direction::DirectionType> PathfindingAlgorithm::computeBFS() {
         }
 
         for (const auto dir: battle_status.getSafeDirections(position)) {
-            const Position next = wrapPosition(position + dir);
+            const Position next = battle_status.wrapPosition(position + dir);
             if (visited.contains(next)) continue;
             std::vector<Direction::DirectionType> new_path = path;
             new_path.push_back(dir);
@@ -181,8 +190,8 @@ void PathfindingAlgorithm::calculateAction(ActionRequest *request, std::string *
         handleTankThreatened(request, request_title);
         return;
     }
-    if (!battle_status.hasTankAmmo() || (battle_info_update < battle_status.turn_number)) {
-        battle_info_update = battle_status.turn_number + 1;
+    if (!battle_status.hasTankAmmo() || (battle_status.last_requested_info_turn < battle_status.turn_number)) {
+        battle_status.last_requested_info_turn = battle_status.turn_number + 1;
         *request = ActionRequest::GetBattleInfo;
         *request_title = "Requesting updated Battle Info";
         return;

@@ -1,18 +1,19 @@
 #ifndef BATTLEUTILS_H
 #define BATTLEUTILS_H
 #include <vector>
-
 #include "Direction.h"
 
 //todo: add rule of 5
 class MyBattleStatus {
 public:
-    int board_x{0};
-    int board_y{0};
-    int max_steps{0};
-    int num_shells{0};
-    int turn_number{0};
-    int cool_down{0};
+    size_t board_x{0};
+    size_t board_y{0};
+    size_t max_steps{0};
+    size_t num_shells{0};
+    size_t turn_number{0};
+    size_t cool_down{0};
+    size_t last_requested_info_turn{0};
+
     Direction::DirectionType tank_direction;
     Position tank_position = {-1, -1};
 
@@ -30,7 +31,7 @@ public:
     explicit MyBattleStatus(int player_id, int tank_index);
 
     void updateBoard(const std::vector<std::vector<char> > &updated_board);
-
+    Position wrapPosition(Position p) const;
     void updateBattleStatusBaseAction(ActionRequest action);
     char getBoardItem(int x, int y) const;
     char getBoardItem(Position p) const;
@@ -39,15 +40,16 @@ public:
     bool isShellClose(int thresh = 2) const;
     bool isEnemyClose(Position position) const;
     bool isEnemyClose() const;
-    int getEnemyTankCounts() const;
-    std::vector<Position> getEnemyPositions();
+    size_t getEnemyTankCounts() const;
+    std::vector<Position> getEnemyPositions() const;
 
     bool hasTankAmmo() const;
     bool canTankShoot() const;
     bool canTankShootEnemy(bool include_shells=false) const;
     bool canTankShootEnemy(Position enemy) const;
     bool canTankShootEnemy(Direction::DirectionType dir, bool include_shells=false) const;
-    bool isSafePosition(Position p, const bool immediate_safe=false) const;
+    bool isSafePosition(Position p, bool immediate_safe=false) const;
+    std::vector<Direction::DirectionType> getSafeDirections(Position position) const;
 
     ActionRequest rotateTowards(Direction::DirectionType to_direction) const;
 

@@ -17,7 +17,6 @@ public:
 protected:
     int player_id{0};
     int tank_index = {0};
-    int battle_info_update{0};
     MyBattleStatus battle_status;
 
 
@@ -32,8 +31,6 @@ protected:
     bool isTankThreatened() const;
 
     ActionRequest moveIfThreatened() const;
-
-
 
 
 };

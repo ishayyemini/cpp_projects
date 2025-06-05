@@ -30,6 +30,7 @@ private:
     void handleEmptyPath(ActionRequest *request, std::string *request_title) const;
     void followPathOrRotate(ActionRequest *request, std::string *request_title);
     std::vector<Direction::DirectionType> computeBFS();
+    bool hasEnemyMoved() const;
 };
 
 

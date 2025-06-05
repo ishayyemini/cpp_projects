@@ -1,8 +1,5 @@
 #include "MyBattleStatus.h"
 
-#include "../../build/_deps/googletest-src/googlemock/include/gmock/gmock-actions.h"
-
-
 MyBattleStatus::MyBattleStatus(int player_id, int tank_index): player_id(player_id),
                                                                tank_index(tank_index),
                                                                tank_direction(
@@ -10,6 +7,12 @@ MyBattleStatus::MyBattleStatus(int player_id, int tank_index): player_id(player_
                                                                        ? Direction::LEFT
                                                                        : Direction::RIGHT) {
     updateTanksPosition();
+}
+
+Position MyBattleStatus::wrapPosition(Position p) const {
+    const size_t mod_x = p.x % board_x;
+    const size_t mod_y = p.y % board_y;
+    return {static_cast<int>(mod_x), static_cast<int>(mod_y)};
 }
 
 void MyBattleStatus::updateBoard(const std::vector<std::vector<char> > &updated_board) {
@@ -94,6 +97,20 @@ bool MyBattleStatus::isSafePosition(Position p, const bool immediate_safe) const
     return !(isShellClose(p) || isEnemyClose(p));
 }
 
+std::vector<Direction::DirectionType> MyBattleStatus::getSafeDirections(const Position position) const {
+    std::vector<Direction::DirectionType> safe_directions;
+
+    for (int i = 0; i < Direction::getDirectionSize(); i++) {
+        auto direction = Direction::getDirectionFromIndex(i);
+        Position next_position = position + direction;
+        if (isSafePosition(next_position)) {
+            safe_directions.push_back(direction);
+        }
+    }
+
+    return safe_directions;
+}
+
 ActionRequest MyBattleStatus::rotateTowards(Direction::DirectionType to_direction) const {
     if (tank_direction == to_direction) return ActionRequest::DoNothing;
 
@@ -151,11 +168,11 @@ char MyBattleStatus::getAllyName() const {
     return (player_id == 1) ? boardItemToChar(BoardItem::TANK_PLAYER_1) : boardItemToChar(BoardItem::TANK_PLAYER_2);
 }
 
-std::vector<Position> MyBattleStatus::getEnemyPositions() {
+std::vector<Position> MyBattleStatus::getEnemyPositions() const {
     return enemy_positions;
 }
 
-int MyBattleStatus::getEnemyTankCounts() const {
+size_t MyBattleStatus::getEnemyTankCounts() const {
     return enemy_positions.size();
 }
 
