@@ -1,5 +1,7 @@
 #include "MyBattleStatus.h"
 
+#include "Direction.h"
+
 MyBattleStatus::MyBattleStatus(int player_id, int tank_index): tank_direction(
                                                                    player_id == 1
                                                                        ? Direction::LEFT
@@ -12,7 +14,7 @@ MyBattleStatus::MyBattleStatus(int player_id, int tank_index): tank_direction(
 Position MyBattleStatus::wrapPosition(Position p) const {
     const size_t mod_x = p.x % board_x;
     const size_t mod_y = p.y % board_y;
-    return {static_cast<int>(mod_x), static_cast<int>(mod_y)};
+    return {mod_x, mod_y};
 }
 
 void MyBattleStatus::updateBoard(const std::vector<std::vector<char> > &updated_board) {
@@ -140,7 +142,7 @@ void MyBattleStatus::updateTanksPosition() {
     std::vector<Position> shells;
     for (size_t i{0}; i < board.size(); i++) {
         for (size_t j{0}; j < board.front().size(); j++) {
-            Position p = {static_cast<int>(i), static_cast<int>(j)};
+            Position p = {i, j};
 
             if (board[i][j] == getAllyName()) {
                 ally.push_back(p);
