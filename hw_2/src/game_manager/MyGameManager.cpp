@@ -106,7 +106,7 @@ bool MyGameManager::tankAction(Tank &tank, const ActionRequest action) {
             result = shoot(tank);
             break;
         case ActionRequest::GetBattleInfo:
-            result = getBattleInfo(tank.getTankAlgoIndex(), tank.getPlayerIndex());
+            result = getBattleInfo(tank, tank.getPlayerIndex());
             break;
         default: ;
     }
@@ -182,10 +182,13 @@ bool MyGameManager::shoot(Tank &tank) {
 }
 
 //todo: note that each time it creates MySatelliteView Object. should we reuse the same?
-bool MyGameManager::getBattleInfo(const size_t tank_algo_i, const size_t player_i) {
+bool MyGameManager::getBattleInfo(const Tank &tank, const size_t player_i) {
     //todo: the player should get the an object of type SatelliteView? - If so we should cast this
+    const int tank_algo_i = tank.getTankAlgoIndex();
     auto satellite_view = MySatelliteView(board->getWidth(), board->getHeight());
     board->fillSatelliteView(satellite_view);
+    auto [x,y] = tank.getPosition();
+    satellite_view.setObjectAt(x, y, '%');
     players[player_i - 1]->updateTankWithBattleInfo(*tanks[tank_algo_i], satellite_view);
     return true;
 }

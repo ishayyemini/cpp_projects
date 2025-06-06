@@ -3,13 +3,16 @@
 #include "Logger.h"
 #include "MyBattleInfo.h"
 
-MyTankAlgorithm::MyTankAlgorithm(const int player_id, const int tank_index): player_id{player_id}, tank_index(tank_index),
-                                                                             battle_status(MyBattleStatus(player_id, tank_index)) {
+MyTankAlgorithm::MyTankAlgorithm(const int player_id, const int tank_index): player_id{player_id},
+                                                                             tank_index(tank_index),
+                                                                             battle_status(
+                                                                                 MyBattleStatus(
+                                                                                     player_id, tank_index)) {
 }
 
 
 void MyTankAlgorithm::updateBattleInfo(BattleInfo &info) {
-    if (const MyBattleInfo* my_battle_info = dynamic_cast<MyBattleInfo*>(&info)) {
+    if (const MyBattleInfo *my_battle_info = dynamic_cast<MyBattleInfo *>(&info)) {
         battle_status.updateBoard(my_battle_info->board);
         battle_status.num_shells = my_battle_info->num_shells;
         battle_status.max_steps = my_battle_info->max_steps;
@@ -18,7 +21,7 @@ void MyTankAlgorithm::updateBattleInfo(BattleInfo &info) {
 
 void MyTankAlgorithm::printLogs(const std::string &msg) const {
     Logger::getInstance().log("Player " + std::to_string(player_id) + " - Tank Index " +
-                              std::to_string(tank_index) + msg);
+                              std::to_string(tank_index) + " " + msg);
 }
 
 ActionRequest MyTankAlgorithm::getAction() {
@@ -42,7 +45,6 @@ bool MyTankAlgorithm::isTankThreatened() const {
     }
     return false;
 }
-
 
 
 ActionRequest MyTankAlgorithm::moveIfThreatened() const {

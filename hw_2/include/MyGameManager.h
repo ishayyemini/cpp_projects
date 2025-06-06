@@ -55,7 +55,7 @@ private:
 
     bool shoot(Tank &tank);
 
-    bool getBattleInfo(size_t tank_algo_i, size_t player_i);
+    bool getBattleInfo(const Tank &tank, size_t player_i);
 
     bool allEmptyAmmo() const;
 

@@ -114,7 +114,7 @@ std::vector<Direction::DirectionType> MyBattleStatus::getSafeDirections(const Po
 
     for (int i = 0; i < Direction::getDirectionSize(); i++) {
         auto direction = Direction::getDirectionFromIndex(i);
-        Position next_position = position + direction;
+        Position next_position = wrapPosition(position + direction);
         if (isSafePosition(next_position)) {
             safe_directions.push_back(direction);
         }
@@ -171,6 +171,7 @@ void MyBattleStatus::updateTanksPosition() {
 }
 
 char MyBattleStatus::getEnemyName() const {
+    (void) tank_index;
     return (player_id == 1) ? boardItemToChar(BoardItem::TANK_PLAYER_2) : boardItemToChar(BoardItem::TANK_PLAYER_1);
 }
 
