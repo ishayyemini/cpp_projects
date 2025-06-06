@@ -18,9 +18,8 @@ void SimpleAlgorithm::calculateAction(ActionRequest *request, std::string *reque
         *request = ActionRequest::Shoot;
         *request_title = "Shooting enemy in direct line of fire";
     }
-    if (battle_status.last_requested_info_turn < battle_status.turn_number) {
-        battle_status.last_requested_info_turn = battle_status.turn_number + 1;
-        *request = ActionRequest::GetBattleInfo;
-        *request_title = "Requesting updated Battle Info";
-    }
+
+    battle_status.last_requested_info_turn = battle_status.turn_number + 1;
+    *request = ActionRequest::GetBattleInfo;
+    *request_title = "Requesting updated Battle Info";
 }
