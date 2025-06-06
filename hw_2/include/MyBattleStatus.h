@@ -35,9 +35,11 @@ public:
     void updateBattleStatusBaseAction(ActionRequest action);
     char getBoardItem(int x, int y) const;
     char getBoardItem(Position p) const;
+    size_t getDistance(const Position &pos1, const Position &pos2) const;
 
-    bool isShellClose(Position position, int thresh=2) const;
-    bool isShellClose(int thresh = 2) const;
+
+    bool isShellClose(Position position, size_t thresh=2) const;
+    bool isShellClose(size_t thresh = 2) const;
     bool isEnemyClose(Position position) const;
     bool isEnemyClose() const;
     size_t getEnemyTankCounts() const;

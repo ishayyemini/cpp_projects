@@ -44,6 +44,16 @@ char MyBattleStatus::getBoardItem(Position p) const {
     return getBoardItem(p.x, p.y);
 }
 
+size_t MyBattleStatus::getDistance(const Position &a, const Position &b) const {
+    int raw_dx = std::abs(static_cast<int>(a.x) - static_cast<int>(b.x));
+    int raw_dy = std::abs(static_cast<int>(a.y) - static_cast<int>(b.y));
+
+    size_t dx = std::min(static_cast<size_t>(raw_dx), board_x - static_cast<size_t>(raw_dx));
+    size_t dy = std::min(static_cast<size_t>(raw_dy), board_y - static_cast<size_t>(raw_dy));
+
+    return std::max(dx, dy);
+}
+
 bool MyBattleStatus::canTankShootEnemy(Direction::DirectionType dir, bool include_shells) const {
     if (enemy_positions.empty() || !canTankShoot()) {
         return false;
@@ -190,9 +200,9 @@ void MyBattleStatus::updateBattleStatusBaseAction(ActionRequest action) {
     updateTankDirectionBaseAction(action);
 }
 
-bool MyBattleStatus::isShellClose(Position position, int thresh) const {
+bool MyBattleStatus::isShellClose(Position position, size_t thresh) const {
     for (auto shell_pos: shells_position) {
-        if (Direction::getDistance(position, shell_pos) < thresh) {
+        if (getDistance(position, shell_pos) < thresh) {
             return true;
         }
     }
@@ -204,16 +214,16 @@ bool MyBattleStatus::isEnemyClose(Position position) const {
         return false;
     }
     for (auto enemy_position: enemy_positions) {
-        if (Direction::getDistance(position, enemy_position) <= 2) {
+        if (getDistance(position, enemy_position) <= 2) {
             return true;
         }
     }
     return false;
 }
 
-//this time we cannot know the shells direction.
+//this time we cannot know the shells' direction.
 //we say shell is threatening a tank if is close to him
-bool MyBattleStatus::isShellClose(int thresh) const {
+bool MyBattleStatus::isShellClose(size_t thresh) const {
     return isShellClose(tank_position, thresh);
 }
 

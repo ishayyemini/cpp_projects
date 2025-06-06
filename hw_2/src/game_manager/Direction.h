@@ -2,8 +2,9 @@
 #define DIRECTION_H
 
 #include <array>
+#include <string>
+#include <ostream>
 #include "ActionRequest.h"
-#include "Logger.h"
 
 class Direction;
 enum class DirectionType : int;
@@ -94,22 +95,6 @@ public:
 
     static constexpr DirectionType getDirectionFromIndex(const int index) {
         return getDirection(index * 45);
-    }
-
-    static int getDistance(const Position &pos1, const Position &pos2) {
-        //todo: implement this
-        //todo: we need to check every possible direction. something similar to this
-        // for (int i = 0; i < 8; ++i) {
-        //     const Direction::DirectionType dir = Direction::getDirectionFromIndex(i);
-        //     if (enemy_pos == player_pos + dir) {
-        //         return true;
-        //     }
-        //     if (enemy_pos == player_pos + dir + dir) {
-        //         return true;
-        //     }
-        // }
-        Logger::getInstance().log("TODO: Distance " + pos1.toString() + "," + pos2.toString());
-        return 43;
     }
 
     static constexpr int getDirectionSize() {
