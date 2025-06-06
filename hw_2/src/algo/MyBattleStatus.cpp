@@ -1,11 +1,11 @@
 #include "MyBattleStatus.h"
 
-MyBattleStatus::MyBattleStatus(int player_id, int tank_index): player_id(player_id),
-                                                               tank_index(tank_index),
-                                                               tank_direction(
+MyBattleStatus::MyBattleStatus(int player_id, int tank_index): tank_direction(
                                                                    player_id == 1
                                                                        ? Direction::LEFT
-                                                                       : Direction::RIGHT) {
+                                                                       : Direction::RIGHT),
+                                                               player_id(player_id),
+                                                               tank_index(tank_index) {
     updateTanksPosition();
 }
 
@@ -75,7 +75,7 @@ bool MyBattleStatus::canTankShootEnemy(bool include_shells) const {
 
 bool MyBattleStatus::isTargetOnSight(Direction::DirectionType dir, Position target) const {
     Position p = tank_position;
-    for (int i = 1; i <= std::max(board_x, board_y); i++) {
+    for (size_t i = 1; i <= std::max(board_x, board_y); i++) {
         p = wrapPosition(p + dir);
         if (target == p) return true;
         if (board[p.x][p.y] == boardItemToChar(BoardItem::WALL) || board[p.x][p.y] == getAllyName()) {
@@ -134,15 +134,13 @@ ActionRequest MyBattleStatus::rotateTowards(Direction::DirectionType to_directio
 }
 
 
-
-
 void MyBattleStatus::updateTanksPosition() {
     std::vector<Position> enemy;
     std::vector<Position> ally;
     std::vector<Position> shells;
-    for (auto i{0}; i < board.size(); i++) {
-        for (auto j{0}; j < board.front().size(); j++) {
-            Position p = {i, j};
+    for (size_t i{0}; i < board.size(); i++) {
+        for (size_t j{0}; j < board.front().size(); j++) {
+            Position p = {static_cast<int>(i), static_cast<int>(j)};
 
             if (board[i][j] == getAllyName()) {
                 ally.push_back(p);

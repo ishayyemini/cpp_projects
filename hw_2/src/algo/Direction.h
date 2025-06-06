@@ -5,6 +5,7 @@
 #include <ostream>
 
 #include "ActionRequest.h"
+#include "Logger.h"
 
 class Direction;
 enum class DirectionType : int;
@@ -69,6 +70,20 @@ public:
         UP_LEFT = 315,
     };
 
+    static std::string directionToString(const DirectionType dir) {
+        switch (dir) {
+            case UP: return "UP";
+            case UP_RIGHT: return "UP_RIGHT";
+            case RIGHT: return "RIGHT";
+            case DOWN_RIGHT: return "DOWN_RIGHT";
+            case DOWN: return "DOWN";
+            case DOWN_LEFT: return "DOWN_LEFT";
+            case LEFT: return "LEFT";
+            case UP_LEFT: return "UP_LEFT";
+        }
+        return "UNKNOWN";
+    }
+
     static constexpr Position getDirectionDelta(const DirectionType dir) {
         return directionOffsets[dir / 45];
     }
@@ -83,7 +98,7 @@ public:
         return getDirection(index * 45);
     }
 
-    static constexpr int getDistance(const Position &pos1, const Position &pos2) {
+    static int getDistance(const Position &pos1, const Position &pos2) {
         //todo: implement this
         //todo: we need to check every possible direction. something similar to this
         // for (int i = 0; i < 8; ++i) {
@@ -95,6 +110,7 @@ public:
         //         return true;
         //     }
         // }
+        Logger::getInstance().log("TODO: Distance " + pos1.toString() + "," + pos2.toString());
         return 43;
     }
 

@@ -128,7 +128,7 @@ void PathfindingAlgorithm::followPathOrRotate(ActionRequest *request, std::strin
 
     // if he isn't able to do anything, just rotate and maybe it will help in the next steps
     tried_path_without_success = false;
-    *request_title = std::format("Rotating from direction {} to {}", battle_status.tank_direction, target_dir);
+    *request_title = std::format("Rotating from direction {} to {}", Direction::directionToString(battle_status.tank_direction), Direction::directionToString(target_dir));
     *request = battle_status.rotateTowards(target_dir);
 }
 
@@ -186,7 +186,7 @@ void PathfindingAlgorithm::calculateAction(ActionRequest *request, std::string *
         *request_title = "Requesting Battle Info (first turn or previously threatened)";
         return;
     }
-    if (isTankThreatened) {
+    if (isTankThreatened()) {
         handleTankThreatened(request, request_title);
         return;
     }
