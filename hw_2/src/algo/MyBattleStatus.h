@@ -3,7 +3,6 @@
 #include <vector>
 #include "Direction.h"
 
-//todo: add rule of 5
 class MyBattleStatus {
 public:
     size_t board_x{0};

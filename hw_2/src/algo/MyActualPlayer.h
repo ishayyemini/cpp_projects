@@ -4,7 +4,6 @@
 #include <vector>
 #include "Player.h"
 
-//todo: rule of 5 - check is actually abstract class
 class MyActualPlayer : public Player {
     int player_index;
     size_t x;
@@ -13,6 +12,14 @@ class MyActualPlayer : public Player {
     size_t num_shells;
 
     std::vector<std::vector<char> > createBoardFromSatellite(const SatelliteView &satellite_view) const;
+
+    MyActualPlayer(const MyActualPlayer &) = delete;
+
+    MyActualPlayer &operator=(const MyActualPlayer &) = delete;
+
+    MyActualPlayer(MyActualPlayer &&) = delete;
+
+    MyActualPlayer &operator=(MyActualPlayer &&) = delete;
 
 protected:
     MyActualPlayer(int player_index,
@@ -24,6 +31,8 @@ protected:
 
 public:
     void updateTankWithBattleInfo(TankAlgorithm &tank, SatelliteView &satellite_view) override;
+
+    ~MyActualPlayer() override = default;
 };
 
 

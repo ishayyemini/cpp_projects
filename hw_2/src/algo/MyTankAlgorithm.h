@@ -12,13 +12,10 @@ public:
 
     void updateBattleInfo(BattleInfo &info) override;
 
-    virtual ~MyTankAlgorithm() = default;
-
 protected:
     int player_id{0};
     int tank_index = {0};
     MyBattleStatus battle_status;
-
 
     MyTankAlgorithm(int player_id, int tank_index);
 
@@ -31,8 +28,6 @@ protected:
     bool isTankThreatened() const;
 
     ActionRequest moveIfThreatened() const;
-
-
 };
 
 #endif //ALGORITHM_H

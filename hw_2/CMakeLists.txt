@@ -19,12 +19,7 @@ file(GLOB_RECURSE SOURCES "${PROJECT_SOURCE_DIR}/src/*.cpp" "${PROJECT_SOURCE_DI
 list(FILTER SOURCES EXCLUDE REGEX ".*main\\.cpp$")
 
 # Add the main executable
-add_executable(tank_game ${SOURCES} "${PROJECT_SOURCE_DIR}/src/main.cpp"
-        include/MyActualPlayer.h
-        src/algo/MyActualPlayer.cpp
-        include/MyBattleStatus.h
-        src/algo/MyBattleStatus.cpp
-)
+add_executable(tank_game ${SOURCES} "${PROJECT_SOURCE_DIR}/src/main.cpp")
 
 # Add the shared library for Python
 add_library(tank_game_lib SHARED

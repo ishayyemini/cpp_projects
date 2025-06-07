@@ -7,7 +7,6 @@
 
 #include <iostream>
 #include <map>
-#include <unordered_set>
 #include <memory>
 #include <vector>
 
@@ -60,6 +59,15 @@ class Board {
         std::cout << "Description: " << desc << ", max_steps: " << max_steps << ", num_shells: " << num_shells <<
                 std::endl;
     }
+
+    // block copy and move
+    Board(const Board &) = delete;
+
+    Board &operator=(const Board &) = delete;
+
+    Board(Board &&) = delete;
+
+    Board &operator=(Board &&) = delete;
 
 public:
     Board();
@@ -116,6 +124,8 @@ public:
     size_t getMaxSteps() const { return max_steps; }
 
     void fillSatelliteView(MySatelliteView &satellite_view) const;
+
+    ~Board() = default;
 };
 
 template<typename T>

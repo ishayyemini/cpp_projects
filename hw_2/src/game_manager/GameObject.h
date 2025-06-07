@@ -6,6 +6,14 @@
 static int static_id = 0;
 
 class GameObject {
+    GameObject(const GameObject &) = delete;
+
+    GameObject &operator=(const GameObject &) = delete;
+
+    GameObject(GameObject &&) = delete;
+
+    GameObject &operator=(GameObject &&) = delete;
+
 protected:
     int id;
     Position position;
@@ -13,6 +21,8 @@ protected:
     bool destroyed = false;
 
 public:
+    virtual ~GameObject() = default;
+
     explicit GameObject(const Position position,
                         const Direction::DirectionType direction): id(static_id++), position(position),
                                                                    direction(direction) {
@@ -20,8 +30,6 @@ public:
 
     explicit GameObject(const Position position): id(static_id++), position(position) {
     }
-
-    virtual ~GameObject() = default;
 
     [[nodiscard]] virtual char getSymbol() const { return ' '; }
 

@@ -37,6 +37,11 @@ public:
 
     Logger &operator=(const Logger &) = delete;
 
+    // Delete move and assignment to ensure singleton pattern
+    Logger(Logger &&) = delete;
+
+    Logger &operator=(Logger &&) = delete;
+
 private:
     // Private constructor for singleton pattern
     Logger();

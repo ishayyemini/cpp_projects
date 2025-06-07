@@ -1,9 +1,10 @@
 #ifndef INPUTPARSER_H
 #define INPUTPARSER_H
 
+#include <unordered_set>
+
 #include "Board.h"
 
-//todo: implement rule of 5
 class InputParser {
     std::vector<std::string> error_messages;
     std::unique_ptr<Board> board;
@@ -31,6 +32,14 @@ class InputParser {
     bool parseBoardInfo(std::ifstream &inFile);
 
     void addErrorMessagesToLog();
+
+    InputParser(const InputParser &) = delete;
+
+    InputParser &operator=(const InputParser &) = delete;
+
+    InputParser(InputParser &&) = delete;
+
+    InputParser &operator=(InputParser &&) = delete;
 
 public:
     InputParser() = default;
