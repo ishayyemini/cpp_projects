@@ -1,0 +1,21 @@
+Visualization
+The visualization starts in PAUSED mode by default, allowing you to manually navigate through the steps. Press SPACE to
+start automatic playback.
+- Features:
+    - Real-time visualization of tank movement, shooting, and destruction
+    - Step-by-step playback with control over speed
+    - Display of tank ammunition counts
+    - Object counters showing tanks, shells, mines, and walls in play
+- Various controls:
+    - Space: Play/Pause the visualization
+    - Right Arrow: Next step
+    - Left Arrow: Previous step
+    - Up Arrow: Forward 3 steps
+    - Down Arrow: Back 3 steps
+    - Home: Go to first step
+    - End: Go to last step
+    - Escape: Quit the visualizer
+- Additional options:
+    - `--cell-size`: Set the size of each grid cell (default: 40 pixels)
+    - `--delay`: Set the delay between steps (default: 0.2 seconds)
+    - `--debug`: Enable debug output (useful for troubleshooting)

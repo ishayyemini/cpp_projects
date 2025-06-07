@@ -26,6 +26,7 @@ int main(const int argc, char *argv[]) {
     GameManager game(player_factory, tank_algorithm_factory);
     game.readBoard(path);
     game.setVisual(visual);
+    game.enableGameStateExport("game_state.txt"); // Enable export to file
     game.run();
 
     return EXIT_SUCCESS;

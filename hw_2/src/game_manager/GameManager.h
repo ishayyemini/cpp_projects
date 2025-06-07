@@ -1,6 +1,7 @@
 #ifndef MYGAMEMANAGER_H
 #define MYGAMEMANAGER_H
 #include <map>
+#include <fstream>
 
 #include "Board.h"
 #include "PlayerFactory.h"
@@ -33,11 +34,19 @@ public:
     void updateCounters(Tank &tank, ActionRequest action);
 
     void setVisual(bool visual) { this->visual = visual; }
+    
+    // Add visualization output capabilities
+    void enableGameStateExport(const std::string& output_file) { 
+        export_game_state = true; 
+        game_state_file.open(output_file);
+    }
 
 private:
     static constexpr int max_steps_empty_ammo = 40;
 
     bool visual = false;
+    bool export_game_state = false;
+    std::ofstream game_state_file;
     size_t game_step = 0;
     bool game_over = false;
     Winner winner = NO_WINNER;
@@ -77,6 +86,9 @@ private:
     std::string getGameResult() const;
 
     void logStep();
+
+    // New method to export game state data for visualization
+    void exportGameState();
 };
 
 #endif //MYGAMEMANAGER_H

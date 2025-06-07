@@ -243,6 +243,11 @@ void GameManager::processStep() {
 
     checkDeaths();
     logStep();
+
+    // Export game state for visualization after each step
+    if (export_game_state) {
+        exportGameState();
+    }
 }
 
 std::string GameManager::getGameResult() const {
@@ -284,3 +289,46 @@ void GameManager::logStep() {
         }
     }
 }
+
+void GameManager::exportGameState() {
+    if (!game_state_file.is_open()) return;
+    game_state_file << "STEP " << game_step << std::endl;
+    game_state_file << board->getWidth() << " " << board->getHeight() << std::endl;
+
+    for (int y = 0; y < board->getHeight(); y++) {
+        for (int x = 0; x < board->getWidth(); x++) {
+            Position pos{x, y};
+            auto obj = board->getObjectAt(pos);
+            if (obj) {
+                char symbol = obj->getSymbol();
+                if (symbol == '1' || symbol == '2') {
+                    auto tank = dynamic_cast<Tank *>(obj);
+                    if (tank) {
+                        int player_id = tank->getPlayerIndex();
+                        int dir = tank->getDirection();
+                        int ammo = tank->getAmmunition();
+                        game_state_file << "T," << x << "," << y << "," << player_id << "," << dir << "," << ammo <<
+                                std::endl;
+                    }
+                } else if (symbol == '*' || symbol == 'X') {
+                    int dir = obj->getDirection();
+                    game_state_file << "*," << x << "," << y << "," << dir << std::endl;
+                } else if (symbol == '@') {
+                    game_state_file << "@," << x << "," << y << std::endl;
+                } else if (symbol == '#') {
+                    game_state_file << "#," << x << "," << y << std::endl;
+                }
+            }
+        }
+    }
+
+    game_state_file << "END_STEP" << std::endl;
+    game_state_file.flush();
+
+    if (game_over) {
+        game_state_file << "GAME_OVER" << std::endl;
+        game_state_file << getGameResult() << std::endl;
+        game_state_file.close();
+    }
+}
+

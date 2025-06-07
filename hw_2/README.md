@@ -1,4 +1,4 @@
-# Advanced Topics Ex1 - Game Build Instructions
+# Advanced Topics Ex2 - Game Build Instructions
 
 ## This project is submitted by
 
@@ -25,11 +25,11 @@ g++ -std=c++20 -Wall -Wextra -Werror -pedantic
 
 The following instructions are for linux / Unix based systems.
 
-Open a terminal and navigate to the advanced_topics_ex1 directory:
+Open a terminal and navigate to the advanced_topics_ex2 directory:
 
 ```bash
 
-cd /path/to/advanced_topics_ex1
+cd /path/to/advanced_topics_ex2
 ```
 
 Build the project for Linux based on the following instructions. Then run the project based on the "Run
@@ -51,11 +51,18 @@ Linux:
 ./tanks_game <Map_File_Name>
 ```
 
-Optionally, if you want to run it with a visualization, run:
+Optionally, if you want to run a visualization, first install:
 
 ```bash
 
-./tanks_game -g <Map_File_Name>
+   pip install pygame
+```
+
+And then, after running a game, run:
+
+```bash
+
+python tank_visualizer.py game_state.txt
 ```
 
 If you want to test it, run:
