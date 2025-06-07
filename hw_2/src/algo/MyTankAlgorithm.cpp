@@ -13,9 +13,9 @@ MyTankAlgorithm::MyTankAlgorithm(const int player_id, const int tank_index): pla
 
 void MyTankAlgorithm::updateBattleInfo(BattleInfo &info) {
     if (const MyBattleInfo *my_battle_info = dynamic_cast<MyBattleInfo *>(&info)) {
-        battle_status.updateBoard(my_battle_info->board);
-        battle_status.num_shells = my_battle_info->num_shells;
-        battle_status.max_steps = my_battle_info->max_steps;
+        battle_status.updateBoard(my_battle_info->getBoard());
+        battle_status.num_shells = my_battle_info->getNumShells();
+        battle_status.max_steps = my_battle_info->getMaxSteps();
     }
 }
 

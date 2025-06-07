@@ -62,7 +62,6 @@ bool PathfindingAlgorithm::hasEnemyMoved() const {
     if (enemy_positions.size() != last_enemy_positions.size()) {
         return true; // if the number of enemies changed, we definitely need to recompute the path
     }
-    //todo: is there a better way to check? we don't really know the enemy's tank index so this is the best we can do i think
     return enemy_positions == last_enemy_positions;
 }
 

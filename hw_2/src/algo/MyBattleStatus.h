@@ -70,8 +70,7 @@ public:
 
     ActionRequest rotateTowards(Direction::DirectionType to_direction) const;
 
-    //todo: use existing enum?
-    static char boardItemToChar(BoardItem b) {
+    static char boardItemToChar(const BoardItem b) {
         switch (b) {
             case BoardItem::WALL: return '#';
             case BoardItem::SHELL: return '*';

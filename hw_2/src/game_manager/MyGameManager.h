@@ -32,7 +32,7 @@ public:
     void setVisual(bool visual) { this->visual = visual; }
 
 private:
-    static constexpr int max_steps_empty_ammo = 40; //todo: who decided this?
+    static constexpr int max_steps_empty_ammo = 40;
 
     bool visual = false;
     size_t game_step = 0;

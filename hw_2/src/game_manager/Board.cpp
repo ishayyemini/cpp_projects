@@ -13,7 +13,6 @@ GameObject *Board::placeObjectReal(std::unique_ptr<GameObject> element, const Po
     const auto [x, y] = wrapPositionReal(real_pos);
 
     if (const auto tank = dynamic_cast<Tank *>(element.get())) {
-        // TODO ensure!!
         tanks_pos[{tank->getPlayerIndex(), tank->getTankIndex()}] = Position(x, y);
     }
 
