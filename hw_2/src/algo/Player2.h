@@ -1,6 +1,6 @@
 #ifndef PLAYER2_H
 #define PLAYER2_H
-#include "Player.h"
+#include "MyActualPlayer.h"
 
 class Player2 final : public MyActualPlayer {
 

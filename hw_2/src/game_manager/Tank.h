@@ -3,8 +3,8 @@
 #include "GameObject.h"
 #include "Direction.h"
 
-constexpr int MAX_SHELL = 16; //todo: why 16?
-static auto tank_count = std::array<int, 9>{}; //todo: why only 9?
+constexpr int MAX_PLAYERS = 9;
+static auto tank_count = std::array<int, MAX_PLAYERS>{};
 
 //todo: we support only two players - make it more modular
 class Tank final : public GameObject {
@@ -51,9 +51,6 @@ public:
     void decrementAmmunition() { if (shell > 0) shell--; }
 
     bool isTank() const override { return true; }
-
-    // void queueAction(Action action) { queued_action = action; }
-    // Action getQueuedAction() const { return queued_action; }
 };
 
 

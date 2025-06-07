@@ -1,10 +1,10 @@
 #ifndef WALL_H
 #define WALL_H
 
-static constexpr int max_health = 2;
+static constexpr int MAX_HEALTH = 2;
 
 class Wall final : public GameObject {
-    int health = max_health;
+    int health = MAX_HEALTH;
 
 public:
     explicit Wall(const Position position): GameObject(position) {
@@ -16,7 +16,7 @@ public:
         if (health > 0) health -= amount;
     }
 
-    [[nodiscard]] int getHitCount() const { return max_health - health; }
+    [[nodiscard]] int getHitCount() const { return MAX_HEALTH - health; }
 
     int getHealth() const { return health; }
 
