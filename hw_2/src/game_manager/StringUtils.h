@@ -6,9 +6,8 @@
 #include <sstream>
 
 namespace StringUtils {
-
     // Trims leading and trailing whitespace from a string
-    inline std::string trim(const std::string& s) {
+    inline std::string trim(const std::string &s) {
         auto start = s.begin();
         while (start != s.end() && std::isspace(*start)) {
             ++start;
@@ -22,7 +21,7 @@ namespace StringUtils {
     }
 
     // Splits a string by a delimiter and trims each part
-    inline std::vector<std::string> split_and_trim(const std::string& input, char delimiter) {
+    inline std::vector<std::string> split_and_trim(const std::string &input, char delimiter) {
         std::vector<std::string> result;
         std::istringstream stream(input);
         std::string token;
@@ -33,7 +32,6 @@ namespace StringUtils {
 
         return result;
     }
-
 } // namespace StringUtils
 
 #endif // STRING_UTILS_H
