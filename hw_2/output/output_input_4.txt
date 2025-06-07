@@ -1,0 +1,51 @@
+Get Battle Info, Get Battle Info
+Get Battle Info, Get Battle Info
+Get Battle Info, Move Forward
+Get Battle Info, Get Battle Info
+Get Battle Info, Rotate Left Eighth
+Get Battle Info, Get Battle Info
+Get Battle Info, Shoot
+Get Battle Info, Get Battle Info
+Move Forward, None
+Get Battle Info, Get Battle Info
+Move Forward, Move Forward
+Get Battle Info, Get Battle Info
+Rotate Right Quarter, Rotate Left Quarter
+Get Battle Info, Get Battle Info
+Rotate Right Eighth, Move Forward
+Get Battle Info, Get Battle Info
+Get Battle Info, Get Battle Info
+Get Battle Info, Rotate Right Quarter
+Get Battle Info, Get Battle Info
+Get Battle Info, Shoot (ignored)
+Get Battle Info, Get Battle Info
+Get Battle Info, Rotate Left Eighth
+Get Battle Info, Get Battle Info
+Get Battle Info, Rotate Left Eighth
+Get Battle Info, Get Battle Info
+Get Battle Info, Rotate Right Quarter
+Get Battle Info, Get Battle Info
+Get Battle Info, Shoot (ignored)
+Get Battle Info, Get Battle Info
+Get Battle Info, Rotate Left Eighth
+Get Battle Info, Get Battle Info
+Get Battle Info, Rotate Left Eighth
+Get Battle Info, Get Battle Info
+Get Battle Info, Rotate Right Quarter
+Get Battle Info, Get Battle Info
+Get Battle Info, Shoot (ignored)
+Get Battle Info, Get Battle Info
+Get Battle Info, Rotate Left Eighth
+Get Battle Info, Get Battle Info
+Get Battle Info, Rotate Left Eighth
+Get Battle Info, Get Battle Info
+Get Battle Info, Rotate Right Quarter
+Get Battle Info, Get Battle Info
+Get Battle Info, Shoot (ignored)
+Get Battle Info, Get Battle Info
+Get Battle Info, Rotate Left Eighth
+Get Battle Info, Get Battle Info
+Get Battle Info, Rotate Left Eighth
+Get Battle Info, Get Battle Info
+Get Battle Info, Rotate Right Quarter
+Tie, reached max steps = 50, player 1 has 1 tanks, player 2 has 1 tanks
