@@ -1,4 +1,4 @@
-#include "MyGameManager.h"
+#include "GameManager.h"
 
 #include <iostream>
 #include <thread>
@@ -13,7 +13,7 @@
 
 using namespace std::chrono_literals;
 
-void MyGameManager::readBoard(const std::string &file_name) {
+void GameManager::readBoard(const std::string &file_name) {
     auto input_parser = InputParser();
     board = input_parser.parseInputFile(file_name);
 
@@ -23,17 +23,18 @@ void MyGameManager::readBoard(const std::string &file_name) {
     }
 
     // create 2 players
-    for (int i = 1; i <= 2; i++)
-        players.emplace_back(playerFactory.create(i, board->getWidth(), board->getHeight(), board->getMaxSteps(),
-                                                  board->getNumShells()));
+    for (int i = 1; i <= 2; i++) {
+        players.emplace_back(player_factory.create(i, board->getWidth(), board->getHeight(), board->getMaxSteps(),
+                                                   board->getNumShells()));
+    }
 
     for (auto [player_i, tank_i]: input_parser.getTanks()) {
-        tanks.emplace_back(tankAlgorithmFactory.create(player_i, tank_i));
+        tanks.emplace_back(tank_algorithm_factory.create(player_i, tank_i));
         tank_status.push_back({false, ActionRequest::DoNothing, true, false});
     }
 }
 
-void MyGameManager::run() {
+void GameManager::run() {
     checkDeaths(); //check if one of the player doesn't have any tanks
     while (!isGameOver()) {
         processStep();
@@ -46,7 +47,7 @@ void MyGameManager::run() {
     }
 }
 
-void MyGameManager::updateCounters(Tank &tank, const ActionRequest action) {
+void GameManager::updateCounters(Tank &tank, const ActionRequest action) {
     tank.decreaseShootingCooldown();
     const int back_counter = tank.getBackwardsCounter();
 
@@ -67,7 +68,7 @@ void MyGameManager::updateCounters(Tank &tank, const ActionRequest action) {
     }
 }
 
-bool MyGameManager::tankAction(Tank &tank, const ActionRequest action) {
+bool GameManager::tankAction(Tank &tank, const ActionRequest action) {
     bool result = false;
     const int back_counter = tank.getBackwardsCounter();
     updateCounters(tank, action);
@@ -107,7 +108,7 @@ bool MyGameManager::tankAction(Tank &tank, const ActionRequest action) {
     return result;
 }
 
-void MyGameManager::checkDeaths() {
+void GameManager::checkDeaths() {
     const bool firstDead = board->getPlayerAliveTanks(1).empty();
     const bool secondDead = board->getPlayerAliveTanks(2).empty();
 
@@ -139,27 +140,27 @@ void MyGameManager::checkDeaths() {
     }
 }
 
-bool MyGameManager::moveForward(Tank &tank) {
+bool GameManager::moveForward(Tank &tank) {
     if (const auto obj = board->getObjectAt(tank.getPosition() + tank.getDirection())) {
         if (obj->getSymbol() == '#') return false;
     }
     return board->moveObject(tank.getPosition(), tank.getDirection());
 }
 
-bool MyGameManager::moveBackward(Tank &tank) {
+bool GameManager::moveBackward(Tank &tank) {
     if (const auto obj = board->getObjectAt(tank.getPosition() + tank.getDirection())) {
         if (obj->getSymbol() == '#') return false;
     }
     return board->moveObject(tank.getPosition(), -tank.getDirection());
 }
 
-bool MyGameManager::rotate(Tank &tank, const int turn) {
+bool GameManager::rotate(Tank &tank, const int turn) {
     const int new_direction = tank.getDirection() + turn;
     tank.setDirection(Direction::getDirection(new_direction));
     return true;
 }
 
-bool MyGameManager::shoot(Tank &tank) {
+bool GameManager::shoot(Tank &tank) {
     if (tank.getAmmunition() == 0) {
         return false;
     }
@@ -174,7 +175,7 @@ bool MyGameManager::shoot(Tank &tank) {
     return true;
 }
 
-bool MyGameManager::getBattleInfo(const Tank &tank, const size_t player_i) {
+bool GameManager::getBattleInfo(const Tank &tank, const size_t player_i) {
     const int tank_algo_i = tank.getTankAlgoIndex();
     auto [x,y] = tank.getPosition();
     MySatelliteView satellite_view = this->satellite_view;
@@ -183,12 +184,12 @@ bool MyGameManager::getBattleInfo(const Tank &tank, const size_t player_i) {
     return true;
 }
 
-void MyGameManager::updateSatelliteView() {
+void GameManager::updateSatelliteView() {
     satellite_view.setDimensions(board->getWidth(), board->getHeight());
     board->fillSatelliteView(satellite_view);
 }
 
-bool MyGameManager::allEmptyAmmo() const {
+bool GameManager::allEmptyAmmo() const {
     if (!board) return true;
     for (const auto tank: board->getAliveTanks()) {
         if (tank->getAmmunition() != 0) return false;
@@ -196,7 +197,7 @@ bool MyGameManager::allEmptyAmmo() const {
     return true;
 }
 
-void MyGameManager::tanksTurn() {
+void GameManager::tanksTurn() {
     for (const auto tank: board->getAliveTanks()) {
         const int i = tank->getTankAlgoIndex();
         const ActionRequest action = tanks[i]->getAction();
@@ -213,13 +214,13 @@ void MyGameManager::tanksTurn() {
     }
 }
 
-void MyGameManager::shellsTurn() const {
+void GameManager::shellsTurn() const {
     for (auto [id, shell]: board->getShells()) {
         board->moveObject(shell->getPosition(), shell->getDirection());
     }
 }
 
-void MyGameManager::processStep() {
+void GameManager::processStep() {
     if (game_over) return;
     game_step++;
 
@@ -244,7 +245,7 @@ void MyGameManager::processStep() {
     logStep();
 }
 
-std::string MyGameManager::getGameResult() const {
+std::string GameManager::getGameResult() const {
     std::string p1_tanks = std::to_string(board->getPlayerAliveTanks(1).size());
     std::string p2_tanks = std::to_string(board->getPlayerAliveTanks(2).size());
     std::string max_steps = std::to_string(board->getMaxSteps());
@@ -267,7 +268,7 @@ std::string MyGameManager::getGameResult() const {
     }
 }
 
-void MyGameManager::logStep() {
+void GameManager::logStep() {
     for (const auto tank: board->getTanks()) {
         if (tank->isDestroyed()) {
             std::get<3>(tank_status[tank->getTankAlgoIndex()]) = true;

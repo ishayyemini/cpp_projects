@@ -1,5 +1,7 @@
 #include "MyPlayerFactory.h"
 
+#include <iostream>
+
 #include "Player1.h"
 #include "Player2.h"
 

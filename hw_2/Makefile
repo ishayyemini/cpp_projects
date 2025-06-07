@@ -1,6 +1,6 @@
 # Configuration
 BUILD_DIR = build
-EXECUTABLE = tank_game
+EXECUTABLE = tanks_game
 CMAKE = cmake
 CMAKE_FLAGS = -DCMAKE_BUILD_TYPE=Release
 
@@ -18,7 +18,7 @@ all: $(BUILD_DIR)
 # Build and run tests
 test: $(BUILD_DIR)
 	$(CMAKE) -S . -B $(BUILD_DIR) $(CMAKE_FLAGS)
-	$(CMAKE) --build $(BUILD_DIR) --target tank_game_tests --parallel
+	$(CMAKE) --build $(BUILD_DIR) --target tanks_game_tests --parallel
 	cd $(BUILD_DIR) && ctest --verbose
 
 # Clean build artifacts

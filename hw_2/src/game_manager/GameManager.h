@@ -3,9 +3,8 @@
 #include <map>
 
 #include "Board.h"
-#include "GameManager.h"
-#include "MyPlayerFactory.h"
-#include "MyTankAlgorithmFactory.h"
+#include "PlayerFactory.h"
+#include "TankAlgorithmFactory.h"
 #include "Tank.h"
 
 enum Winner {
@@ -17,10 +16,14 @@ enum Winner {
     NO_WINNER
 };
 
-class MyGameManager : public GameManager {
+class GameManager {
+    const PlayerFactory &player_factory;
+    const TankAlgorithmFactory &tank_algorithm_factory;
+
 public:
-    MyGameManager(const PlayerFactory &player_factory, const TankAlgorithmFactory &tank_algorithm_factory): GameManager(
-            player_factory, tank_algorithm_factory), satellite_view(MySatelliteView()) {
+    GameManager(const PlayerFactory &player_factory, const TankAlgorithmFactory &tank_algorithm_factory)
+        : player_factory(player_factory), tank_algorithm_factory(tank_algorithm_factory),
+          satellite_view(MySatelliteView()) {
     }
 
     void readBoard(const std::string &file_name);

@@ -1,11 +1,9 @@
 #include "PathfindingAlgorithm.h"
 
-#include <format>
 #include <queue>
 #include <set>
 #include "Logger.h"
 #include "Direction.h"
-
 
 // a boolean to indicate if we are stuck in the current BFS path and need to recompute the path
 bool tried_path_without_success = false;
@@ -127,9 +125,8 @@ void PathfindingAlgorithm::followPathOrRotate(ActionRequest *request, std::strin
 
     // if he isn't able to do anything, just rotate and maybe it will help in the next steps
     tried_path_without_success = false;
-    *request_title = std::format("Rotating from direction {} to {}",
-                                 Direction::directionToString(battle_status.tank_direction),
-                                 Direction::directionToString(target_dir));
+    *request_title = "Rotating from direction " + Direction::directionToString(battle_status.tank_direction) + " to " +
+                     Direction::directionToString(target_dir);
     *request = battle_status.rotateTowards(target_dir);
 }
 
@@ -142,8 +139,7 @@ std::vector<Direction::DirectionType> PathfindingAlgorithm::computeBFS() {
         Node(const Position &pos, const std::vector<Direction::DirectionType> &path): pos(pos), path(path) {
         }
     };
-    std::string msg = std::format("Performing BFS. Start Position = ({}, {})", battle_status.tank_position.x,
-                                  battle_status.tank_position.y);
+    std::string msg = "Performing BFS. Start Position = " + battle_status.tank_position.toString();
     printLogs(msg);
 
     std::queue<Node> q;

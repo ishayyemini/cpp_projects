@@ -4,7 +4,7 @@
 #include <thread>
 
 #include "Logger.h"
-#include "MyGameManager.h"
+#include "GameManager.h"
 #include "MyPlayerFactory.h"
 #include "MyTankAlgorithmFactory.h"
 
@@ -20,7 +20,10 @@ int main(const int argc, char *argv[]) {
     const std::string path = argc == 2 ? argv[1] : argv[2];
 
     Logger::getInstance().init(path);
-    MyGameManager game(MyPlayerFactory{}, MyTankAlgorithmFactory{});
+
+    const auto player_factory = MyPlayerFactory();
+    const auto tank_algorithm_factory = MyTankAlgorithmFactory();
+    GameManager game(player_factory, tank_algorithm_factory);
     game.readBoard(path);
     game.setVisual(visual);
     game.run();

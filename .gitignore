@@ -8,7 +8,7 @@ hw_1/output_*.txt
 
 hw_2/cmake-build-debug
 hw_2/build
-hw_2/tank_game
+hw_2/tanks_game
 hw_2/log.txt
 hw_2/errors.txt
 hw_2/input_errors.txt

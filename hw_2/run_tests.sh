@@ -19,7 +19,7 @@ make
 
 # Run the tests
 echo -e "\nRunning tests..."
-./tank_game_tests
+./tanks_game_tests
 
 # Print message if all tests passed
 if [ $? -eq 0 ]; then
