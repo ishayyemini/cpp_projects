@@ -1,68 +1,173 @@
 Get Battle Info, Get Battle Info, Get Battle Info, Get Battle Info, Get Battle Info, Get Battle Info
-Move Forward, Get Battle Info, Move Forward, Get Battle Info, Get Battle Info, Get Battle Info
+Get Battle Info, Get Battle Info, Move Forward, Get Battle Info, Get Battle Info, Get Battle Info
 Get Battle Info, Rotate Left Eighth, Get Battle Info, Get Battle Info, Shoot, Get Battle Info
 Get Battle Info, Get Battle Info, Get Battle Info, Get Battle Info, Get Battle Info, Get Battle Info
-Move Forward, Move Forward, Move Forward, Get Battle Info, None, Get Battle Info
+Get Battle Info, Move Forward, Move Forward, Get Battle Info, None, Get Battle Info
 Get Battle Info, Get Battle Info, Get Battle Info, Get Battle Info, Get Battle Info, Get Battle Info
-Rotate Left Eighth, Shoot, Rotate Right Quarter, Get Battle Info, Get Battle Info, Get Battle Info
-Get Battle Info, Get Battle Info, Get Battle Info, Get Battle Info, Shoot, Get Battle Info
-Rotate Left Quarter, None, Move Forward, Move Forward, Get Battle Info, None
-Get Battle Info, Get Battle Info, Get Battle Info, Get Battle Info, None, Get Battle Info
-Rotate Left Quarter, Get Battle Info, Rotate Right Quarter, Get Battle Info, Get Battle Info, Get Battle Info
 Get Battle Info, Shoot, Get Battle Info, Get Battle Info, Get Battle Info, Get Battle Info
-Move Forward, Get Battle Info, Move Forward, Get Battle Info, Rotate Right Eighth, Get Battle Info
-Get Battle Info, None, Get Battle Info, Move Forward, Get Battle Info, None
-Get Battle Info, Get Battle Info, Get Battle Info, Get Battle Info, Move Forward, Get Battle Info
-Get Battle Info, Get Battle Info, Rotate Left Quarter, Get Battle Info, Get Battle Info, Get Battle Info
-Get Battle Info, Shoot, Get Battle Info, Get Battle Info, Rotate Right Quarter, Get Battle Info
-Get Battle Info, Get Battle Info, Rotate Left Quarter, Get Battle Info, Get Battle Info, Get Battle Info
-Get Battle Info, None, Get Battle Info, Move Forward, Rotate Right Eighth, None
-Rotate Right Eighth, Get Battle Info, Shoot, Get Battle Info, Get Battle Info, Get Battle Info
-Get Battle Info, Get Battle Info, Get Battle Info, Get Battle Info, Shoot, Get Battle Info
-Get Battle Info (killed), Rotate Left Quarter, None, Get Battle Info, Get Battle Info, Get Battle Info
-killed, Get Battle Info, Get Battle Info, Get Battle Info, None, Get Battle Info
-killed, Get Battle Info, Move Forward, Get Battle Info, Get Battle Info, Get Battle Info
-killed, Move Forward, Get Battle Info, Move Forward, Rotate Right Quarter, Rotate Left Eighth
-killed, Get Battle Info, Move Forward, Get Battle Info (killed), Get Battle Info, Get Battle Info
-killed, None, Get Battle Info, killed, Get Battle Info, None
-killed, Get Battle Info, Get Battle Info, killed, Shoot, Get Battle Info
-killed, Get Battle Info, Move Forward, killed, Get Battle Info, Get Battle Info
-killed, Shoot, Get Battle Info, killed, None, Get Battle Info
-killed, Get Battle Info, Move Forward, killed, Get Battle Info, Get Battle Info
-killed, Rotate Left Eighth, Get Battle Info, killed, Get Battle Info, Get Battle Info
-killed, Get Battle Info, Move Forward, killed, Shoot, Get Battle Info
-killed, Rotate Left Eighth, Get Battle Info, killed, Get Battle Info, Get Battle Info
-killed, Get Battle Info, None, killed, None, Get Battle Info
-killed, Move Forward, Get Battle Info, killed, Get Battle Info, Get Battle Info
-killed, Get Battle Info, Get Battle Info, killed, Get Battle Info, Get Battle Info
-killed, Shoot, Shoot, killed, Shoot, Get Battle Info
-killed, Get Battle Info, Get Battle Info, killed, Get Battle Info, Get Battle Info
-killed, Rotate Left Eighth, None, killed, None, Get Battle Info
-killed, Get Battle Info, Get Battle Info, killed, Get Battle Info, Get Battle Info
-killed, Rotate Left Eighth, Get Battle Info, killed, Get Battle Info, Get Battle Info
-killed, Get Battle Info, Shoot, killed, Shoot, Get Battle Info
-killed, Move Forward, Get Battle Info, killed, Get Battle Info, Get Battle Info
-killed, Get Battle Info, Move Forward, killed, None, Get Battle Info
-killed, Rotate Left Quarter, Get Battle Info, killed, Get Battle Info, Get Battle Info
-killed, Get Battle Info, Get Battle Info, killed, Get Battle Info, Get Battle Info
-killed, Move Forward, Shoot, killed, Shoot, Get Battle Info
-killed, Get Battle Info, Get Battle Info, killed, Get Battle Info, Get Battle Info
-killed, Move Forward, None, killed, None, Get Battle Info
-killed, Get Battle Info, Get Battle Info, killed, Get Battle Info, Get Battle Info
-killed, Move Forward, Get Battle Info, killed, Get Battle Info, Get Battle Info
-killed, Get Battle Info, Shoot, killed, Shoot, Get Battle Info
-killed, Move Forward, Get Battle Info, killed, Get Battle Info, Get Battle Info
-killed, Get Battle Info, Move Forward, killed, None, Get Battle Info
-killed, Shoot, Get Battle Info, killed, Get Battle Info, Get Battle Info
-killed, Get Battle Info, Get Battle Info, killed, Get Battle Info, Get Battle Info
-killed, Rotate Left Eighth, Shoot, killed, Rotate Left Quarter, Get Battle Info
-killed, Get Battle Info, Get Battle Info, killed, Get Battle Info, Get Battle Info
-killed, Rotate Left Eighth, Rotate Left Eighth, killed, Move Forward, Get Battle Info
-killed, Get Battle Info, Get Battle Info, killed, Get Battle Info, Get Battle Info
-killed, Move Forward, Rotate Left Eighth, killed, Move Forward, Get Battle Info
-killed, Get Battle Info, Get Battle Info, killed, Get Battle Info, Get Battle Info
-killed, Rotate Left Eighth, Move Forward, killed, Move Forward, Get Battle Info
-killed, Get Battle Info, Get Battle Info, killed, Get Battle Info, Get Battle Info
-killed, Shoot, Shoot, killed, Move Forward, Get Battle Info
-killed, Get Battle Info, Get Battle Info, killed, Get Battle Info, Get Battle Info (killed)
-Player 1 won with 3 tanks still alive
+Get Battle Info, Get Battle Info, Shoot, Get Battle Info, Shoot, Get Battle Info
+Get Battle Info, None, Get Battle Info, Move Forward, Get Battle Info, Get Battle Info
+Get Battle Info, Get Battle Info, None, Get Battle Info, None, Get Battle Info
+Get Battle Info, Get Battle Info, Get Battle Info, Get Battle Info, Get Battle Info, Get Battle Info
+Get Battle Info, Shoot, Get Battle Info (killed), Get Battle Info, None, Get Battle Info
+Get Battle Info, Get Battle Info, killed, Get Battle Info, Get Battle Info, Get Battle Info
+Get Battle Info, None, killed, Move Forward, Get Battle Info, Get Battle Info
+Get Battle Info, Get Battle Info, killed, Get Battle Info, Rotate Right Eighth, Get Battle Info
+Get Battle Info, Get Battle Info, killed, Get Battle Info, Get Battle Info, Get Battle Info
+Get Battle Info, Rotate Right Quarter, killed, Get Battle Info, Move Forward, Get Battle Info
+Get Battle Info, Get Battle Info, killed, Get Battle Info, Get Battle Info, Get Battle Info
+Get Battle Info, Rotate Left Quarter, killed, Get Battle Info, Rotate Right Quarter, Get Battle Info
+Get Battle Info, Get Battle Info, killed, Get Battle Info, Get Battle Info, Get Battle Info
+Get Battle Info, Shoot, killed, Get Battle Info, Rotate Right Eighth, Get Battle Info
+Get Battle Info, Get Battle Info, killed, Get Battle Info, Get Battle Info, Get Battle Info
+Get Battle Info, None, killed, Move Forward, Shoot, Get Battle Info
+Get Battle Info, Get Battle Info, killed, Get Battle Info, Get Battle Info, Get Battle Info
+Get Battle Info, Get Battle Info, killed, Get Battle Info, None, Get Battle Info
+Get Battle Info, Shoot, killed, Get Battle Info, Get Battle Info, Get Battle Info
+Get Battle Info, Get Battle Info, killed, Get Battle Info, Rotate Right Quarter, Get Battle Info
+Get Battle Info, None, killed, Get Battle Info (killed), Get Battle Info, Get Battle Info
+Get Battle Info, Get Battle Info, killed, killed, Get Battle Info, None
+Get Battle Info, Get Battle Info, killed, killed, Shoot, Get Battle Info
+Get Battle Info, Move Forward, killed, killed, Get Battle Info, Get Battle Info
+Get Battle Info, Get Battle Info, killed, killed, None, Get Battle Info
+Get Battle Info, Move Forward, killed, killed, Get Battle Info, Get Battle Info
+Get Battle Info, Get Battle Info, killed, killed, Get Battle Info, Get Battle Info
+Get Battle Info, Move Forward, killed, killed, Shoot, Get Battle Info
+Get Battle Info, Get Battle Info, killed, killed, Get Battle Info, Get Battle Info
+Get Battle Info, Shoot, killed, killed, None, Get Battle Info
+Get Battle Info, Get Battle Info, killed, killed, Get Battle Info, Get Battle Info
+Get Battle Info, None, killed, killed, Rotate Right Eighth, Get Battle Info
+Get Battle Info, Get Battle Info, killed, killed, Get Battle Info, Get Battle Info
+Get Battle Info, Get Battle Info, killed, killed, Get Battle Info, Get Battle Info
+Get Battle Info, Move Forward, killed, killed, Move Forward, Get Battle Info
+Get Battle Info, Get Battle Info, killed, killed, Get Battle Info, Get Battle Info
+Get Battle Info, Move Forward, killed, killed, Shoot, Get Battle Info
+Get Battle Info, Get Battle Info, killed, killed, Get Battle Info, Get Battle Info
+Get Battle Info, Shoot, killed, killed, Rotate Left Eighth, Get Battle Info
+Get Battle Info, Get Battle Info, killed, killed, Get Battle Info, Get Battle Info
+Get Battle Info, Rotate Left Eighth, killed, killed, Rotate Left Eighth, Get Battle Info
+Get Battle Info, Get Battle Info, killed, killed, Get Battle Info, Get Battle Info
+Get Battle Info, Rotate Left Eighth, killed, killed, Shoot, Get Battle Info
+Get Battle Info, Get Battle Info, killed, killed, Get Battle Info, Get Battle Info
+Get Battle Info, None, killed, killed, None, Get Battle Info
+Get Battle Info, Get Battle Info, killed, killed, Get Battle Info, Get Battle Info
+Get Battle Info, Get Battle Info, killed, killed, Get Battle Info, Get Battle Info
+Get Battle Info, Shoot, killed, killed, Shoot, Get Battle Info
+Get Battle Info, Get Battle Info, killed, killed, Get Battle Info, Get Battle Info
+Get Battle Info, None, killed, killed, None, Get Battle Info
+Get Battle Info, Get Battle Info, killed, killed, Get Battle Info, Get Battle Info
+Get Battle Info, Get Battle Info, killed, killed, Get Battle Info, Get Battle Info
+Get Battle Info, Shoot, killed, killed, Shoot, Get Battle Info
+Get Battle Info, Get Battle Info, killed, killed, Get Battle Info, Get Battle Info
+Get Battle Info, Move Forward, killed, killed, None, Get Battle Info
+Get Battle Info, Get Battle Info, killed, killed, Get Battle Info, Get Battle Info
+Get Battle Info, Get Battle Info, killed, killed, Get Battle Info, Get Battle Info
+Get Battle Info, Shoot, killed, killed, Shoot, Get Battle Info
+Get Battle Info, Get Battle Info, killed, killed, Get Battle Info, Get Battle Info
+Get Battle Info, Rotate Left Quarter, killed, killed, None, Get Battle Info
+Get Battle Info, Get Battle Info, killed, killed, Get Battle Info, Get Battle Info
+Get Battle Info, Get Battle Info, killed, killed, Get Battle Info, Get Battle Info
+Get Battle Info, Move Forward, killed, killed, Rotate Left Quarter, Get Battle Info
+Get Battle Info, Get Battle Info, killed, killed, Get Battle Info, Get Battle Info
+Get Battle Info, Move Forward, killed, killed, Move Forward, Get Battle Info
+Get Battle Info, Get Battle Info, killed, killed, Get Battle Info, Get Battle Info
+Get Battle Info, Rotate Right Eighth, killed, killed, Shoot, Get Battle Info
+Get Battle Info, Get Battle Info, killed, killed, Get Battle Info, Get Battle Info
+Get Battle Info, Shoot, killed, killed, Rotate Left Eighth, Get Battle Info
+Get Battle Info, Get Battle Info, killed, killed, Get Battle Info, Get Battle Info (killed)
+Get Battle Info, None, killed, killed, Rotate Left Eighth, killed
+Get Battle Info, Get Battle Info, killed, killed, Get Battle Info, killed
+Get Battle Info, Get Battle Info, killed, killed, Shoot, killed
+Get Battle Info, Move Forward, killed, killed, Get Battle Info, killed
+Get Battle Info, Get Battle Info, killed, killed, Rotate Left Eighth, killed
+Get Battle Info, Rotate Left Eighth, killed, killed, Get Battle Info, killed
+Get Battle Info, Get Battle Info, killed, killed, Rotate Left Eighth, killed
+Get Battle Info, Move Forward, killed, killed, Get Battle Info, killed
+Get Battle Info, Get Battle Info, killed, killed, Move Forward, killed
+Get Battle Info, Shoot, killed, killed, Get Battle Info, killed
+Get Battle Info, Get Battle Info, killed, killed, Shoot, killed
+Get Battle Info, Rotate Left Eighth, killed, killed, Get Battle Info, killed
+Get Battle Info, Get Battle Info, killed, killed, Rotate Left Eighth, killed
+Get Battle Info, Rotate Left Eighth, killed, killed, Get Battle Info, killed
+Get Battle Info, Get Battle Info, killed, killed, Rotate Left Eighth, killed
+Get Battle Info, Shoot, killed, killed, Get Battle Info, killed
+Get Battle Info, Get Battle Info, killed, killed, Rotate Left Quarter, killed
+Get Battle Info, Rotate Left Eighth, killed, killed, Get Battle Info, killed
+Get Battle Info, Get Battle Info, killed, killed, Move Forward, killed
+Get Battle Info, Rotate Left Eighth, killed, killed, Get Battle Info, killed
+Get Battle Info, Get Battle Info, killed, killed, Shoot, killed
+Get Battle Info, Move Forward, killed, killed, Get Battle Info, killed
+Get Battle Info, Get Battle Info, killed, killed, Rotate Left Eighth, killed
+Get Battle Info, Move Forward, killed, killed, Get Battle Info, killed
+Get Battle Info, Get Battle Info, killed, killed, Rotate Left Eighth, killed
+Get Battle Info, Shoot, killed, killed, Get Battle Info, killed
+Get Battle Info, Get Battle Info, killed, killed, Shoot, killed
+Get Battle Info, Rotate Left Eighth, killed, killed, Get Battle Info, killed
+Get Battle Info, Get Battle Info, killed, killed, Rotate Left Eighth, killed
+Get Battle Info, Rotate Left Eighth, killed, killed, Get Battle Info, killed
+Get Battle Info, Get Battle Info, killed, killed, Rotate Left Eighth, killed
+Get Battle Info, Shoot, killed, killed, Get Battle Info, killed
+Get Battle Info, Get Battle Info, killed, killed, Move Forward, killed
+Get Battle Info, Rotate Left Eighth, killed, killed, Get Battle Info, killed
+Get Battle Info, Get Battle Info, killed, killed, Move Forward, killed
+Get Battle Info, Rotate Left Eighth, killed, killed, Get Battle Info, killed
+Get Battle Info, Get Battle Info, killed, killed, Shoot, killed
+Get Battle Info, Move Forward, killed, killed, Get Battle Info, killed
+Get Battle Info, Get Battle Info, killed, killed, Rotate Left Eighth, killed
+Get Battle Info, Move Forward, killed, killed, Get Battle Info, killed
+Get Battle Info, Get Battle Info, killed, killed, Rotate Left Eighth, killed
+Get Battle Info, Shoot, killed, killed, Get Battle Info, killed
+Get Battle Info, Get Battle Info, killed, killed, Shoot, killed
+Get Battle Info, Rotate Left Eighth, killed, killed, Get Battle Info, killed
+Get Battle Info, Get Battle Info, killed, killed, Rotate Left Eighth, killed
+Get Battle Info, Rotate Left Eighth, killed, killed, Get Battle Info, killed
+Get Battle Info, Get Battle Info, killed, killed, Rotate Left Eighth, killed
+Get Battle Info, Shoot, killed, killed, Get Battle Info, killed
+Get Battle Info, Get Battle Info, killed, killed, Move Forward, killed
+Get Battle Info, Rotate Left Eighth, killed, killed, Get Battle Info, killed
+Get Battle Info, Get Battle Info, killed, killed, Move Forward, killed
+Get Battle Info, Rotate Left Eighth, killed, killed, Get Battle Info, killed
+Get Battle Info, Get Battle Info, killed, killed, Move Forward, killed
+Get Battle Info, Move Forward, killed, killed, Get Battle Info, killed
+Get Battle Info, Get Battle Info, killed, killed, Rotate Right Quarter, killed
+Get Battle Info, Move Forward, killed, killed, Get Battle Info, killed
+Get Battle Info, Get Battle Info, killed, killed, Move Forward, killed
+Get Battle Info, Shoot, killed, killed, Get Battle Info, killed
+Get Battle Info, Get Battle Info, killed, killed, Move Forward, killed
+Get Battle Info, Rotate Left Eighth, killed, killed, Get Battle Info, killed
+Get Battle Info, Get Battle Info, killed, killed, Move Forward, killed
+Get Battle Info, Rotate Left Eighth, killed, killed, Get Battle Info, killed
+Get Battle Info, Get Battle Info, killed, killed, Move Forward, killed
+Get Battle Info, Shoot, killed, killed, Get Battle Info, killed
+Get Battle Info, Get Battle Info, killed, killed, Shoot, killed
+Get Battle Info, Rotate Left Eighth, killed, killed, Get Battle Info, killed
+Get Battle Info, Get Battle Info, killed, killed, Rotate Left Eighth, killed
+Get Battle Info, Rotate Left Eighth, killed, killed, Get Battle Info, killed
+Get Battle Info, Get Battle Info, killed, killed, Rotate Left Eighth, killed
+Get Battle Info, Move Forward, killed, killed, Get Battle Info, killed
+Get Battle Info, Get Battle Info, killed, killed, Move Forward, killed
+Get Battle Info, Move Forward, killed, killed, Get Battle Info, killed
+Get Battle Info, Get Battle Info, killed, killed, Move Forward, killed
+Get Battle Info, Move Forward, killed, killed, Get Battle Info, killed
+Get Battle Info, Get Battle Info, killed, killed, Move Forward, killed
+Get Battle Info, Move Forward, killed, killed, Get Battle Info, killed
+Get Battle Info, Get Battle Info, killed, killed, Shoot, killed
+Get Battle Info, Shoot, killed, killed, Get Battle Info, killed
+Get Battle Info, Get Battle Info, killed, killed, Rotate Left Eighth, killed
+Get Battle Info, Rotate Left Eighth, killed, killed, Get Battle Info, killed
+Get Battle Info, Get Battle Info, killed, killed, Rotate Left Eighth, killed
+Get Battle Info, Rotate Left Eighth, killed, killed, Get Battle Info, killed
+Get Battle Info, Get Battle Info, killed, killed, Move Forward, killed
+Get Battle Info, Move Forward, killed, killed, Get Battle Info, killed
+Get Battle Info, Get Battle Info, killed, killed, Move Forward, killed
+Get Battle Info, Rotate Left Eighth, killed, killed, Get Battle Info, killed
+Get Battle Info, Get Battle Info, killed, killed, Move Forward, killed
+Get Battle Info, Move Forward, killed, killed, Get Battle Info, killed
+Get Battle Info, Get Battle Info, killed, killed, Move Forward, killed
+Get Battle Info, Move Forward, killed, killed, Get Battle Info, killed
+Get Battle Info, Get Battle Info, killed, killed, Rotate Left Eighth, killed
+Get Battle Info, Move Forward, killed, killed, Get Battle Info, killed
+Get Battle Info, Get Battle Info, killed, killed, Shoot, killed
+Get Battle Info, Move Forward, killed, killed, Get Battle Info, killed
+Get Battle Info (killed), Get Battle Info, killed, killed, None, killed
+Player 1 won with 2 tanks still alive
