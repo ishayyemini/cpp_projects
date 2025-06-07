@@ -27,6 +27,8 @@ public:
 
     void run();
 
+    void updateCounters(Tank &tank, ActionRequest action);
+
     void setVisual(bool visual) { this->visual = visual; }
 
 private:

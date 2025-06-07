@@ -128,7 +128,9 @@ void PathfindingAlgorithm::followPathOrRotate(ActionRequest *request, std::strin
 
     // if he isn't able to do anything, just rotate and maybe it will help in the next steps
     tried_path_without_success = false;
-    *request_title = std::format("Rotating from direction {} to {}", Direction::directionToString(battle_status.tank_direction), Direction::directionToString(target_dir));
+    *request_title = std::format("Rotating from direction {} to {}",
+                                 Direction::directionToString(battle_status.tank_direction),
+                                 Direction::directionToString(target_dir));
     *request = battle_status.rotateTowards(target_dir);
 }
 
@@ -141,16 +143,13 @@ std::vector<Direction::DirectionType> PathfindingAlgorithm::computeBFS() {
         Node(const Position &pos, const std::vector<Direction::DirectionType> &path): pos(pos), path(path) {
         }
     };
-
-    std::string msg = std::format("Performing BFS. Start Position = ({}, {})",
-                                  battle_status.tank_position.x,
+    std::string msg = std::format("Performing BFS. Start Position = ({}, {})", battle_status.tank_position.x,
                                   battle_status.tank_position.y);
     printLogs(msg);
 
     std::queue<Node> q;
     std::set<Position> visited;
     q.push(Node(battle_status.tank_position, {}));
-
     std::vector<Direction::DirectionType> best_path;
     size_t shortest_length = std::numeric_limits<size_t>::max();
 
@@ -167,7 +166,6 @@ std::vector<Direction::DirectionType> PathfindingAlgorithm::computeBFS() {
             }
             continue;
         }
-
         for (const auto dir: battle_status.getSafeDirections(position)) {
             const Position next = battle_status.wrapPosition(position + dir);
             if (visited.contains(next)) continue;

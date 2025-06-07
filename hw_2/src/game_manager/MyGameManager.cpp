@@ -22,8 +22,7 @@ void MyGameManager::readBoard(const std::string &file_name) {
         std::cerr << "Can't parse file " << file_name << std::endl;
     }
 
-    //todo: 2 is magic number? can we try to make it modular? maybe
-    //create 2 players
+    // create 2 players
     for (int i = 1; i <= 2; i++)
         players.emplace_back(playerFactory.create(i, board->getWidth(), board->getHeight(), board->getMaxSteps(),
                                                   board->getNumShells()));
@@ -47,19 +46,9 @@ void MyGameManager::run() {
     }
 }
 
-//todo: make this function shorter
-bool MyGameManager::tankAction(Tank &tank, const ActionRequest action) {
-    bool result = false;
-    const int back_counter = tank.getBackwardsCounter();
+void MyGameManager::updateCounters(Tank &tank, const ActionRequest action) {
     tank.decreaseShootingCooldown();
-
-    if (action == ActionRequest::DoNothing) result = true;
-
-    /* 3 -> "regular". Here, any action will perform normally, except for back, which will just dec the counter.
-     * 2 -> "waiting". Don't move. If FORWARD, reset counter. Else, dec counter.
-     * 1 -> "almost moved". If FORWARD, reset counter. Else, move back and dec counter.
-     * 0 -> "moved". If back, move back. Else, perform regular action and reset counter.
-     */
+    const int back_counter = tank.getBackwardsCounter();
 
     if (back_counter == 2) {
         if (action == ActionRequest::MoveForward) {
@@ -73,10 +62,17 @@ bool MyGameManager::tankAction(Tank &tank, const ActionRequest action) {
         if (action == ActionRequest::MoveForward) {
             tank.setBackwardsCounter(3);
         } else {
-            result = moveBackward(tank);
             tank.setBackwardsCounter(back_counter - 1);
         }
     }
+}
+
+bool MyGameManager::tankAction(Tank &tank, const ActionRequest action) {
+    bool result = false;
+    const int back_counter = tank.getBackwardsCounter();
+    updateCounters(tank, action);
+    if (action == ActionRequest::DoNothing) return true;
+    if (back_counter == 1 && action != ActionRequest::MoveForward) return moveBackward(tank);
 
     switch (action) {
         case ActionRequest::MoveForward:
@@ -84,11 +80,8 @@ bool MyGameManager::tankAction(Tank &tank, const ActionRequest action) {
             if (back_counter == 0) tank.setBackwardsCounter(3);
             break;
         case ActionRequest::MoveBackward:
-            if (back_counter == 0) {
-                result = moveBackward(tank);
-            } else {
-                tank.setBackwardsCounter(back_counter - 1);
-            }
+            if (back_counter == 0) result = moveBackward(tank);
+            else tank.setBackwardsCounter(back_counter - 1);
             break;
         case ActionRequest::RotateLeft45:
             result = rotate(tank, -45);
@@ -203,7 +196,6 @@ bool MyGameManager::allEmptyAmmo() const {
     return true;
 }
 
-//todo: should it store all the action results and then perform them?
 void MyGameManager::tanksTurn() {
     for (const auto tank: board->getAliveTanks()) {
         const int i = tank->getTankAlgoIndex();

@@ -94,7 +94,6 @@ void Board::removeIndices(GameObject *game_object) {
     if (game_object == nullptr) return;
 
     if (const auto tank = dynamic_cast<Tank *>(game_object)) {
-        // TODO ensure this doesn't fuck anything up
         tanks_pos.erase({tank->getPlayerIndex(), tank->getTankIndex()});
     }
 

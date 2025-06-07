@@ -11,10 +11,7 @@ std::unique_ptr<GameObject> Collision::popElement() {
 }
 
 bool Collision::checkOkCollision() {
-    if (marked) {
-        return shell != nullptr && mine != nullptr;
-    }
-
+    if (marked) return shell != nullptr && mine != nullptr;
     marked = true;
 
     for (auto it = elements.begin(); it != elements.end();) {
@@ -29,9 +26,7 @@ bool Collision::checkOkCollision() {
             mine.reset(minePtr);
             it->release();
             it = elements.erase(it);
-        } else {
-            ++it;
-        }
+        } else ++it;
     }
 
     if (elements.size() == 0 && shell != nullptr && mine != nullptr) {
@@ -47,9 +42,7 @@ bool Collision::checkOkCollision() {
             wallPtr->takeDamage();
             if (!wallPtr->isDestroyed()) hasWeakenedWall = true;
             else hasWeakenedWall = false;
-        } else {
-            it->get()->destroy();
-        }
+        } else it->get()->destroy();
         ++it;
     }
 
