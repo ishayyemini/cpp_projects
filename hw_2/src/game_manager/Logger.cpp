@@ -17,8 +17,18 @@ Logger::~Logger() {
     close();
 }
 
-bool Logger::init(const std::string &out_file_path, const std::string &log_file_path, const std::string &err_file_path,
-                  const std::string &input_err_file_path) {
+bool Logger::init(const std::string &path) {
+    const int last_dot = path.find_last_of(".");
+    const int last_slash = path.find_last_of("/");
+    std::string name;
+    if (last_dot > last_slash) name = path.substr(last_slash + 1, last_dot - last_slash - 1);
+    else name = path.substr(last_slash + 1);
+
+    const std::string out_file_path = "output_" + name + ".txt";
+    const std::string log_file_path = "log.txt";
+    const std::string err_file_path = "errors.txt";
+    const std::string input_err_file_path = "input_errors.txt";
+
     if (initialized) {
         close();
     }
@@ -74,7 +84,7 @@ void Logger::log(const std::string &message) {
     log_file.flush();
 }
 
-void Logger::logActions(std::vector<std::tuple<bool, ActionRequest, bool, bool>> actions) {
+void Logger::logActions(std::vector<std::tuple<bool, ActionRequest, bool, bool> > actions) {
     if (!initialized) {
         std::cerr << "Logger not initialized" << std::endl;
         return;

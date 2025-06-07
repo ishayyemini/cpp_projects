@@ -16,7 +16,7 @@ public:
     // Log a message to the log file
     void log(const std::string &message);
 
-    void logActions(std::vector<std::tuple<bool, ActionRequest, bool, bool>> actions);
+    void logActions(std::vector<std::tuple<bool, ActionRequest, bool, bool> > actions);
 
     void logResult(const std::string &message);
 
@@ -27,10 +27,7 @@ public:
     void inputError(const std::string &message);
 
     // Initialize with custom file paths
-    bool init(const std::string &out_file_path = "output.txt",
-              const std::string &log_file_path = "log.txt",
-              const std::string &err_file_path = "errors.txt",
-              const std::string &input_err_file_path = "input_errors.txt");
+    bool init(const std::string &path);
 
     // Close log files
     void close();
