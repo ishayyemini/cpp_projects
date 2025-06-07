@@ -10,7 +10,7 @@ class GameObjectFactory {
     static int tank_algo_count;
 
 public:
-    static std::unique_ptr<GameObject> create(char symbol, Position position);
+    static std::unique_ptr<GameObject> create(char symbol, Position position, size_t num_shells);
 };
 
 

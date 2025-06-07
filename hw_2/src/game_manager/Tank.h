@@ -13,15 +13,17 @@ class Tank final : public GameObject {
     int tank_algo_index;
     int backwards_counter = 3;
     int shooting_cooldown = 0;
-    int shell = MAX_SHELL;
+    int shell;
 
 public:
-    explicit Tank(Position position, int player_id, int tank_algo_index): GameObject(position, player_id == 1
-                                                                                      ? Direction::LEFT
-                                                                                      : Direction::RIGHT),
-                                                                          player_index(player_id),
-                                                                          tank_index(tank_count[player_id]++),
-                                                                          tank_algo_index(tank_algo_index) {
+    explicit Tank(Position position, int player_id, int tank_algo_index, size_t num_shells): GameObject(position,
+            player_id == 1
+                ? Direction::LEFT
+                : Direction::RIGHT),
+        player_index(player_id),
+        tank_index(tank_count[player_id]++),
+        tank_algo_index(tank_algo_index),
+        shell(num_shells) {
     }
 
     [[nodiscard]] char getSymbol() const override { return player_index == 1 ? '1' : '2'; }

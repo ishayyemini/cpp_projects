@@ -57,7 +57,7 @@ void InputParser::processLine(size_t row, const std::string &line) {
             symbol = default_symbol;
         }
 
-        auto obj = GameObjectFactory::create(symbol, Position(col, row));
+        auto obj = GameObjectFactory::create(symbol, Position(col, row), num_shells);
         if (const auto t = dynamic_cast<Tank *>(obj.get())) {
             tanks.push_back({t->getPlayerIndex(), t->getTankIndex()});
         }
