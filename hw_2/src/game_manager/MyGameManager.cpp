@@ -181,22 +181,24 @@ bool MyGameManager::shoot(Tank &tank) {
     return true;
 }
 
-//todo: note that each time it creates MySatelliteView Object. should we reuse the same?
 bool MyGameManager::getBattleInfo(const Tank &tank, const size_t player_i) {
-    //todo: the player should get the an object of type SatelliteView? - If so we should cast this
     const int tank_algo_i = tank.getTankAlgoIndex();
-    auto satellite_view = MySatelliteView(board->getWidth(), board->getHeight());
-    board->fillSatelliteView(satellite_view);
     auto [x,y] = tank.getPosition();
+    MySatelliteView satellite_view = this->satellite_view;
     satellite_view.setObjectAt(x, y, '%');
     players[player_i - 1]->updateTankWithBattleInfo(*tanks[tank_algo_i], satellite_view);
     return true;
 }
 
+void MyGameManager::updateSatelliteView() {
+    satellite_view.setDimensions(board->getWidth(), board->getHeight());
+    board->fillSatelliteView(satellite_view);
+}
+
 bool MyGameManager::allEmptyAmmo() const {
     if (!board) return true;
     for (const auto tank: board->getAliveTanks()) {
-        if (tank->getAmmunition() == 0) return false;
+        if (tank->getAmmunition() != 0) return false;
     }
     return true;
 }
@@ -228,6 +230,8 @@ void MyGameManager::shellsTurn() const {
 void MyGameManager::processStep() {
     if (game_over) return;
     game_step++;
+
+    updateSatelliteView();
 
     shellsTurn();
     board->finishMove();

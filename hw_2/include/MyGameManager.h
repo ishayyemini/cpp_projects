@@ -20,7 +20,7 @@ enum Winner {
 class MyGameManager : public GameManager {
 public:
     MyGameManager(const PlayerFactory &player_factory, const TankAlgorithmFactory &tank_algorithm_factory): GameManager(
-        player_factory, tank_algorithm_factory) {
+            player_factory, tank_algorithm_factory), satellite_view(MySatelliteView()) {
     }
 
     void readBoard(const std::string &file_name);
@@ -38,10 +38,10 @@ private:
     Winner winner = NO_WINNER;
     std::unique_ptr<Board> board;
     int empty_countdown = -1;
-    //todo: what tank_status keep track of?
     std::vector<std::tuple<bool, ActionRequest, bool, bool> > tank_status;
     std::vector<std::unique_ptr<Player> > players;
     std::vector<std::unique_ptr<TankAlgorithm> > tanks;
+    MySatelliteView satellite_view;
 
     bool tankAction(Tank &tank, ActionRequest action);
 
@@ -56,6 +56,8 @@ private:
     bool shoot(Tank &tank);
 
     bool getBattleInfo(const Tank &tank, size_t player_i);
+
+    void updateSatelliteView();
 
     bool allEmptyAmmo() const;
 

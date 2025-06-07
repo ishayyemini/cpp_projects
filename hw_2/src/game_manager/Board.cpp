@@ -270,7 +270,7 @@ void Board::fillSatelliteView(MySatelliteView &satellite_view) const {
         for (size_t j = 0; j < height; j++) {
             if (isCollision({i, j}))
                 satellite_view.setObjectAt(i, j, '*'); // We can only have mine-shell collisions here
-            if (isOccupied({i, j}))
+            else if (isOccupied({i, j}))
                 satellite_view.setObjectAt(i, j, getObjectAt({i, j})->getSymbol());
             else
                 satellite_view.setObjectAt(i, j, ' ');
