@@ -1,4 +1,8 @@
-10 9
+3 - Player 2 escapes shell and wins
+MaxSteps=5000
+NumShells=20
+Rows=9
+Cols=10
 @@@@@@@@@@
  2        
           

@@ -1,9 +1,0 @@
-input_f
-MaxSteps = 40
-NumShells = 40
-Rows = 4
-Cols = 9
-#       #
-#@@@@@@@#
-#2     1#
-#  ##   #
