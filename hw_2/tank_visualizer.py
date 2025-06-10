@@ -390,6 +390,7 @@ class TankVisualizer:
             elif obj_type == ObjectType.SHELL:
                 direction = int(obj[3]) if len(obj) > 3 else 0
                 rotated_shell = pygame.transform.rotate(self.shell_image, -direction)
+                rotated_shell = pygame.transform.scale_by(rotated_shell, 1.5)
                 shell_rect = rotated_shell.get_rect(center=(x * self.cell_size + self.cell_size // 2,
                                                             y * self.cell_size + self.cell_size // 2))
                 self.screen.blit(rotated_shell, shell_rect.topleft)
