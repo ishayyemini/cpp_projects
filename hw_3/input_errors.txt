@@ -1,0 +1,5 @@
+Line 1 is shorter than specified width
+Line 2 is shorter than specified width
+Line 3 is shorter than specified width
+Map is shorter than specified height
+Line 4 is shorter than specified width

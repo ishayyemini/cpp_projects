@@ -1,0 +1,5 @@
+if(EXISTS "/home/rachel/University/cpp_projects/hw_2/build/tank_game_tests[1]_tests.cmake")
+  include("/home/rachel/University/cpp_projects/hw_2/build/tank_game_tests[1]_tests.cmake")
+else()
+  add_test(tank_game_tests_NOT_BUILT tank_game_tests_NOT_BUILT)
+endif()
