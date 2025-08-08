@@ -20,6 +20,7 @@ namespace GameManager_322868852_340849710 {
     };
 
     class GameManager_322868852 : public AbstractGameManager {
+        // TODO don't ignore the verbose!
         bool verbose;
 
     public:
