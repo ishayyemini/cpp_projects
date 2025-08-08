@@ -5,6 +5,8 @@
 #include "BattleInfo.h"
 #include "Logger.h"
 
+using namespace UserCommon_322868852_340849710;
+
 namespace Algorithm_322868852_340849710 {
     class MyBattleInfo final : public BattleInfo {
         std::vector<std::vector<char> > board{};

@@ -3,6 +3,8 @@
 #include "GameObject.h"
 #include "Direction.h"
 
+using namespace UserCommon_322868852_340849710;
+
 namespace GameManager_322868852_340849710 {
     constexpr int MAX_PLAYERS = 9;
     static auto tank_count = std::array<int, MAX_PLAYERS>{};

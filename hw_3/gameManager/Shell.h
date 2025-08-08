@@ -4,6 +4,8 @@
 #include "Direction.h"
 #include "GameObject.h"
 
+using namespace UserCommon_322868852_340849710;
+
 namespace GameManager_322868852_340849710 {
     class Shell final : public GameObject {
         int owner_id;

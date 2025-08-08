@@ -5,6 +5,8 @@
 #include "MyBattleStatus.h"
 #include "TankAlgorithm.h"
 
+using namespace UserCommon_322868852_340849710;
+
 namespace Algorithm_322868852_340849710 {
     class Algorithm_322868852 : public TankAlgorithm {
         int player_id{0};

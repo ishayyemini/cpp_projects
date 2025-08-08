@@ -2,6 +2,8 @@
 
 #include "Direction.h"
 
+using namespace UserCommon_322868852_340849710;
+
 namespace Algorithm_322868852_340849710 {
     MyBattleStatus::MyBattleStatus(int player_id, int tank_index) : tank_direction(
                                                                         player_id == 1

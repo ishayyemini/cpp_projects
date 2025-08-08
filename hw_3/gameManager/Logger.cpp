@@ -1,9 +1,12 @@
 #include "Logger.h"
+
 #include <iostream>
 #include <chrono>
 #include <iomanip>
 #include <sstream>
 #include <vector>
+
+using namespace UserCommon_322868852_340849710;
 
 Logger &Logger::getInstance() {
     static Logger instance;

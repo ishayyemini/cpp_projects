@@ -3,6 +3,8 @@
 
 #include "Direction.h"
 
+using namespace UserCommon_322868852_340849710;
+
 namespace GameManager_322868852_340849710 {
     static int static_id = 0;
 
