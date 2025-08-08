@@ -7,6 +7,7 @@
 #include "Player.h"
 #include "TankAlgorithm.h"
 #include "Tank.h"
+#include "AbstractGameManager.h"
 
 namespace GameManager_322868852_340849710 {
     enum Winner {
@@ -18,19 +19,26 @@ namespace GameManager_322868852_340849710 {
         NO_WINNER
     };
 
-    class GameManager {
-        const PlayerFactory &player_factory;
-        const TankAlgorithmFactory &tank_algorithm_factory;
+    class GameManager_322868852 : public AbstractGameManager {
+        bool verbose;
 
     public:
-        GameManager(const PlayerFactory &player_factory, const TankAlgorithmFactory &tank_algorithm_factory)
-            : player_factory(player_factory), tank_algorithm_factory(tank_algorithm_factory),
-              satellite_view(MySatelliteView()) {
+        GameManager_322868852(const bool verbose)
+            : verbose(verbose), satellite_view(MySatelliteView()) {
         }
 
-        void readBoard(const std::string &file_name);
+        void initBoard(size_t map_width, size_t map_height,
+                       const SatelliteView &map,
+                       const std::string &map_name,
+                       size_t max_steps, size_t num_shells);
 
-        void run();
+        GameResult run(size_t map_width, size_t map_height,
+                       const SatelliteView &map, // <= a snapshot, NOT updated
+                       std::string map_name,
+                       size_t max_steps, size_t num_shells,
+                       Player &player1, std::string name1, Player &player2, std::string name2,
+                       TankAlgorithmFactory player1_tank_algo_factory,
+                       TankAlgorithmFactory player2_tank_algo_factory) override;
 
         void updateCounters(Tank &tank, ActionRequest action);
 
@@ -54,7 +62,9 @@ namespace GameManager_322868852_340849710 {
         std::unique_ptr<Board> board;
         int empty_countdown = -1;
         std::vector<std::tuple<bool, ActionRequest, bool, bool> > tank_status;
-        std::vector<std::unique_ptr<Player> > players;
+        std::vector<std::string> player_names;
+        std::vector<Player *> players;
+        std::vector<TankAlgorithmFactory> ta_factories;
         std::vector<std::unique_ptr<TankAlgorithm> > tanks;
         MySatelliteView satellite_view;
 

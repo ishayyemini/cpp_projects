@@ -1,5 +1,3 @@
-# Makefile for GameManager shared library
-
 ID = 322868852_340849710
 TARGET = GameManager_$(ID).so
 
@@ -7,14 +5,15 @@ SRC = $(wildcard *.cpp)
 OBJ = $(SRC:.cpp=.o)
 
 CXX = g++
-CXXFLAGS = -Wall -std=c++20 -fPIC -I../common -I../userCommon
+CXXFLAGS = -Wall -Wextra -Werror -pedantic -std=c++20 -fPIC -I../common -I../userCommon
+LDFLAGS = -shared
 
 .PHONY: all clean
 
 all: $(TARGET)
 
 $(TARGET): $(OBJ)
-	$(CXX) -shared -o $@ $^
+	$(CXX) $(LDFLAGS) $^ -o $@
 
 %.o: %.cpp
 	@echo "Compiling $<..."
