@@ -11,12 +11,13 @@
   </component>
   <component name="CidrRootsConfiguration">
     <sourceRoots>
-      <file path="$PROJECT_DIR$/hw_2" />
+      <file path="$PROJECT_DIR$/hw_3" />
     </sourceRoots>
     <excludeRoots>
       <file path="$PROJECT_DIR$/hw_1" />
       <file path="$PROJECT_DIR$/hw_1/build" />
       <file path="$PROJECT_DIR$/hw_1/cmake-build-debug" />
+      <file path="$PROJECT_DIR$/hw_2" />
     </excludeRoots>
   </component>
 </project>

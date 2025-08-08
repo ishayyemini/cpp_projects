@@ -14,3 +14,12 @@ hw_2/errors.txt
 hw_2/input_errors.txt
 hw_2/output_*.txt
 hw_2/game_state.txt
+
+hw_3/cmake-build-debug
+hw_3/build
+hw_3/tanks_game
+hw_3/log.txt
+hw_3/errors.txt
+hw_3/input_errors.txt
+hw_3/output_*.txt
+hw_3/game_state.txt

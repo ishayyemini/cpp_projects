@@ -1,0 +1,8 @@
+1 - Player 1 wins
+MaxSteps=5000
+NumShells=20
+Rows=3
+Cols=6
+#### @
+# 1   
+#  2  
