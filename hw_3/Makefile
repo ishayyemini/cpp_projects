@@ -1,28 +1,17 @@
-# Configuration
-BUILD_DIR = build
-EXECUTABLE = tanks_game
-CMAKE = cmake
-CMAKE_FLAGS = -DCMAKE_BUILD_TYPE=Release
+.PHONY: all clean algorithm gameManager simulator
 
-all: all
+all: algorithm gameManager simulator
 
-# Create build directory if it doesn't exist
-$(BUILD_DIR):
-	mkdir -p $(BUILD_DIR)
+algorithm:
+	$(MAKE) -C algorithm
 
-all: $(BUILD_DIR)
-	$(CMAKE) -S . -B $(BUILD_DIR) -DUSE_SFML=OFF $(CMAKE_FLAGS)
-	$(CMAKE) --build $(BUILD_DIR) --parallel
-	cp $(BUILD_DIR)/$(EXECUTABLE) ./$(EXECUTABLE)
+gameManager:
+	$(MAKE) -C gameManager
 
-# Build and run tests
-test: $(BUILD_DIR)
-	$(CMAKE) -S . -B $(BUILD_DIR) $(CMAKE_FLAGS)
-	$(CMAKE) --build $(BUILD_DIR) --target tanks_game_tests --parallel
-	cd $(BUILD_DIR) && ctest --verbose
+simulator: algorithm
+	$(MAKE) -C simulator
 
-# Clean build artifacts
 clean:
-	rm -rf $(BUILD_DIR)
-	rm -f $(EXECUTABLE)
-	rm -f output.txt errors.txt input_errors.txt
+	$(MAKE) -C algorithm clean
+	$(MAKE) -C gameManager clean
+	$(MAKE) -C simulator clean

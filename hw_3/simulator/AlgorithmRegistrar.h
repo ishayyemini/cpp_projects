@@ -38,6 +38,8 @@ class AlgorithmRegistrar {
             return tankAlgorithmFactory(player_index, tank_index);
         }
 
+        TankAlgorithmFactory getTankAlgorithmFactory() const { return tankAlgorithmFactory; }
+
         bool hasPlayerFactory() const {
             return playerFactory != nullptr;
         }

@@ -7,7 +7,6 @@
 #include "Logger.h"
 #include "Shell.h"
 #include "ActionRequest.h"
-#include "InputParser.h"
 #include "MySatelliteView.h"
 #include "GameManagerRegistration.h"
 #include "GameObjectFactory.h"

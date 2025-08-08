@@ -1,22 +1,22 @@
-# Configuration
-BUILD_DIR = build
-EXECUTABLE = tanks_game
-CMAKE = cmake
-CMAKE_FLAGS = -DCMAKE_BUILD_TYPE=Release
+ID = 322868852_340849710
+TARGET = simulator_$(ID)
 
-all: all
+SRC = $(wildcard *.cpp)
+OBJ = $(SRC:.cpp=.o)
 
-# Create build directory if it doesn't exist
-$(BUILD_DIR):
-	mkdir -p $(BUILD_DIR)
+CXX = g++
+CXXFLAGS = -Wall -Wextra -Werror -pedantic -std=c++20 -fPIC -I../common -I../userCommon -rdynamic
 
-all: $(BUILD_DIR)
-	$(CMAKE) -S . -B $(BUILD_DIR) -DUSE_SFML=OFF $(CMAKE_FLAGS)
-	$(CMAKE) --build $(BUILD_DIR) --parallel
-	cp $(BUILD_DIR)/$(EXECUTABLE) ./$(EXECUTABLE)
+.PHONY: all clean
 
-# Clean build artifacts
+all: $(TARGET)
+
+$(TARGET): $(OBJ)
+	$(CXX) $(CXXFLAGS) $(OBJ) -o $(TARGET) -ldl
+
+%.o: %.cpp
+	@echo "Compiling $<..."
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
 clean:
-	rm -rf $(BUILD_DIR)
-	rm -f $(EXECUTABLE)
-	rm -f output.txt errors.txt input_errors.txt
+	rm -f $(OBJ) $(TARGET)
