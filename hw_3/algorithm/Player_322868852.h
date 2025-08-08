@@ -5,7 +5,7 @@
 #include "Player.h"
 
 namespace Algorithm_322868852_340849710 {
-    class MyPlayer final : public Player {
+    class Player_322868852 final : public Player {
         int player_index;
         size_t x;
         size_t y;
@@ -15,9 +15,9 @@ namespace Algorithm_322868852_340849710 {
         std::vector<std::vector<char> > createBoardFromSatellite(const SatelliteView &satellite_view) const;
 
     public:
-        MyPlayer(int player_index,
-                 size_t x, size_t y,
-                 size_t max_steps, size_t num_shells);
+        Player_322868852(int player_index,
+                         size_t x, size_t y,
+                         size_t max_steps, size_t num_shells);
 
         void updateTankWithBattleInfo(TankAlgorithm &tank, SatelliteView &satellite_view) override;
     };
