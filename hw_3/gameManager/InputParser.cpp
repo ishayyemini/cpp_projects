@@ -1,4 +1,4 @@
-#include "../src/game_manager/InputParser.h"
+#include "InputParser.h"
 
 #include <fstream>
 #include <iostream>
@@ -133,7 +133,3 @@ std::unique_ptr<Board> InputParser::parseInputFile(const std::string &file_name)
     addErrorMessagesToLog();
     return std::move(board);
 }
-
-
-
-

@@ -1,11 +1,11 @@
-#include "../src/game_manager/Board.h"
+#include "Board.h"
 
 #include <iostream>
 #include <utility>
 
 #include "Collision.h"
 #include "Mine.h"
-#include "../src/game_manager/Tank.h"
+#include "Tank.h"
 #include "Wall.h"
 #include "Shell.h"
 
@@ -111,7 +111,7 @@ void Board::removeIndices(GameObject *game_object) {
     moving_pos.erase(game_object->getId());
 }
 
-Board::Board(): max_steps(0), num_shells(0) {
+Board::Board() : max_steps(0), num_shells(0) {
 }
 
 Board::Board(std::string desc, const size_t max_steps, const size_t num_shells, size_t width,

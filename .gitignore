@@ -23,3 +23,5 @@ hw_3/errors.txt
 hw_3/input_errors.txt
 hw_3/output_*.txt
 hw_3/game_state.txt
+hw_3/**/**.so
+hw_3/**/**.o

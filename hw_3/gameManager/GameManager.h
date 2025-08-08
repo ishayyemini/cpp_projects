@@ -4,8 +4,8 @@
 #include <fstream>
 
 #include "Board.h"
-#include "PlayerFactory.h"
-#include "TankAlgorithmFactory.h"
+#include "Player.h"
+#include "TankAlgorithm.h"
 #include "Tank.h"
 
 enum Winner {
@@ -34,10 +34,10 @@ public:
     void updateCounters(Tank &tank, ActionRequest action);
 
     void setVisual(bool visual) { this->visual = visual; }
-    
+
     // Add visualization output capabilities
-    void enableGameStateExport(const std::string& output_file) { 
-        export_game_state = true; 
+    void enableGameStateExport(const std::string &output_file) {
+        export_game_state = true;
         game_state_file.open(output_file);
     }
 

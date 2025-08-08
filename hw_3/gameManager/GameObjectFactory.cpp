@@ -1,5 +1,5 @@
-#include "../src/game_manager/GameObjectFactory.h"
-#include "../src/game_manager/Wall.h"
+#include "GameObjectFactory.h"
+#include "Wall.h"
 #include "Mine.h"
 #include "Tank.h"
 
@@ -15,4 +15,3 @@ std::unique_ptr<GameObject> GameObjectFactory::create(const char symbol, const P
         default: return nullptr;
     }
 }
-

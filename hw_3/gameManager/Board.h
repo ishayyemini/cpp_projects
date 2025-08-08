@@ -11,11 +11,11 @@
 #include <vector>
 
 #include "GameObject.h"
-#include "../src/game_manager/Mine.h"
-#include "../src/game_manager/MySatelliteView.h"
-#include "../src/game_manager/Shell.h"
-#include "../src/game_manager/Tank.h"
-#include "../src/game_manager/Wall.h"
+#include "Mine.h"
+#include "MySatelliteView.h"
+#include "Shell.h"
+#include "Tank.h"
+#include "Wall.h"
 
 enum ObjectType {
     TANK_1,

@@ -3,15 +3,12 @@
 ID = 322868852_340849710
 TARGET = GameManager_$(ID).so
 
-# === Source and object files ===
 SRC = $(wildcard *.cpp)
 OBJ = $(SRC:.cpp=.o)
 
-# === Compiler settings ===
 CXX = g++
-CXXFLAGS = -Wall -std=c++17 -fPIC -I../common -I../UserCommon
+CXXFLAGS = -Wall -std=c++20 -fPIC -I../common -I../userCommon
 
-# === Targets ===
 .PHONY: all clean
 
 all: $(TARGET)

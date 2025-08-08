@@ -1,4 +1,4 @@
-#include "../src/game_manager/GameObject.h"
+#include "GameObject.h"
 
 #include <iosfwd>
 

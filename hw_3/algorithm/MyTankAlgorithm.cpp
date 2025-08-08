@@ -1,13 +1,13 @@
-#include "../src/algo/MyTankAlgorithm.h"
+#include "MyTankAlgorithm.h"
 
 #include "Logger.h"
 #include "MyBattleInfo.h"
 
-MyTankAlgorithm::MyTankAlgorithm(const int player_id, const int tank_index): player_id{player_id},
-                                                                             tank_index(tank_index),
-                                                                             battle_status(
-                                                                                 MyBattleStatus(
-                                                                                     player_id, tank_index)) {
+MyTankAlgorithm::MyTankAlgorithm(const int player_id, const int tank_index) : player_id{player_id},
+                                                                              tank_index(tank_index),
+                                                                              battle_status(
+                                                                                  MyBattleStatus(
+                                                                                      player_id, tank_index)) {
 }
 
 

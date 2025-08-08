@@ -6,9 +6,9 @@
 
 #include "Logger.h"
 #include "Mine.h"
-#include "../src/game_manager/Shell.h"
+#include "Shell.h"
 #include "ActionRequest.h"
-#include "../src/game_manager/InputParser.h"
+#include "InputParser.h"
 #include "MySatelliteView.h"
 
 using namespace std::chrono_literals;
@@ -18,18 +18,18 @@ void GameManager::readBoard(const std::string &file_name) {
     board = input_parser.parseInputFile(file_name);
 
     if (board == nullptr) {
-        board = make_unique<Board>();
+        board = std::make_unique<Board>();
         std::cerr << "Can't parse file " << file_name << std::endl;
     }
 
     // create 2 players
     for (int i = 1; i <= 2; i++) {
-        players.emplace_back(player_factory.create(i, board->getWidth(), board->getHeight(), board->getMaxSteps(),
-                                                   board->getNumShells()));
+        players.emplace_back(player_factory(i, board->getWidth(), board->getHeight(), board->getMaxSteps(),
+                                            board->getNumShells()));
     }
 
     for (auto [player_i, tank_i]: input_parser.getTanks()) {
-        tanks.emplace_back(tank_algorithm_factory.create(player_i, tank_i));
+        tanks.emplace_back(tank_algorithm_factory(player_i, tank_i));
         tank_status.push_back({false, ActionRequest::DoNothing, true, false});
     }
 }
@@ -331,4 +331,3 @@ void GameManager::exportGameState() {
         game_state_file.close();
     }
 }
-

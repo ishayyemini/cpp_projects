@@ -1,13 +1,13 @@
-#include "../src/algo/MyBattleStatus.h"
+#include "MyBattleStatus.h"
 
 #include "Direction.h"
 
-MyBattleStatus::MyBattleStatus(int player_id, int tank_index): tank_direction(
-                                                                   player_id == 1
-                                                                       ? Direction::LEFT
-                                                                       : Direction::RIGHT),
-                                                               player_id(player_id),
-                                                               tank_index(tank_index) {
+MyBattleStatus::MyBattleStatus(int player_id, int tank_index) : tank_direction(
+                                                                    player_id == 1
+                                                                        ? Direction::LEFT
+                                                                        : Direction::RIGHT),
+                                                                player_id(player_id),
+                                                                tank_index(tank_index) {
     updateTanksPosition();
 }
 

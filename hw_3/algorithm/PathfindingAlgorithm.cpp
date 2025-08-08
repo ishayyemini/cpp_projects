@@ -1,4 +1,4 @@
-#include "../src/algo/PathfindingAlgorithm.h"
+#include "PathfindingAlgorithm.h"
 
 #include <queue>
 #include <set>
@@ -136,7 +136,7 @@ std::vector<Direction::DirectionType> PathfindingAlgorithm::computeBFS() {
         Position pos;
         std::vector<Direction::DirectionType> path;
 
-        Node(const Position &pos, const std::vector<Direction::DirectionType> &path): pos(pos), path(path) {
+        Node(const Position &pos, const std::vector<Direction::DirectionType> &path) : pos(pos), path(path) {
         }
     };
     std::string msg = "Performing BFS. Start Position = " + battle_status.tank_position.toString();

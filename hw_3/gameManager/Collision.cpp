@@ -1,7 +1,7 @@
-#include "../src/game_manager/Collision.h"
+#include "Collision.h"
 
 #include "Tank.h"
-#include "../src/game_manager/Wall.h"
+#include "Wall.h"
 
 std::unique_ptr<GameObject> Collision::popElement() {
     if (elements.empty()) return nullptr;
