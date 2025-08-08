@@ -57,7 +57,7 @@ void InputParser::processLine(size_t row, const std::string &line) {
             symbol = default_symbol;
         }
 
-        satellite_view->setObjectAt(row, col, symbol);
+        satellite_view->setObjectAt(col, row, symbol);
     }
 }
 
@@ -121,7 +121,7 @@ void InputParser::parseInputFile(const std::string &file_name) {
         return;
     }
 
-    satellite_view = std::make_unique<MySatelliteView>();
+    satellite_view = std::make_unique<MySatelliteView>(width, height);
     populateBoard(inFile);
     Logger::getInstance().log("Board loaded successfully");
     inFile.close();

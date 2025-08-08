@@ -23,7 +23,7 @@ void GameManager_322868852::initBoard(size_t map_width, size_t map_height, const
 
     for (size_t y = 0; y < map_height; ++y) {
         for (size_t x = 0; x < map_width; ++x) {
-            auto obj = GameObjectFactory::create(map.getObjectAt(x, y), Position(y, x), num_shells);
+            auto obj = GameObjectFactory::create(map.getObjectAt(x, y), Position(x, y), num_shells);
             if (const auto t = dynamic_cast<Tank *>(obj.get())) {
                 tanks.emplace_back(ta_factories[t->getPlayerIndex() - 1](t->getPlayerIndex(), t->getTankIndex()));
                 tank_status.emplace_back(false, ActionRequest::DoNothing, true, false);
