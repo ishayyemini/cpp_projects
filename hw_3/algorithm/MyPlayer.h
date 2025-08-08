@@ -4,21 +4,23 @@
 
 #include "Player.h"
 
-class MyPlayer final : public Player {
-    int player_index;
-    size_t x;
-    size_t y;
-    size_t max_steps;
-    size_t num_shells;
+namespace Algorithm_322868852_340849710 {
+    class MyPlayer final : public Player {
+        int player_index;
+        size_t x;
+        size_t y;
+        size_t max_steps;
+        size_t num_shells;
 
-    std::vector<std::vector<char> > createBoardFromSatellite(const SatelliteView &satellite_view) const;
+        std::vector<std::vector<char> > createBoardFromSatellite(const SatelliteView &satellite_view) const;
 
-public:
-    MyPlayer(int player_index,
-             size_t x, size_t y,
-             size_t max_steps, size_t num_shells);
+    public:
+        MyPlayer(int player_index,
+                 size_t x, size_t y,
+                 size_t max_steps, size_t num_shells);
 
-    void updateTankWithBattleInfo(TankAlgorithm &tank, SatelliteView &satellite_view) override;
-};
+        void updateTankWithBattleInfo(TankAlgorithm &tank, SatelliteView &satellite_view) override;
+    };
+}
 
 #endif //MyPlayer_H

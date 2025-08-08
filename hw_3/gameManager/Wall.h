@@ -1,30 +1,32 @@
 #ifndef WALL_H
 #define WALL_H
 
-static constexpr int MAX_HEALTH = 2;
+namespace GameManager_322868852_340849710 {
+    static constexpr int MAX_HEALTH = 2;
 
-class Wall final : public GameObject {
-    int health = MAX_HEALTH;
+    class Wall final : public GameObject {
+        int health = MAX_HEALTH;
 
-public:
-    explicit Wall(const Position position): GameObject(position) {
-    }
+    public:
+        explicit Wall(const Position position) : GameObject(position) {
+        }
 
-    [[nodiscard]] char getSymbol() const override { return '#'; }
+        [[nodiscard]] char getSymbol() const override { return '#'; }
 
-    void takeDamage(const int amount = 1) {
-        if (health > 0) health -= amount;
-    }
+        void takeDamage(const int amount = 1) {
+            if (health > 0) health -= amount;
+        }
 
-    [[nodiscard]] int getHitCount() const { return MAX_HEALTH - health; }
+        [[nodiscard]] int getHitCount() const { return MAX_HEALTH - health; }
 
-    int getHealth() const { return health; }
+        int getHealth() const { return health; }
 
-    bool isDestroyed() const override { return health == 0; }
+        bool isDestroyed() const override { return health == 0; }
 
-    void destroy() override { health = 0; }
+        void destroy() override { health = 0; }
 
-    bool isWall() const override { return true; }
-};
+        bool isWall() const override { return true; }
+    };
+}
 
 #endif //WALL_H

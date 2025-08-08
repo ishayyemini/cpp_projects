@@ -6,28 +6,30 @@
 #include "MyBattleStatus.h"
 #include "TankAlgorithm.h"
 
-class MyTankAlgorithm : public TankAlgorithm {
-public:
-    virtual std::string getName() const { return "Algorithm"; }
+namespace Algorithm_322868852_340849710 {
+    class MyTankAlgorithm : public TankAlgorithm {
+    public:
+        virtual std::string getName() const { return "Algorithm"; }
 
-    void updateBattleInfo(BattleInfo &info) override;
+        void updateBattleInfo(BattleInfo &info) override;
 
-protected:
-    int player_id{0};
-    int tank_index = {0};
-    MyBattleStatus battle_status;
+    protected:
+        int player_id{0};
+        int tank_index = {0};
+        MyBattleStatus battle_status;
 
-    MyTankAlgorithm(int player_id, int tank_index);
+        MyTankAlgorithm(int player_id, int tank_index);
 
-    ActionRequest getAction() override;
+        ActionRequest getAction() override;
 
-    virtual void calculateAction(ActionRequest *request, std::string *request_title) = 0;
+        virtual void calculateAction(ActionRequest *request, std::string *request_title) = 0;
 
-    void printLogs(const std::string &msg) const;
+        void printLogs(const std::string &msg) const;
 
-    bool isTankThreatened() const;
+        bool isTankThreatened() const;
 
-    ActionRequest moveIfThreatened() const;
-};
+        ActionRequest moveIfThreatened() const;
+    };
+}
 
 #endif //ALGORITHM_H
