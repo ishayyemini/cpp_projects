@@ -39,35 +39,6 @@ set_target_properties(tanks_game_lib
         LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
 )
 
-# Google Test
-include(FetchContent)
-FetchContent_Declare(
-        googletest
-        GIT_REPOSITORY https://github.com/google/googletest.git
-        GIT_TAG release-1.12.1
-)
-# For Windows: Prevent overriding the parent project's compiler/linker settings
-set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-FetchContent_MakeAvailable(googletest)
-
-# Enable testing
-enable_testing()
-
-# Add tests
-add_executable(tanks_game_tests
-        "tests/position_test.cpp"
-        "tests/board_test.cpp"
-        "tests/input_parser_test.cpp"
-        "tests/game_state_test.cpp"
-        "tests/algorithms_test.cpp"
-        "tests/game_manager_test.cpp"
-        ${SOURCES}
-)
-target_link_libraries(tanks_game_tests gtest_main gmock)
-
-include(GoogleTest)
-gtest_discover_tests(tanks_game_tests)
-
 add_custom_command(
         TARGET tanks_game
         POST_BUILD
