@@ -94,7 +94,7 @@ namespace GameManager_322868852_340849710 {
 
         bool isGameOver() const { return game_over; }
 
-        std::string getGameResult() const;
+        std::string getGameResult(GameResult &result) const;
 
         void logStep();
 

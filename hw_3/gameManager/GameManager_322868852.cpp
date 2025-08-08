@@ -50,18 +50,20 @@ GameResult GameManager_322868852::run(size_t map_width, size_t map_height,
 
     initBoard(map_width, map_height, map, map_name, max_steps, num_shells);
 
+    GameResult result;
+
     checkDeaths(); //check if one of the player doesn't have any tanks
     while (!isGameOver()) {
         processStep();
         if (visual) std::this_thread::sleep_for(200ms);
     }
 
-    Logger::getInstance().logResult(getGameResult());
+    Logger::getInstance().logResult(getGameResult(result));
     if (visual) {
-        std::cout << getGameResult() << std::endl;
+        std::cout << getGameResult(result) << std::endl;
     }
 
-    // TODO return game result
+    return result;
 }
 
 void GameManager_322868852::updateCounters(Tank &tank, const ActionRequest action) {
@@ -267,24 +269,38 @@ void GameManager_322868852::processStep() {
     }
 }
 
-std::string GameManager_322868852::getGameResult() const {
+std::string GameManager_322868852::getGameResult(GameResult &result) const {
     std::string p1_tanks = std::to_string(board->getPlayerAliveTanks(1).size());
     std::string p2_tanks = std::to_string(board->getPlayerAliveTanks(2).size());
     std::string max_steps = std::to_string(board->getMaxSteps());
     std::string empty_ammo = std::to_string(max_steps_empty_ammo);
 
+    result.remaining_tanks = {board->getPlayerAliveTanks(1).size(), board->getPlayerAliveTanks(2).size()};
+    auto sv = std::make_unique<MySatelliteView>();
+    board->fillSatelliteView(*sv);
+    result.gameState = std::move(sv);
+    result.rounds = game_step;
+
     switch (winner) {
         case TIE:
+            result.winner = 0;
+            result.reason = GameResult::Reason::ALL_TANKS_DEAD;
             return "Tie, both players have zero tanks";
         case TIE_STEPS:
+            result.winner = 0;
+            result.reason = GameResult::Reason::MAX_STEPS;
             return "Tie, reached max steps = " + max_steps + ", player 1 has " + p1_tanks + " tanks, player 2 has "
                    +
                    p2_tanks + " tanks";
         case TIE_AMMO:
+            result.winner = 0;
+            result.reason = GameResult::Reason::ZERO_SHELLS;
             return "Tie, both players have zero shells for " + empty_ammo + " steps";
         case PLAYER_1:
+            result.winner = 1;
             return "Player 1 won with " + p1_tanks + " tanks still alive";
         case PLAYER_2:
+            result.winner = 2;
             return "Player 2 won with " + p2_tanks + " tanks still alive";
         default:
             return "Bad result";
@@ -344,8 +360,9 @@ void GameManager_322868852::exportGameState() {
     game_state_file.flush();
 
     if (game_over) {
+        GameResult result;
         game_state_file << "GAME_OVER" << std::endl;
-        game_state_file << getGameResult() << std::endl;
+        game_state_file << getGameResult(result) << std::endl;
         game_state_file.close();
     }
 }
