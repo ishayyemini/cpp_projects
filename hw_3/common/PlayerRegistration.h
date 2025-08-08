@@ -1,8 +1,10 @@
 #ifndef PLAYERREGISTRATION_H
 #define PLAYERREGISTRATION_H
 
+#include "Player.h"
+
 struct PlayerRegistration {
-    PlayerRegistration (PlayerFactory);
+    PlayerRegistration(PlayerFactory);
 };
 
 #define REGISTER_PLAYER(class_name) \
