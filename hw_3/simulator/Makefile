@@ -5,14 +5,14 @@ SRC = $(wildcard *.cpp)
 OBJ = $(SRC:.cpp=.o)
 
 CXX = g++
-CXXFLAGS = -Wall -Wextra -Werror -pedantic -std=c++20 -fPIC -I../common -I../userCommon -rdynamic
+CXXFLAGS = -Wall -Wextra -Werror -pedantic -std=c++20 -fPIC -I../common -I../userCommon
 
 .PHONY: all clean
 
 all: $(TARGET)
 
 $(TARGET): $(OBJ)
-	$(CXX) $(CXXFLAGS) $(OBJ) -o $(TARGET) -ldl
+	$(CXX) $(CXXFLAGS) $(OBJ) -o $(TARGET) -ldl -rdynamic -pthread
 
 %.o: %.cpp
 	@echo "Compiling $<..."
