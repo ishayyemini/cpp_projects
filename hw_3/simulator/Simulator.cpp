@@ -622,7 +622,7 @@ int Simulator::runComparative(const Args &args) {
     std::vector<OneRes> results;
 
     auto runOne = [&](const GmWrap &gw) {
-        auto gm = gw.makeGameManager(false);
+        auto gm = gw.makeGameManager(args.verbose);
         if (!gm) return;
 
         auto p1 = alg1->playerFactory(1, width, height, maxSteps, numShells);
@@ -708,139 +708,129 @@ int Simulator::runComparative(const Args &args) {
 }
 
 int Simulator::runCompetition(const Args &args) {
-    (void) args;
-    // // Fresh registrars
-    // AlgorithmRegistrar::getAlgorithmRegistrar().clear();
-    // GameManagerRegistrar::getGameManagerRegistrar().clear();
-    //
-    // // Load GM (keep handle list)
-    // auto gmOpt = loadGameManagerSo(args.gameManagerFile);
-    // std::vector<void *> gmHandles;
-    // if (!gmOpt) {
-    //     std::cerr << "Error: failed to load game_manager.\n" << usageCompetition();
-    //     dlcloseAll(gmHandles);
-    //     return 1;
-    // }
-    // if (void *h = dlopenOrNull(args.gameManagerFile)) gmHandles.push_back(h);
-    //
-    // // Load algorithms folder
-    // auto pairLoaded = loadAlgorithmFolder(args.algorithmsFolder);
-    // auto &algs = pairLoaded.first;
-    // auto &algHandles = pairLoaded.second;
-    // if (algs.size() < 2) {
-    //     std::cerr << "Error: algorithms_folder has fewer than 2 valid .so files.\n" << usageCompetition();
-    //     // Ensure registrars are empty and close libs
-    //     AlgorithmRegistrar::getAlgorithmRegistrar().clear();
-    //     dlcloseAll(algHandles);
-    //     dlcloseAll(gmHandles);
-    //     return 1;
-    // }
-    //
-    // // List maps
-    // auto mapFiles = listRegularFiles(args.gameMapsFolder);
-    // if (mapFiles.empty()) {
-    //     std::cerr << "Error: no map files in game_maps_folder.\n" << usageCompetition();
-    //     // Cleanup ordering
-    //     algs.clear();
-    //     algs.shrink_to_fit();
-    //     AlgorithmRegistrar::getAlgorithmRegistrar().clear();
-    //     dlcloseAll(algHandles);
-    //     dlcloseAll(gmHandles);
-    //     return 1;
-    // }
-    //
-    // std::vector<int> scores(algs.size(), 0);
-    // auto addWin = [&](size_t idx) { scores[idx] += 3; };
-    // auto addTie = [&](size_t a, size_t b) {
-    //     scores[a] += 1;
-    //     scores[b] += 1;
-    // };
-    //
-    // std::mutex mtx;
-    //
-    // auto runOne = [&](const std::string &mapPath, size_t ai, size_t aj) {
-    //     try {
-    //         std::lock_guard<std::mutex> glk(g_logger_mutex);
-    //         Logger::getInstance().init(mapPath);
-    //         InputParser parser;
-    //         parser.parseInputFile(mapPath);
-    //         SatelliteView *mapView = parser.getSatelliteView();
-    //         if (!mapView) return;
-    //
-    //         const size_t width = parser.getWidth();
-    //         const size_t height = parser.getHeight();
-    //         const size_t maxSteps = parser.getMaxSteps();
-    //         const size_t numShells = parser.getNumShells();
-    //         const std::string mapName = parser.getBoardDescription();
-    //
-    //         auto gm = gmOpt->makeGameManager();
-    //         if (!gm) return;
-    //
-    //         auto p1 = algs[ai].makePlayer(1, width, height, maxSteps, numShells);
-    //         auto p2 = algs[aj].makePlayer(2, width, height, maxSteps, numShells);
-    //         if (!p1 || !p2) return;
-    //
-    //         GameResult gr = gm->run(width, height, *mapView, mapName, maxSteps, numShells,
-    //                                 *p1, algs[ai].name, *p2, algs[aj].name,
-    //                                 algs[ai].tankFactory, algs[aj].tankFactory);
-    //
-    //         std::lock_guard<std::mutex> lk(mtx);
-    //         if (gr.winner == 1) addWin(ai);
-    //         else if (gr.winner == 2) addWin(aj);
-    //         else addTie(ai, aj);
-    //     } catch (...) {
-    //         // Swallow to keep tournament running; earlier logging should have captured clues
-    //     }
-    // };
-    //
-    // bool usePool = args.numThreads >= 2;
-    // std::unique_ptr<ThreadPool> pool;
-    // if (usePool) pool = std::make_unique<ThreadPool>(static_cast<size_t>(args.numThreads));
-    //
-    // const size_t N = algs.size();
-    // for (size_t k = 0; k < mapFiles.size(); ++k) {
-    //     bool dedup = (N % 2 == 0) && (k == (N / 2 - 1));
-    //     auto pairs = computePairsForK(N, k, dedup);
-    //     for (auto [i,j]: pairs) {
-    //         if (usePool) pool->enqueue([=] { runOne(mapFiles[k], i, j); });
-    //         else runOne(mapFiles[k], i, j);
-    //     }
-    // }
-    // if (usePool) pool->waitIdle();
-    //
-    // // Build sorted scoreboard
-    // std::vector<std::pair<std::string, int> > out;
-    // out.reserve(algs.size());
-    // for (size_t i = 0; i < algs.size(); ++i) out.emplace_back(algs[i].name, scores[i]);
-    // std::sort(out.begin(), out.end(), [](const auto &a, const auto &b) {
-    //     if (a.second != b.second) return a.second > b.second;
-    //     return a.first < b.first;
-    // });
-    //
-    // // Emit output
-    // const auto content = formatCompetitionOutput(args.gameMapsFolder, args.gameManagerFile, out);
-    // const auto outPath = joinPath(args.algorithmsFolder, "competition_" + epochTimeId() + ".txt");
-    // std::string err;
-    // if (!writeTextFile(outPath, content, err)) {
-    //     std::cerr << "Error: " << err << "\n";
-    //     std::cout << content;
-    // }
-    //
-    // // IMPORTANT: Clean up in the correct order
-    // // 1) Destroy all std::function and lambdas that might reference plugin code
-    // out.clear();
-    // scores.clear();
-    // mapFiles.clear();
-    // if (pool) pool.reset();
-    // // Destroy algs vector (releases TankAlgorithmFactory objects)
-    // algs.clear();
-    // algs.shrink_to_fit();
-    // // Clear registrars so their internal std::function objects are destroyed
-    // AlgorithmRegistrar::getAlgorithmRegistrar().clear();
-    // GameManagerRegistrar::getGameManagerRegistrar().clear();
-    // // 2) Now it is safe to unload the shared libraries
-    // dlcloseAll(algHandles);
-    // dlcloseAll(gmHandles);
-    //
+    // Fresh registrars
+    AlgorithmRegistrar::getAlgorithmRegistrar().clear();
+    GameManagerRegistrar::getGameManagerRegistrar().clear();
+
+    // Load GM
+    auto gmWrap = loadGameManagerSo(args.gameManagerFile);
+    if (!gmWrap) {
+        std::cerr << "Error: failed to load game_manager.\n" << usageCompetition();
+        closeGmWrap(gmWrap);
+        return 1;
+    }
+
+    // Load algorithms folder
+    auto algs = loadAlgorithmFolder(args.algorithmsFolder);
+    if (algs.size() < 2) {
+        std::cerr << "Error: algorithms_folder has fewer than 2 valid .so files.\n" << usageCompetition();
+        // Ensure registrars are empty and close libs
+        AlgorithmRegistrar::getAlgorithmRegistrar().clear();
+        GameManagerRegistrar::getGameManagerRegistrar().clear();
+        closeAlgWrap(algs);
+        closeGmWrap(gmWrap);
+        return 1;
+    }
+
+    // List maps
+    auto mapFiles = listRegularFiles(args.gameMapsFolder);
+    if (mapFiles.empty()) {
+        std::cerr << "Error: no map files in game_maps_folder.\n" << usageCompetition();
+        // Cleanup ordering
+        AlgorithmRegistrar::getAlgorithmRegistrar().clear();
+        GameManagerRegistrar::getGameManagerRegistrar().clear();
+        closeAlgWrap(algs);
+        closeGmWrap(gmWrap);
+        return 1;
+    }
+
+    std::vector<int> scores(algs.size(), 0);
+    auto addWin = [&](size_t idx) { scores[idx] += 3; };
+    auto addTie = [&](size_t a, size_t b) {
+        scores[a] += 1;
+        scores[b] += 1;
+    };
+
+    std::mutex mtx;
+
+    auto runOne = [&](const std::string &mapPath, size_t ai, size_t aj) {
+        try {
+            std::lock_guard<std::mutex> glk(g_logger_mutex);
+            Logger::getInstance().init(mapPath);
+            InputParser parser;
+            parser.parseInputFile(mapPath);
+            SatelliteView *mapView = parser.getSatelliteView();
+            if (!mapView) return;
+
+            const size_t width = parser.getWidth();
+            const size_t height = parser.getHeight();
+            const size_t maxSteps = parser.getMaxSteps();
+            const size_t numShells = parser.getNumShells();
+            const std::string mapName = parser.getBoardDescription();
+
+            auto gm = gmWrap->makeGameManager(args.verbose);
+            if (!gm) return;
+
+            auto p1 = algs[ai].playerFactory(1, width, height, maxSteps, numShells);
+            auto p2 = algs[aj].playerFactory(2, width, height, maxSteps, numShells);
+            if (!p1 || !p2) return;
+
+            GameResult gr = gm->run(width, height, *mapView, mapName, maxSteps, numShells,
+                                    *p1, algs[ai].name, *p2, algs[aj].name,
+                                    algs[ai].tankFactory, algs[aj].tankFactory);
+
+            std::lock_guard<std::mutex> lk(mtx);
+            if (gr.winner == 1) addWin(ai);
+            else if (gr.winner == 2) addWin(aj);
+            else addTie(ai, aj);
+        } catch (...) {
+            // Swallow to keep tournament running; earlier logging should have captured clues
+        }
+    };
+
+    bool usePool = args.numThreads >= 2;
+    std::unique_ptr<ThreadPool> pool;
+    if (usePool) pool = std::make_unique<ThreadPool>(static_cast<size_t>(args.numThreads));
+
+    const size_t N = algs.size();
+    for (size_t k = 0; k < mapFiles.size(); ++k) {
+        bool dedup = (N % 2 == 0) && (k == (N / 2 - 1));
+        auto pairs = computePairsForK(N, k, dedup);
+        for (auto [i,j]: pairs) {
+            if (usePool) pool->enqueue([=] { runOne(mapFiles[k], i, j); });
+            else runOne(mapFiles[k], i, j);
+        }
+    }
+    if (usePool) pool->waitIdle();
+
+    // Build sorted scoreboard
+    std::vector<std::pair<std::string, int> > out;
+    out.reserve(algs.size());
+    for (size_t i = 0; i < algs.size(); ++i) out.emplace_back(algs[i].name, scores[i]);
+    std::sort(out.begin(), out.end(), [](const auto &a, const auto &b) {
+        if (a.second != b.second) return a.second > b.second;
+        return a.first < b.first;
+    });
+    // Emit output
+    const auto content = formatCompetitionOutput(args.gameMapsFolder, args.gameManagerFile, out);
+    const auto outPath = joinPath(args.algorithmsFolder, "competition_" + epochTimeId() + ".txt");
+    std::string err;
+    if (!writeTextFile(outPath, content, err)) {
+        std::cerr << "Error: " << err << "\n";
+        std::cout << content;
+    }
+
+    // IMPORTANT: Clean up in the correct order
+    // 1) Destroy all std::function and lambdas that might reference plugin code
+    out.clear();
+    scores.clear();
+    mapFiles.clear();
+    if (pool) pool.reset();
+
+    AlgorithmRegistrar::getAlgorithmRegistrar().clear();
+    GameManagerRegistrar::getGameManagerRegistrar().clear();
+    closeAlgWrap(algs);
+    closeGmWrap(gmWrap);
+
     return 0;
 }
