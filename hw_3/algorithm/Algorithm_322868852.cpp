@@ -3,7 +3,6 @@
 #include <queue>
 #include <set>
 
-#include "Logger.h"
 #include "Direction.h"
 #include "MyBattleInfo.h"
 #include "TankAlgorithmRegistration.h"
@@ -149,7 +148,6 @@ std::vector<Direction::DirectionType> Algorithm_322868852::computeBFS() {
         }
     };
     std::string msg = "Performing BFS. Start Position = " + battle_status.tank_position.toString();
-    printLogs(msg);
 
     std::queue<Node> q;
     std::set<Position> visited;
@@ -215,28 +213,20 @@ void Algorithm_322868852::updateBattleInfo(BattleInfo &info) {
     }
 }
 
-void Algorithm_322868852::printLogs(const std::string &msg) const {
-    Logger::getInstance().log("Player " + std::to_string(player_id) + " - Tank Index " +
-                              std::to_string(tank_index) + " " + msg);
-}
-
 ActionRequest Algorithm_322868852::getAction() {
     ActionRequest request = ActionRequest::DoNothing;
     std::string request_title = "Doing nothing";
     calculateAction(&request, &request_title);
     battle_status.turn_number++;
-    printLogs(request_title);
     battle_status.updateBattleStatusBaseAction(request);
     return request;
 }
 
 bool Algorithm_322868852::isTankThreatened() const {
     if (battle_status.isShellClose()) {
-        printLogs("Threatened by shells");
         return true;
     }
     if (battle_status.isEnemyClose()) {
-        printLogs("Threatened by enemy");
         return true;
     }
     return false;

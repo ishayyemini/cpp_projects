@@ -27,8 +27,6 @@ namespace Algorithm_322868852_340849710 {
 
         void updateBattleInfo(BattleInfo &info);
 
-        void printLogs(const std::string &msg) const;
-
         ActionRequest getAction();
 
         bool isTankThreatened() const;

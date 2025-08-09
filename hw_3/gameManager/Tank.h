@@ -9,7 +9,6 @@ namespace GameManager_322868852_340849710 {
     constexpr int MAX_PLAYERS = 9;
     static auto tank_count = std::array<int, MAX_PLAYERS>{};
 
-    //todo: we support only two players - make it more modular
     class Tank final : public GameObject {
         int player_index;
         int tank_index;
