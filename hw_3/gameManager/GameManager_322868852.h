@@ -54,7 +54,7 @@ namespace GameManager_322868852_340849710 {
     private:
         static constexpr int max_steps_empty_ammo = 40;
 
-        bool visual = true; // TODO change!
+        bool visual = false; // TODO change!
         bool export_game_state = false;
         std::ofstream game_state_file;
         size_t game_step = 0;

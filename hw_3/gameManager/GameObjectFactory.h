@@ -11,6 +11,8 @@ namespace GameManager_322868852_340849710 {
 
     public:
         static std::unique_ptr<GameObject> create(char symbol, Position position, size_t num_shells);
+
+        static void reset() { tank_algo_count = 0; }
     };
 }
 

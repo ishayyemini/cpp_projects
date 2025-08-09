@@ -20,6 +20,7 @@ REGISTER_GAME_MANAGER(GameManager_322868852)
 void GameManager_322868852::initBoard(size_t map_width, size_t map_height, const SatelliteView &map,
                                       const std::string &map_name, size_t max_steps, size_t num_shells) {
     board = std::make_unique<Board>(map_name, max_steps, num_shells, map_width, map_height);
+    GameObjectFactory::reset();
 
     for (size_t y = 0; y < map_height; ++y) {
         for (size_t x = 0; x < map_width; ++x) {
