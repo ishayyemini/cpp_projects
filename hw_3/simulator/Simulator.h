@@ -73,35 +73,44 @@ private:
     // Dynamic load helpers
     static void *dlopenOrNull(const std::string &path);
 
-    static void dlcloseAll(std::vector<void *> &handles);
-
     // Registrar-based loading
     struct AlgWrap {
+        void *dl;
         std::string name;
-        // Player factory per algorithm
-        std::function<std::unique_ptr<Player>(int, size_t, size_t, size_t, size_t)> makePlayer;
-        // Tank algorithm factory per algorithm
+        PlayerFactory playerFactory;
         TankAlgorithmFactory tankFactory;
     };
+
+    static void closeAlgWrap(std::optional<AlgWrap> &wrap);
+
+    static void closeAlgWrap(AlgWrap &wrap);
+
+    static void closeAlgWrap(std::vector<AlgWrap> &handles);
 
     // Loads a single algorithm .so into AlgorithmRegistrar. Returns nullopt on failure.
     static std::optional<AlgWrap> loadAlgorithmSo(const std::string &soPath);
 
     // Loads many algorithm .so files, returns loaded algorithms and their dls.
-    static std::pair<std::vector<AlgWrap>, std::vector<void *> > loadAlgorithmFolder(const std::string &folder);
+    static std::vector<Simulator::AlgWrap> loadAlgorithmFolder(const std::string &folder);
 
     struct GmWrap {
+        void *dl;
         std::string name;
-        // Factory for a GameManager instance (per run)
-        std::function<std::unique_ptr<AbstractGameManager>()> makeGameManager;
+        GameManagerFactory makeGameManager;
     };
 
+    static void closeGmWrap(std::optional<GmWrap> &wrap);
+
+    static void closeGmWrap(GmWrap &wrap);
+
+    static void closeGmWrap(std::vector<GmWrap> &handles);
+
     // Loads a single game manager .so into GameManagerRegistrar. Returns nullopt on failure.
-    static std::optional<GmWrap> loadGameManagerSo(const std::string &soPath, bool verbose);
+    static std::optional<GmWrap> loadGameManagerSo(const std::string &soPath);
 
     // Loads many GMs from a folder
-    static std::pair<std::vector<GmWrap>, std::vector<void *> > loadGameManagersFolder(
-        const std::string &folder, bool verbose);
+    static std::vector<Simulator::GmWrap> loadGameManagersFolder(
+        const std::string &folder);
 
     // Thread pool (created only when numThreads >= 2; workers = numThreads; main waits)
     class ThreadPool {

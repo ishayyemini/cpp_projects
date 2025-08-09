@@ -38,6 +38,8 @@ class AlgorithmRegistrar {
             return tankAlgorithmFactory(player_index, tank_index);
         }
 
+        PlayerFactory getPlayerFactory() const { return playerFactory; }
+
         TankAlgorithmFactory getTankAlgorithmFactory() const { return tankAlgorithmFactory; }
 
         bool hasPlayerFactory() const {
@@ -83,6 +85,11 @@ public:
                 .hasTankAlgorithmFactory = last.hasTankAlgorithmFactory()
             };
         }
+    }
+
+    auto lastReg() {
+        validateLastRegistration();
+        return &algorithms.back();
     }
 
     void removeLast() {

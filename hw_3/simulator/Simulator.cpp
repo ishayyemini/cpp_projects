@@ -2,7 +2,6 @@
 
 #include <algorithm>
 #include <chrono>
-#include <cctype>
 #include <filesystem>
 #include <fstream>
 #include <iostream>
@@ -14,12 +13,17 @@
 #include <thread>
 #include <utility>
 #include <condition_variable>
-#include <pthread.h>
 
 #include <dlfcn.h>
 
-namespace fs = std::filesystem;
 using namespace UserCommon_322868852_340849710;
+
+namespace fs = std::filesystem;
+
+// Guard all Logger usage and any code paths that might write via Logger
+namespace {
+    std::mutex g_logger_mutex;
+}
 
 // -------------------- Utils --------------------
 static inline std::string trim(const std::string &s) {
@@ -106,8 +110,32 @@ void *Simulator::dlopenOrNull(const std::string &path) {
     return h;
 }
 
-void Simulator::dlcloseAll(std::vector<void *> &handles) {
-    for (void *h: handles) if (h) dlclose(h);
+void Simulator::closeAlgWrap(AlgWrap &wrap) {
+    wrap.playerFactory = nullptr;
+    wrap.tankFactory = nullptr;
+    dlclose(wrap.dl);
+}
+
+void Simulator::closeAlgWrap(std::optional<AlgWrap> &wrap) {
+    if (wrap) closeAlgWrap(*wrap);
+}
+
+void Simulator::closeGmWrap(GmWrap &wrap) {
+    wrap.makeGameManager = nullptr;
+    dlclose(wrap.dl);
+}
+
+void Simulator::closeGmWrap(std::optional<GmWrap> &wrap) {
+    if (wrap) closeGmWrap(*wrap);
+}
+
+void Simulator::closeAlgWrap(std::vector<AlgWrap> &handles) {
+    for (AlgWrap &wrap: handles) closeAlgWrap(wrap);
+    handles.clear();
+}
+
+void Simulator::closeGmWrap(std::vector<GmWrap> &handles) {
+    for (GmWrap &wrap: handles) closeGmWrap(wrap);
     handles.clear();
 }
 
@@ -241,9 +269,6 @@ std::optional<Args> Simulator::parseArgs(int argc, char **argv, std::string &usa
             else if (k == "algorithms_folder") args.algorithmsFolder = v;
             else if (k == "num_threads") {
                 try { args.numThreads = std::max(1, std::stoi(v)); } catch (...) { args.numThreads = 1; }
-                // numThreads is number of worker threads in addition to main.
-                if (args.numThreads == 2) args.numThreads = 2;
-                // total threads != 2 already satisfied (main + 2 workers = 3)
             }
         }
     }
@@ -358,7 +383,6 @@ std::optional<Args> Simulator::parseArgs(int argc, char **argv, std::string &usa
 std::optional<Simulator::AlgWrap> Simulator::loadAlgorithmSo(const std::string &soPath) {
     auto &reg = AlgorithmRegistrar::getAlgorithmRegistrar();
     const std::string name = basenameNoExt(soPath);
-    size_t before = reg.count();
 
     reg.createAlgorithmFactoryEntry(name);
     void *h = dlopenOrNull(soPath);
@@ -380,68 +404,29 @@ std::optional<Simulator::AlgWrap> Simulator::loadAlgorithmSo(const std::string &
         return std::nullopt;
     }
 
-    // Retrieve the just-added entry (index = before)
-    size_t idx = 0;
+    // Build a stable wrapper capturing the registrar index (not a reference)
     AlgWrap wrap;
-    for (const auto &alg: reg) {
-        if (idx++ == before) {
-            wrap.name = name;
-            wrap.makePlayer = [&alg](int player_index, size_t x, size_t y, size_t max_steps, size_t num_shells) {
-                return alg.createPlayer(player_index, x, y, max_steps, num_shells);
-            };
-            wrap.tankFactory = alg.getTankAlgorithmFactory();
-            break;
-        }
-    }
+    wrap.name = name;
+    wrap.dl = h;
+    wrap.playerFactory = reg.lastReg()->getPlayerFactory();
+    wrap.tankFactory = reg.lastReg()->getTankAlgorithmFactory();
+
     return wrap;
 }
 
-std::pair<std::vector<Simulator::AlgWrap>, std::vector<void *> > Simulator::loadAlgorithmFolder(
-    const std::string &folder) {
+std::vector<Simulator::AlgWrap> Simulator::loadAlgorithmFolder(const std::string &folder) {
     std::vector<AlgWrap> out;
-    std::vector<void *> handles;
-    auto sos = listFilesWithExtension(folder, ".so");
-    auto &reg = AlgorithmRegistrar::getAlgorithmRegistrar();
+    const auto sos = listFilesWithExtension(folder, ".so");
     for (auto &so: sos) {
-        const std::string name = basenameNoExt(so);
-        size_t before = reg.count();
-        reg.createAlgorithmFactoryEntry(name);
-        void *h = dlopenOrNull(so);
-        if (!h) {
-            reg.removeLast();
-            continue;
-        }
-        try {
-            reg.validateLastRegistration();
-        } catch (const AlgorithmRegistrar::BadRegistrationException &e) {
-            std::cerr << "Algorithm registration failed for '" << name << "'.\n";
-            reg.removeLast();
-            dlclose(h);
-            continue;
-        }
-        // stored
-        handles.push_back(h);
-        size_t idx = 0;
-        for (const auto &alg: reg) {
-            if (idx++ == before) {
-                AlgWrap wrap;
-                wrap.name = name;
-                wrap.makePlayer = [&alg](int player_index, size_t x, size_t y, size_t max_steps, size_t num_shells) {
-                    return alg.createPlayer(player_index, x, y, max_steps, num_shells);
-                };
-                wrap.tankFactory = alg.getTankAlgorithmFactory();
-                out.emplace_back(std::move(wrap));
-                break;
-            }
-        }
+        if (auto wrap = loadAlgorithmSo(so); wrap.has_value())
+            out.emplace_back(wrap.value());
     }
-    return {out, handles};
+    return out;
 }
 
-std::optional<Simulator::GmWrap> Simulator::loadGameManagerSo(const std::string &soPath, bool verbose) {
+std::optional<Simulator::GmWrap> Simulator::loadGameManagerSo(const std::string &soPath) {
     auto &reg = GameManagerRegistrar::getGameManagerRegistrar();
     const std::string name = basenameNoExt(soPath);
-    size_t before = reg.count();
 
     reg.createGameManagerFactoryEntry(name);
     void *h = dlopenOrNull(soPath);
@@ -452,7 +437,7 @@ std::optional<Simulator::GmWrap> Simulator::loadGameManagerSo(const std::string 
 
     try {
         reg.validateLastRegistration();
-    } catch (const GameManagerRegistrar::BadRegistrationException &e) {
+    } catch (const GameManagerRegistrar::BadRegistrationException &) {
         std::cerr << "GameManager registration failed for '" << name << "'.\n";
         reg.removeLast();
         dlclose(h);
@@ -460,56 +445,22 @@ std::optional<Simulator::GmWrap> Simulator::loadGameManagerSo(const std::string 
     }
 
     GmWrap wrap;
+    wrap.dl = h;
     wrap.name = name;
-    // find the entry we just added
-    size_t idx = 0;
-    for (const auto &gm: reg) {
-        if (idx++ == before) {
-            wrap.makeGameManager = [verbose, &gm] {
-                return gm.createGameManager(verbose);
-            };
-            break;
-        }
-    }
+    wrap.makeGameManager = reg.lastReg()->getGameManagerFactory();
+
     return wrap;
 }
 
-std::pair<std::vector<Simulator::GmWrap>, std::vector<void *> > Simulator::loadGameManagersFolder(
-    const std::string &folder, bool verbose) {
+std::vector<Simulator::GmWrap> Simulator::loadGameManagersFolder(const std::string &folder) {
     std::vector<GmWrap> out;
     std::vector<void *> handles;
-    auto sos = listFilesWithExtension(folder, ".so");
-    auto &reg = GameManagerRegistrar::getGameManagerRegistrar();
+    const auto sos = listFilesWithExtension(folder, ".so");
     for (auto &so: sos) {
-        const std::string name = basenameNoExt(so);
-        size_t before = reg.count();
-        reg.createGameManagerFactoryEntry(name);
-        void *h = dlopenOrNull(so);
-        if (!h) {
-            reg.removeLast();
-            continue;
-        }
-        try {
-            reg.validateLastRegistration();
-        } catch (const GameManagerRegistrar::BadRegistrationException &e) {
-            std::cerr << "GameManager registration failed for '" << name << "'.\n";
-            reg.removeLast();
-            dlclose(h);
-            continue;
-        }
-        handles.push_back(h);
-        GmWrap wrap;
-        wrap.name = name;
-        size_t idx = 0;
-        for (const auto &gm: reg) {
-            if (idx++ == before) {
-                wrap.makeGameManager = [verbose, &gm] { return gm.createGameManager(verbose); };
-                break;
-            }
-        }
-        out.emplace_back(std::move(wrap));
+        if (auto wrap = loadGameManagerSo(so); wrap.has_value())
+            out.emplace_back(wrap.value());
     }
-    return {out, handles};
+    return out;
 }
 
 // -------------------- Pairing --------------------
@@ -577,17 +528,13 @@ std::string Simulator::formatComparativeOutput(
     for (auto &[gmNames, key]: grouped) {
         if (!firstGroup) out << "\n";
         firstGroup = false;
-        // 5th line: comma-separated GM names
         for (size_t i = 0; i < gmNames.size(); ++i) {
             if (i) out << ", ";
             out << gmNames[i];
         }
         out << "\n";
-        // 6th line: result message
         out << resultMessage(key.winner, key.reason) << "\n";
-        // 7th line: round number
         out << key.rounds << "\n";
-        // 8th line on: final map
         for (auto &line: key.finalMapDump) out << line << "\n";
     }
     return out.str();
@@ -609,7 +556,6 @@ std::string Simulator::formatCompetitionOutput(
 
 // -------------------- Runners --------------------
 int Simulator::run(const Args &args) {
-    std::cout << "Running Simulator" << std::endl;
     try {
         if (args.mode == Args::Mode::Comparative) return runComparative(args);
         return runCompetition(args);
@@ -620,33 +566,30 @@ int Simulator::run(const Args &args) {
 }
 
 int Simulator::runComparative(const Args &args) {
-    // Prepare registrars
+    // Fresh registrars
     AlgorithmRegistrar::getAlgorithmRegistrar().clear();
     GameManagerRegistrar::getGameManagerRegistrar().clear();
 
-    // Load algorithms
-    std::vector<void *> algHandles;
+    // Load algorithms (single dlopen each)
     std::optional<AlgWrap> alg1 = loadAlgorithmSo(args.algorithm1File);
-    if (alg1) {
-        // The loadAlgorithmSo already dlopened, but we didn't keep a handle; re-open to retain handle for lifetime.
-        if (void *h = dlopenOrNull(args.algorithm1File)) algHandles.push_back(h);
-    }
     std::optional<AlgWrap> alg2 = loadAlgorithmSo(args.algorithm2File);
-    if (alg2) {
-        if (void *h = dlopenOrNull(args.algorithm2File)) algHandles.push_back(h);
-    }
     if (!alg1 || !alg2) {
         std::cerr << "Error: failed to load algorithm(s).\n" << usageComparative();
-        dlcloseAll(algHandles);
+        AlgorithmRegistrar::getAlgorithmRegistrar().clear();
+        closeAlgWrap(alg1);
+        closeAlgWrap(alg2);
         return 1;
     }
 
     // Load game managers
-    auto [gms, gmHandles] = loadGameManagersFolder(args.gameManagersFolder, args.verbose);
+    auto gms = loadGameManagersFolder(args.gameManagersFolder);
     if (gms.empty()) {
         std::cerr << "Error: game_managers_folder has no valid .so game managers.\n" << usageComparative();
-        dlcloseAll(algHandles);
-        dlcloseAll(gmHandles);
+        AlgorithmRegistrar::getAlgorithmRegistrar().clear();
+        GameManagerRegistrar::getGameManagerRegistrar().clear();
+        closeAlgWrap(alg1);
+        closeAlgWrap(alg2);
+        closeGmWrap(gms);
         return 1;
     }
 
@@ -657,8 +600,11 @@ int Simulator::runComparative(const Args &args) {
     SatelliteView *mapView = parser.getSatelliteView();
     if (!mapView) {
         std::cerr << "Error: failed to parse game map: " << args.gameMapFile << "\n" << usageComparative();
-        dlcloseAll(algHandles);
-        dlcloseAll(gmHandles);
+        AlgorithmRegistrar::getAlgorithmRegistrar().clear();
+        GameManagerRegistrar::getGameManagerRegistrar().clear();
+        closeAlgWrap(alg1);
+        closeAlgWrap(alg2);
+        closeGmWrap(gms);
         return 1;
     }
 
@@ -676,11 +622,11 @@ int Simulator::runComparative(const Args &args) {
     std::vector<OneRes> results;
 
     auto runOne = [&](const GmWrap &gw) {
-        auto gm = gw.makeGameManager();
+        auto gm = gw.makeGameManager(false);
         if (!gm) return;
 
-        auto p1 = alg1->makePlayer(1, width, height, maxSteps, numShells);
-        auto p2 = alg2->makePlayer(2, width, height, maxSteps, numShells);
+        auto p1 = alg1->playerFactory(1, width, height, maxSteps, numShells);
+        auto p2 = alg2->playerFactory(2, width, height, maxSteps, numShells);
         if (!p1 || !p2) return;
 
         GameResult gr = gm->run(width, height, *mapView, mapName, maxSteps, numShells,
@@ -717,8 +663,12 @@ int Simulator::runComparative(const Args &args) {
 
     if (results.empty()) {
         std::cerr << "Error: no game managers produced results.\n";
-        dlcloseAll(algHandles);
-        dlcloseAll(gmHandles);
+        // Clean up in correct order
+        AlgorithmRegistrar::getAlgorithmRegistrar().clear();
+        GameManagerRegistrar::getGameManagerRegistrar().clear();
+        closeAlgWrap(alg1);
+        closeAlgWrap(alg2);
+        closeGmWrap(gms);
         return 1;
     }
 
@@ -734,6 +684,7 @@ int Simulator::runComparative(const Args &args) {
         std::sort(names.begin(), names.end());
         grouped.emplace_back(std::move(names), std::move(key));
     }
+
     std::sort(grouped.begin(), grouped.end(), [](const auto &a, const auto &b) {
         return a.first.size() > b.first.size();
     });
@@ -747,126 +698,149 @@ int Simulator::runComparative(const Args &args) {
         std::cout << content;
     }
 
-    dlcloseAll(algHandles);
-    dlcloseAll(gmHandles);
+    AlgorithmRegistrar::getAlgorithmRegistrar().clear();
+    GameManagerRegistrar::getGameManagerRegistrar().clear();
+    closeAlgWrap(alg1);
+    closeAlgWrap(alg2);
+    closeGmWrap(gms);
+
     return 0;
 }
 
 int Simulator::runCompetition(const Args &args) {
-    // Prepare registrars
-    AlgorithmRegistrar::getAlgorithmRegistrar().clear();
-    GameManagerRegistrar::getGameManagerRegistrar().clear();
-
-    // Load GM
-    auto gmOpt = loadGameManagerSo(args.gameManagerFile, args.verbose);
-    std::vector<void *> gmHandles;
-    if (!gmOpt) {
-        std::cerr << "Error: failed to load game_manager.\n" << usageCompetition();
-        dlcloseAll(gmHandles);
-        return 1;
-    }
-    if (void *h = dlopenOrNull(args.gameManagerFile)) gmHandles.push_back(h);
-
-    std::cout << "loaded game manager" << std::endl;
-
-    // Load algorithms
-    auto [algs, algHandles] = loadAlgorithmFolder(args.algorithmsFolder);
-    if (algs.size() < 2) {
-        std::cerr << "Error: algorithms_folder has fewer than 2 valid .so files.\n" << usageCompetition();
-        dlcloseAll(algHandles);
-        dlcloseAll(gmHandles);
-        return 1;
-    }
-
-    std::cout << "loaded algorithms" << std::endl;
-
-    // List maps
-    auto mapFiles = listRegularFiles(args.gameMapsFolder);
-    if (mapFiles.empty()) {
-        std::cerr << "Error: no map files in game_maps_folder.\n" << usageCompetition();
-        dlcloseAll(algHandles);
-        dlcloseAll(gmHandles);
-        return 1;
-    }
-
-    std::vector<int> scores(algs.size(), 0);
-    auto addWin = [&](size_t idx) { scores[idx] += 3; };
-    auto addTie = [&](size_t a, size_t b) {
-        scores[a] += 1;
-        scores[b] += 1;
-    };
-
-    std::mutex mtx;
-
-    auto runOne = [&](const std::string &mapPath, size_t ai, size_t aj) {
-        // Parse map
-        Logger::getInstance().init(mapPath);
-        InputParser parser;
-        parser.parseInputFile(mapPath);
-        SatelliteView *mapView = parser.getSatelliteView();
-        if (!mapView) return;
-
-        const size_t width = parser.getWidth();
-        const size_t height = parser.getHeight();
-        const size_t maxSteps = parser.getMaxSteps();
-        const size_t numShells = parser.getNumShells();
-        const std::string mapName = parser.getBoardDescription();
-
-        // Create GM instance
-        auto gm = gmOpt->makeGameManager();
-        if (!gm) return;
-
-        std::cout << "created 1 game manager" << std::endl;
-
-        // Players
-        auto p1 = algs[ai].makePlayer(1, width, height, maxSteps, numShells);
-        auto p2 = algs[aj].makePlayer(2, width, height, maxSteps, numShells);
-        if (!p1 || !p2) return;
-
-        GameResult gr = gm->run(width, height, *mapView, mapName, maxSteps, numShells,
-                                *p1, algs[ai].name, *p2, algs[aj].name,
-                                algs[ai].tankFactory, algs[aj].tankFactory);
-
-        std::lock_guard<std::mutex> lk(mtx);
-        if (gr.winner == 1) addWin(ai);
-        else if (gr.winner == 2) addWin(aj);
-        else addTie(ai, aj);
-    };
-
-    bool usePool = args.numThreads >= 2;
-    std::unique_ptr<ThreadPool> pool;
-    if (usePool) pool = std::make_unique<ThreadPool>(static_cast<size_t>(args.numThreads));
-
-    const size_t N = algs.size();
-    for (size_t k = 0; k < mapFiles.size(); ++k) {
-        bool dedup = (N % 2 == 0) && (k == (N / 2 - 1));
-        auto pairs = computePairsForK(N, k, dedup);
-        for (auto [i,j]: pairs) {
-            if (usePool) pool->enqueue([=] { runOne(mapFiles[k], i, j); });
-            else runOne(mapFiles[k], i, j);
-        }
-    }
-    if (usePool) pool->waitIdle();
-
-    // Build sorted scoreboard
-    std::vector<std::pair<std::string, int> > out;
-    out.reserve(algs.size());
-    for (size_t i = 0; i < algs.size(); ++i) out.emplace_back(algs[i].name, scores[i]);
-    std::sort(out.begin(), out.end(), [](const auto &a, const auto &b) {
-        if (a.second != b.second) return a.second > b.second;
-        return a.first < b.first;
-    });
-
-    // Emit output
-    const auto content = formatCompetitionOutput(args.gameMapsFolder, args.gameManagerFile, out);
-    const auto outPath = joinPath(args.algorithmsFolder, "competition_" + epochTimeId() + ".txt");
-    std::string err;
-    if (!writeTextFile(outPath, content, err)) {
-        std::cerr << "Error: " << err << "\n";
-        std::cout << content;
-    }
-
-    dlcloseAll(algHandles);
-    dlcloseAll(gmHandles);
+    (void) args;
+    // // Fresh registrars
+    // AlgorithmRegistrar::getAlgorithmRegistrar().clear();
+    // GameManagerRegistrar::getGameManagerRegistrar().clear();
+    //
+    // // Load GM (keep handle list)
+    // auto gmOpt = loadGameManagerSo(args.gameManagerFile);
+    // std::vector<void *> gmHandles;
+    // if (!gmOpt) {
+    //     std::cerr << "Error: failed to load game_manager.\n" << usageCompetition();
+    //     dlcloseAll(gmHandles);
+    //     return 1;
+    // }
+    // if (void *h = dlopenOrNull(args.gameManagerFile)) gmHandles.push_back(h);
+    //
+    // // Load algorithms folder
+    // auto pairLoaded = loadAlgorithmFolder(args.algorithmsFolder);
+    // auto &algs = pairLoaded.first;
+    // auto &algHandles = pairLoaded.second;
+    // if (algs.size() < 2) {
+    //     std::cerr << "Error: algorithms_folder has fewer than 2 valid .so files.\n" << usageCompetition();
+    //     // Ensure registrars are empty and close libs
+    //     AlgorithmRegistrar::getAlgorithmRegistrar().clear();
+    //     dlcloseAll(algHandles);
+    //     dlcloseAll(gmHandles);
+    //     return 1;
+    // }
+    //
+    // // List maps
+    // auto mapFiles = listRegularFiles(args.gameMapsFolder);
+    // if (mapFiles.empty()) {
+    //     std::cerr << "Error: no map files in game_maps_folder.\n" << usageCompetition();
+    //     // Cleanup ordering
+    //     algs.clear();
+    //     algs.shrink_to_fit();
+    //     AlgorithmRegistrar::getAlgorithmRegistrar().clear();
+    //     dlcloseAll(algHandles);
+    //     dlcloseAll(gmHandles);
+    //     return 1;
+    // }
+    //
+    // std::vector<int> scores(algs.size(), 0);
+    // auto addWin = [&](size_t idx) { scores[idx] += 3; };
+    // auto addTie = [&](size_t a, size_t b) {
+    //     scores[a] += 1;
+    //     scores[b] += 1;
+    // };
+    //
+    // std::mutex mtx;
+    //
+    // auto runOne = [&](const std::string &mapPath, size_t ai, size_t aj) {
+    //     try {
+    //         std::lock_guard<std::mutex> glk(g_logger_mutex);
+    //         Logger::getInstance().init(mapPath);
+    //         InputParser parser;
+    //         parser.parseInputFile(mapPath);
+    //         SatelliteView *mapView = parser.getSatelliteView();
+    //         if (!mapView) return;
+    //
+    //         const size_t width = parser.getWidth();
+    //         const size_t height = parser.getHeight();
+    //         const size_t maxSteps = parser.getMaxSteps();
+    //         const size_t numShells = parser.getNumShells();
+    //         const std::string mapName = parser.getBoardDescription();
+    //
+    //         auto gm = gmOpt->makeGameManager();
+    //         if (!gm) return;
+    //
+    //         auto p1 = algs[ai].makePlayer(1, width, height, maxSteps, numShells);
+    //         auto p2 = algs[aj].makePlayer(2, width, height, maxSteps, numShells);
+    //         if (!p1 || !p2) return;
+    //
+    //         GameResult gr = gm->run(width, height, *mapView, mapName, maxSteps, numShells,
+    //                                 *p1, algs[ai].name, *p2, algs[aj].name,
+    //                                 algs[ai].tankFactory, algs[aj].tankFactory);
+    //
+    //         std::lock_guard<std::mutex> lk(mtx);
+    //         if (gr.winner == 1) addWin(ai);
+    //         else if (gr.winner == 2) addWin(aj);
+    //         else addTie(ai, aj);
+    //     } catch (...) {
+    //         // Swallow to keep tournament running; earlier logging should have captured clues
+    //     }
+    // };
+    //
+    // bool usePool = args.numThreads >= 2;
+    // std::unique_ptr<ThreadPool> pool;
+    // if (usePool) pool = std::make_unique<ThreadPool>(static_cast<size_t>(args.numThreads));
+    //
+    // const size_t N = algs.size();
+    // for (size_t k = 0; k < mapFiles.size(); ++k) {
+    //     bool dedup = (N % 2 == 0) && (k == (N / 2 - 1));
+    //     auto pairs = computePairsForK(N, k, dedup);
+    //     for (auto [i,j]: pairs) {
+    //         if (usePool) pool->enqueue([=] { runOne(mapFiles[k], i, j); });
+    //         else runOne(mapFiles[k], i, j);
+    //     }
+    // }
+    // if (usePool) pool->waitIdle();
+    //
+    // // Build sorted scoreboard
+    // std::vector<std::pair<std::string, int> > out;
+    // out.reserve(algs.size());
+    // for (size_t i = 0; i < algs.size(); ++i) out.emplace_back(algs[i].name, scores[i]);
+    // std::sort(out.begin(), out.end(), [](const auto &a, const auto &b) {
+    //     if (a.second != b.second) return a.second > b.second;
+    //     return a.first < b.first;
+    // });
+    //
+    // // Emit output
+    // const auto content = formatCompetitionOutput(args.gameMapsFolder, args.gameManagerFile, out);
+    // const auto outPath = joinPath(args.algorithmsFolder, "competition_" + epochTimeId() + ".txt");
+    // std::string err;
+    // if (!writeTextFile(outPath, content, err)) {
+    //     std::cerr << "Error: " << err << "\n";
+    //     std::cout << content;
+    // }
+    //
+    // // IMPORTANT: Clean up in the correct order
+    // // 1) Destroy all std::function and lambdas that might reference plugin code
+    // out.clear();
+    // scores.clear();
+    // mapFiles.clear();
+    // if (pool) pool.reset();
+    // // Destroy algs vector (releases TankAlgorithmFactory objects)
+    // algs.clear();
+    // algs.shrink_to_fit();
+    // // Clear registrars so their internal std::function objects are destroyed
+    // AlgorithmRegistrar::getAlgorithmRegistrar().clear();
+    // GameManagerRegistrar::getGameManagerRegistrar().clear();
+    // // 2) Now it is safe to unload the shared libraries
+    // dlcloseAll(algHandles);
+    // dlcloseAll(gmHandles);
+    //
     return 0;
 }

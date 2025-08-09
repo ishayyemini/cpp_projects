@@ -26,6 +26,8 @@ class GameManagerRegistrar {
             return game_manager_factory(verbose);
         }
 
+        GameManagerFactory getGameManagerFactory() const { return game_manager_factory; }
+
         bool hasGameManagerFactory() const {
             return game_manager_factory != nullptr;
         }
@@ -64,6 +66,11 @@ public:
 
     void removeLast() {
         game_managers.pop_back();
+    }
+
+    auto lastReg() {
+        validateLastRegistration();
+        return &game_managers.back();
     }
 
     auto begin() const {
