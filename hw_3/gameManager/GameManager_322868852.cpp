@@ -276,7 +276,7 @@ std::string GameManager_322868852::getGameResult(GameResult &result) const {
     std::string empty_ammo = std::to_string(max_steps_empty_ammo);
 
     result.remaining_tanks = {board->getPlayerAliveTanks(1).size(), board->getPlayerAliveTanks(2).size()};
-    auto sv = std::make_unique<MySatelliteView>();
+    auto sv = std::make_unique<MySatelliteView>(board->getWidth(), board->getHeight());
     board->fillSatelliteView(*sv);
     result.gameState = std::move(sv);
     result.rounds = game_step;
