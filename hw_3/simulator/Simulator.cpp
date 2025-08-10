@@ -876,7 +876,7 @@ int Simulator::runCompetition(const Args &args) {
         auto pairs = computePairsForK(N, k, dedup);
         for (auto [i,j]: pairs) {
             if (usePool)
-                pool->enqueue([&, i, j] {
+                pool->enqueue([&, i, j, k] {
                     runOneCompetition(args, gmWrap, algs, mapFiles[k], i, j, mtx, scores);
                 });
             else runOneCompetition(args, gmWrap, algs, mapFiles[k], i, j, mtx, scores);
