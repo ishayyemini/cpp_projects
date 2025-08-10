@@ -847,7 +847,6 @@ int Simulator::runCompetition(const Args &args) {
     std::optional<GmWrap> gmWrap;
     std::vector<AlgWrap> algs;
     std::vector<std::string> mapFiles;
-
     if (loadCompetition(args, gmWrap, algs, mapFiles) == 1)
         return 1;
     std::vector scores(algs.size(), 0);
@@ -861,9 +860,10 @@ int Simulator::runCompetition(const Args &args) {
         bool dedup = (N % 2 == 0) && (k == (N / 2 - 1));
         auto pairs = computePairsForK(N, k, dedup);
         for (auto [i,j]: pairs) {
-            if (usePool) pool->enqueue([&, i, j] {
-                runOneCompetition(args, gmWrap, algs, mapFiles[k], i, j, mtx, scores);
-            });
+            if (usePool)
+                pool->enqueue([&, i, j] {
+                    runOneCompetition(args, gmWrap, algs, mapFiles[k], i, j, mtx, scores);
+                });
             else runOneCompetition(args, gmWrap, algs, mapFiles[k], i, j, mtx, scores);
         }
     }
