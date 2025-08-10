@@ -1,8 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="PublishConfigData" autoUpload="Always" serverName="ubuntu" remoteFilesAllowedToDisappearOnAutoupload="false" confirmBeforeUploading="false" autoUploadExternalChanges="true" showAutoUploadSettingsWarning="false">
+  <component name="PublishConfigData" autoUpload="Always" serverName="ishay" remoteFilesAllowedToDisappearOnAutoupload="false" confirmBeforeUploading="false" autoUploadExternalChanges="true" showAutoUploadSettingsWarning="false">
     <option name="confirmBeforeUploading" value="false" />
     <serverData>
+      <paths name="ishay">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/home/ishay/cpp_projects/hw_3" local="$PROJECT_DIR$/hw_3" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
       <paths name="ubuntu">
         <serverdata>
           <mappings>

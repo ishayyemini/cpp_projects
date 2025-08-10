@@ -2,6 +2,7 @@
 
 #include <queue>
 #include <set>
+#include <limits>
 
 #include "Direction.h"
 #include "MyBattleInfo.h"
