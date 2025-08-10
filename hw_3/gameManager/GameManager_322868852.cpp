@@ -22,10 +22,6 @@ void GameManager_322868852::initBoard(size_t map_width, size_t map_height, const
     board = std::make_unique<Board>(map_name, max_steps, num_shells, map_width, map_height);
     GameObjectFactory::reset();
 
-    if (verbose) {
-        logger.init(map_name);
-    }
-
     for (size_t y = 0; y < map_height; ++y) {
         for (size_t x = 0; x < map_width; ++x) {
             auto obj = GameObjectFactory::create(map.getObjectAt(x, y), Position(x, y), num_shells);
@@ -53,6 +49,10 @@ GameResult GameManager_322868852::run(size_t map_width, size_t map_height,
     ta_factories.push_back(player2_tank_algo_factory);
 
     initBoard(map_width, map_height, map, map_name, max_steps, num_shells);
+
+    if (verbose) {
+        logger.init(map_name, name1, name2);
+    }
 
     GameResult result;
 

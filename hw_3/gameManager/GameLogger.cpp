@@ -6,8 +6,11 @@
 
 using namespace GameManager_322868852_340849710;
 
-bool GameLogger::init(const std::string &map_name) {
-    const std::string out_file_path = "output_" + map_name + ".txt";
+bool GameLogger::init(const std::string &map_name, const std::string &name1, const std::string &name2) {
+    const auto now = std::chrono::system_clock::now();
+    const auto time_t = std::chrono::system_clock::to_time_t(now);
+    const std::string out_file_path = "output_" + map_name + "_" + name1 + "_" + name2 + "_ts" + std::to_string(time_t)
+                                      + ".txt";
 
     if (initialized) {
         close();

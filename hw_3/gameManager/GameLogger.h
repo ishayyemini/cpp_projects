@@ -18,7 +18,7 @@ namespace GameManager_322868852_340849710 {
 
         void logResult(const std::string &message);
 
-        bool init(const std::string &map_name);
+        bool init(const std::string &map_name, const std::string &name1, const std::string &name2);
 
         void close();
 
@@ -27,13 +27,13 @@ namespace GameManager_322868852_340849710 {
         }
 
         // Copy constructor
-        GameLogger(const GameLogger&) : initialized(false) {
+        GameLogger(const GameLogger &) : initialized(false) {
             // Cannot copy file streams, so we don't copy the state
             // User would need to call init() again on the copied object
         }
 
         // Copy assignment operator
-        GameLogger& operator=(const GameLogger& other) {
+        GameLogger &operator=(const GameLogger &other) {
             if (this != &other) {
                 close(); // Close current file if open
                 initialized = false;
@@ -44,14 +44,13 @@ namespace GameManager_322868852_340849710 {
         }
 
         // Move constructor
-        GameLogger(GameLogger&& other) noexcept :
-            out_file(std::move(other.out_file)),
-            initialized(other.initialized) {
+        GameLogger(GameLogger &&other) noexcept : out_file(std::move(other.out_file)),
+                                                  initialized(other.initialized) {
             other.initialized = false;
         }
 
         // Move assignment operator
-        GameLogger& operator=(GameLogger&& other) noexcept {
+        GameLogger &operator=(GameLogger &&other) noexcept {
             if (this != &other) {
                 close(); // Close current file if open
                 out_file = std::move(other.out_file);
