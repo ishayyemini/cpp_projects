@@ -565,8 +565,8 @@ std::string Simulator::formatComparativeOutput(
     const std::vector<std::pair<std::vector<std::string>, ComparativeKey> > &grouped) {
     std::ostringstream out;
     out << "game_map=" << gameMap << "\n";
-    out << "algorithm1=" << alg1 << "\n";
-    out << "algorithm2=" << alg2 << "\n";
+    out << "algorithm1=" << basenameNoExt(alg1) << "\n";
+    out << "algorithm2=" << basenameNoExt(alg2) << "\n";
     out << "\n";
     bool firstGroup = true;
     for (auto &[gmNames, key]: grouped) {
@@ -590,7 +590,7 @@ std::string Simulator::formatCompetitionOutput(
     const std::vector<std::pair<std::string, int> > &scoresSorted) {
     std::ostringstream out;
     out << "game_maps_folder=" << gameMapsFolder << "\n";
-    out << "game_manager=" << gameManagerSo << "\n";
+    out << "game_manager=" << basenameNoExt(gameManagerSo) << "\n";
     out << "\n";
     for (auto &[name, score]: scoresSorted) {
         out << name << " " << score << "\n";
