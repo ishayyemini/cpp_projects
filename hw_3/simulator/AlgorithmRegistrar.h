@@ -18,13 +18,13 @@ class AlgorithmRegistrar {
         }
 
         void setTankAlgorithmFactory(TankAlgorithmFactory &&factory) {
-            assert(tankAlgorithmFactory == nullptr);
-            tankAlgorithmFactory = std::move(factory);
+            if (tankAlgorithmFactory == nullptr)
+                tankAlgorithmFactory = std::move(factory);
         }
 
         void setPlayerFactory(PlayerFactory &&factory) {
-            assert(playerFactory == nullptr);
-            playerFactory = std::move(factory);
+            if (playerFactory == nullptr)
+                playerFactory = std::move(factory);
         }
 
         const std::string &name() const { return so_name; }

@@ -668,35 +668,38 @@ void Simulator::runOneComparative(const GmWrap &gw, const Args &args, const std:
                                   const size_t &width, const size_t &height, const size_t &maxSteps,
                                   const size_t &numShells, const std::string &mapName, std::mutex &mtx,
                                   std::vector<OneRes> &results) {
-    auto gm = gw.makeGameManager(args.verbose);
-    if (!gm) return;
+    try {
+        auto gm = gw.makeGameManager(args.verbose);
+        if (!gm) return;
 
-    auto p1 = alg1->playerFactory(1, width, height, maxSteps, numShells);
-    auto p2 = alg2->playerFactory(2, width, height, maxSteps, numShells);
-    if (!p1 || !p2) return;
+        auto p1 = alg1->playerFactory(1, width, height, maxSteps, numShells);
+        auto p2 = alg2->playerFactory(2, width, height, maxSteps, numShells);
+        if (!p1 || !p2) return;
 
-    GameResult gr = gm->run(width, height, *mapView, mapName, maxSteps, numShells,
-                            *p1, alg1->name, *p2, alg2->name, alg1->tankFactory, alg2->tankFactory);
+        GameResult gr = gm->run(width, height, *mapView, mapName, maxSteps, numShells,
+                                *p1, alg1->name, *p2, alg2->name, alg1->tankFactory, alg2->tankFactory);
 
-    ComparativeKey key;
-    key.winner = gr.winner;
-    key.reason = gr.reason;
-    key.rounds = gr.rounds;
+        ComparativeKey key;
+        key.winner = gr.winner;
+        key.reason = gr.reason;
+        key.rounds = gr.rounds;
 
-    // Dump final game state
-    std::vector<std::string> dump;
-    dump.reserve(height);
-    const SatelliteView *state = gr.gameState ? gr.gameState.get() : mapView.get();
-    for (size_t y = 0; y < height; ++y) {
-        std::string row;
-        row.reserve(width);
-        for (size_t x = 0; x < width; ++x) row.push_back(state->getObjectAt(x, y));
-        dump.push_back(std::move(row));
+        // Dump final game state
+        std::vector<std::string> dump;
+        dump.reserve(height);
+        const SatelliteView *state = gr.gameState ? gr.gameState.get() : mapView.get();
+        for (size_t y = 0; y < height; ++y) {
+            std::string row;
+            row.reserve(width);
+            for (size_t x = 0; x < width; ++x) row.push_back(state->getObjectAt(x, y));
+            dump.push_back(std::move(row));
+        }
+        key.finalMapDump = std::move(dump);
+
+        std::lock_guard lk(mtx);
+        results.push_back({gw.name, std::move(key)});
+    } catch (...) {
     }
-    key.finalMapDump = std::move(dump);
-
-    std::lock_guard lk(mtx);
-    results.push_back({gw.name, std::move(key)});
 }
 
 std::vector<std::pair<std::vector<std::string>, Simulator::ComparativeKey> >
