@@ -861,7 +861,9 @@ int Simulator::runCompetition(const Args &args) {
         bool dedup = (N % 2 == 0) && (k == (N / 2 - 1));
         auto pairs = computePairsForK(N, k, dedup);
         for (auto [i,j]: pairs) {
-            if (usePool) pool->enqueue([&] { runOneCompetition(args, gmWrap, algs, mapFiles[k], i, j, mtx, scores); });
+            if (usePool) pool->enqueue([&, i, j] {
+                runOneCompetition(args, gmWrap, algs, mapFiles[k], i, j, mtx, scores);
+            });
             else runOneCompetition(args, gmWrap, algs, mapFiles[k], i, j, mtx, scores);
         }
     }
@@ -881,6 +883,5 @@ int Simulator::runCompetition(const Args &args) {
     mapFiles.clear();
     if (pool) pool.reset();
     cleanCompetition(gmWrap, algs);
-
     return 0;
 }
