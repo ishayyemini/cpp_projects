@@ -8,6 +8,7 @@
 #include "TankAlgorithm.h"
 #include "Tank.h"
 #include "AbstractGameManager.h"
+#include "GameLogger.h"
 
 namespace GameManager_322868852_340849710 {
     enum Winner {
@@ -20,12 +21,12 @@ namespace GameManager_322868852_340849710 {
     };
 
     class GameManager_322868852 : public AbstractGameManager {
-        // TODO don't ignore the verbose!
         bool verbose;
+        GameLogger logger;
 
     public:
-        GameManager_322868852(const bool verbose)
-            : verbose(verbose), satellite_view(MySatelliteView()) {
+        explicit GameManager_322868852(const bool verbose) : verbose(verbose), logger(GameLogger()),
+                                                             satellite_view(MySatelliteView()) {
         }
 
         void initBoard(size_t map_width, size_t map_height,
@@ -43,19 +44,9 @@ namespace GameManager_322868852_340849710 {
 
         void updateCounters(Tank &tank, ActionRequest action);
 
-        void setVisual(bool visual) { this->visual = visual; }
-
-        // Add visualization output capabilities
-        void enableGameStateExport(const std::string &output_file) {
-            export_game_state = true;
-            game_state_file.open(output_file);
-        }
-
     private:
         static constexpr int max_steps_empty_ammo = 40;
 
-        bool visual = false; // TODO change!
-        bool export_game_state = false;
         std::ofstream game_state_file;
         size_t game_step = 0;
         bool game_over = false;

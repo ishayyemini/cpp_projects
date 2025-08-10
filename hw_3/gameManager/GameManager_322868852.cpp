@@ -4,7 +4,7 @@
 #include <thread>
 #include <chrono>
 
-#include "Logger.h"
+#include "GameLogger.h"
 #include "Shell.h"
 #include "ActionRequest.h"
 #include "MySatelliteView.h"
@@ -21,6 +21,10 @@ void GameManager_322868852::initBoard(size_t map_width, size_t map_height, const
                                       const std::string &map_name, size_t max_steps, size_t num_shells) {
     board = std::make_unique<Board>(map_name, max_steps, num_shells, map_width, map_height);
     GameObjectFactory::reset();
+
+    if (verbose) {
+        logger.init(map_name);
+    }
 
     for (size_t y = 0; y < map_height; ++y) {
         for (size_t x = 0; x < map_width; ++x) {
@@ -55,12 +59,11 @@ GameResult GameManager_322868852::run(size_t map_width, size_t map_height,
     checkDeaths(); //check if one of the player doesn't have any tanks
     while (!isGameOver()) {
         processStep();
-        if (visual) std::this_thread::sleep_for(200ms);
     }
 
-    Logger::getInstance().logResult(getGameResult(result));
-    if (visual) {
-        std::cout << getGameResult(result) << std::endl;
+    const std::string out_result = getGameResult(result);
+    if (verbose) {
+        logger.logResult(out_result);
     }
 
     return result;
@@ -248,25 +251,12 @@ void GameManager_322868852::processStep() {
     shellsTurn();
     board->finishMove();
 
-    if (visual) {
-        std::cout << "Step " << game_step << std::endl;
-    }
-
     shellsTurn();
     tanksTurn();
     board->finishMove();
 
-    if (visual) {
-        board->displayBoard();
-    }
-
     checkDeaths();
     logStep();
-
-    // Export game state for visualization after each step
-    if (export_game_state) {
-        exportGameState();
-    }
 }
 
 std::string GameManager_322868852::getGameResult(GameResult &result) const {
@@ -314,7 +304,9 @@ void GameManager_322868852::logStep() {
         }
     }
 
-    Logger::getInstance().logActions(tank_status);
+    if (verbose) {
+        logger.logActions(tank_status);
+    }
 
     // Update deaths
     for (size_t i = 0; i < tank_status.size(); i++) {
