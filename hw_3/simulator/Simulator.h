@@ -44,6 +44,15 @@ class Simulator {
 public:
     Simulator() = default;
 
+    // Rule of 5
+    ~Simulator() = default;
+
+    Simulator(const Simulator& other) = delete;
+    Simulator& operator=(const Simulator& other) = delete;
+
+    Simulator(Simulator&& other) noexcept = default;
+    Simulator& operator=(Simulator&& other) noexcept = default;
+
     int run(const Args &args);
 
     // CLI parsing and usage
@@ -155,11 +164,17 @@ private:
 
         ~ThreadPool();
 
+        // Rule of 5
+        ThreadPool(const ThreadPool& other) = delete;
+        ThreadPool& operator=(const ThreadPool& other) = delete;
+
+        ThreadPool(ThreadPool&& other) noexcept = default;
+        ThreadPool& operator=(ThreadPool&& other) noexcept = default;
+
         void enqueue(std::function<void()> task);
 
         void waitIdle();
 
-        // TODO rule of 5
 
     private:
         struct Impl;
