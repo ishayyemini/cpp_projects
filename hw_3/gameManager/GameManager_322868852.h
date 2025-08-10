@@ -20,10 +20,7 @@ namespace GameManager_322868852_340849710 {
         NO_WINNER
     };
 
-    class GameManager_322868852 : public AbstractGameManager {
-        bool verbose;
-        GameLogger logger;
-
+    class GameManager_322868852 final : public AbstractGameManager {
     public:
         explicit GameManager_322868852(const bool verbose) : verbose(verbose), logger(GameLogger()),
                                                              satellite_view(MySatelliteView()) {
@@ -47,6 +44,8 @@ namespace GameManager_322868852_340849710 {
     private:
         static constexpr int max_steps_empty_ammo = 40;
 
+        bool verbose;
+        GameLogger logger;
         std::ofstream game_state_file;
         size_t game_step = 0;
         bool game_over = false;
@@ -72,7 +71,7 @@ namespace GameManager_322868852_340849710 {
 
         bool shoot(Tank &tank);
 
-        bool getBattleInfo(const Tank &tank, size_t player_i);
+        bool getBattleInfo(const Tank &tank, size_t player_i) const;
 
         void updateSatelliteView();
 
@@ -92,6 +91,8 @@ namespace GameManager_322868852_340849710 {
 
         // New method to export game state data for visualization
         void exportGameState();
+
+        void reset();
     };
 }
 

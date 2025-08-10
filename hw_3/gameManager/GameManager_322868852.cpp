@@ -1,6 +1,5 @@
 #include "GameManager_322868852.h"
 
-#include <iostream>
 #include <thread>
 #include <chrono>
 
@@ -20,7 +19,6 @@ REGISTER_GAME_MANAGER(GameManager_322868852)
 void GameManager_322868852::initBoard(size_t map_width, size_t map_height, const SatelliteView &map,
                                       const std::string &map_name, size_t max_steps, size_t num_shells) {
     board = std::make_unique<Board>(map_name, max_steps, num_shells, map_width, map_height);
-    GameObjectFactory::reset();
 
     for (size_t y = 0; y < map_height; ++y) {
         for (size_t x = 0; x < map_width; ++x) {
@@ -41,6 +39,8 @@ GameResult GameManager_322868852::run(size_t map_width, size_t map_height,
                                       Player &player1, std::string name1, Player &player2, std::string name2,
                                       TankAlgorithmFactory player1_tank_algo_factory,
                                       TankAlgorithmFactory player2_tank_algo_factory) {
+    reset();
+
     players.push_back(&player1);
     player_names.push_back(name1);
     ta_factories.push_back(player1_tank_algo_factory);
@@ -197,12 +197,12 @@ bool GameManager_322868852::shoot(Tank &tank) {
     return true;
 }
 
-bool GameManager_322868852::getBattleInfo(const Tank &tank, const size_t player_i) {
+bool GameManager_322868852::getBattleInfo(const Tank &tank, const size_t player_i) const {
     const int tank_algo_i = tank.getTankAlgoIndex();
     auto [x,y] = tank.getPosition();
-    MySatelliteView satellite_view = this->satellite_view;
-    satellite_view.setObjectAt(x, y, '%');
-    players[player_i - 1]->updateTankWithBattleInfo(*tanks[tank_algo_i], satellite_view);
+    MySatelliteView sv = this->satellite_view;
+    sv.setObjectAt(x, y, '%');
+    players[player_i - 1]->updateTankWithBattleInfo(*tanks[tank_algo_i], sv);
     return true;
 }
 
@@ -359,3 +359,18 @@ void GameManager_322868852::exportGameState() {
     }
 }
 
+void GameManager_322868852::reset() {
+    logger.close();
+    game_step = 0;
+    game_over = false;
+    winner = NO_WINNER;
+    board = std::make_unique<Board>();
+    empty_countdown = -1;
+    tank_status.clear();
+    player_names.clear();
+    players.clear();
+    ta_factories.clear();
+    tanks.clear();
+    satellite_view.clear();
+    GameObjectFactory::reset();
+}

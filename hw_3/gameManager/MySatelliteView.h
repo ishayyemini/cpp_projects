@@ -27,6 +27,8 @@ namespace GameManager_322868852_340849710 {
         char getObjectAt(size_t x, size_t y) const override;
 
         void setObjectAt(size_t x, size_t y, char c);
+
+        void clear();
     };
 }
 

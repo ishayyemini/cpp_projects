@@ -16,4 +16,9 @@ namespace GameManager_322868852_340849710 {
         if (x >= width || y >= height) return;
         board[x][y] = c;
     }
+
+    void MySatelliteView::clear() {
+        width = height = 0;
+        board.clear();
+    }
 }
