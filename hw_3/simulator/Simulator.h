@@ -174,6 +174,20 @@ private:
     // Pairing for competition (dedup unordered pairs only for the even-N special case)
     static std::vector<std::pair<size_t, size_t> > computePairsForK(size_t N, size_t k, bool dedupUnordered);
 
+    struct OneRes {
+        std::string gmName;
+        ComparativeKey key;
+    };
+
+    static void runOneComparative(const GmWrap &gw, const Args &args, const std::optional<AlgWrap> &alg1,
+                                  const std::optional<AlgWrap> &alg2, const std::unique_ptr<SatelliteView> &mapView,
+                                  const size_t &width, const size_t &height, const size_t &maxSteps,
+                                  const size_t &numShells,
+                                  const std::string &mapName, std::mutex &mtx, std::vector<OneRes> &results);
+
+    static std::vector<std::pair<std::vector<std::string>, ComparativeKey> > groupResComparative(
+        const std::vector<OneRes> &results);
+
     // Output
     static std::string formatComparativeOutput(
         const std::string &gameMap,

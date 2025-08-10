@@ -651,70 +651,44 @@ int Simulator::loadComparative(const Args &args, std::optional<AlgWrap> &alg1, s
     return 0;
 }
 
-// TODO too long
-int Simulator::runComparative(const Args &args) {
-    std::optional<AlgWrap> alg1, alg2;
-    std::vector<GmWrap> gms;
-    std::unique_ptr<SatelliteView> mapView;
-    size_t width, height, maxSteps, numShells;
-    std::string mapName;
+void Simulator::runOneComparative(const GmWrap &gw, const Args &args, const std::optional<AlgWrap> &alg1,
+                                  const std::optional<AlgWrap> &alg2, const std::unique_ptr<SatelliteView> &mapView,
+                                  const size_t &width, const size_t &height, const size_t &maxSteps,
+                                  const size_t &numShells, const std::string &mapName, std::mutex &mtx,
+                                  std::vector<OneRes> &results) {
+    auto gm = gw.makeGameManager(args.verbose);
+    if (!gm) return;
 
-    loadComparative(args, alg1, alg2, gms, mapView, width, height, maxSteps, numShells, mapName);
+    auto p1 = alg1->playerFactory(1, width, height, maxSteps, numShells);
+    auto p2 = alg2->playerFactory(2, width, height, maxSteps, numShells);
+    if (!p1 || !p2) return;
 
-    struct OneRes {
-        std::string gmName;
-        ComparativeKey key;
-    };
-    std::mutex mtx;
-    std::vector<OneRes> results;
+    GameResult gr = gm->run(width, height, *mapView, mapName, maxSteps, numShells,
+                            *p1, alg1->name, *p2, alg2->name, alg1->tankFactory, alg2->tankFactory);
 
-    auto runOne = [&](const GmWrap &gw) {
-        auto gm = gw.makeGameManager(args.verbose);
-        if (!gm) return;
+    ComparativeKey key;
+    key.winner = gr.winner;
+    key.reason = gr.reason;
+    key.rounds = gr.rounds;
 
-        auto p1 = alg1->playerFactory(1, width, height, maxSteps, numShells);
-        auto p2 = alg2->playerFactory(2, width, height, maxSteps, numShells);
-        if (!p1 || !p2) return;
-
-        GameResult gr = gm->run(width, height, *mapView, mapName, maxSteps, numShells,
-                                *p1, alg1->name, *p2, alg2->name, alg1->tankFactory, alg2->tankFactory);
-
-        ComparativeKey key;
-        key.winner = gr.winner;
-        key.reason = gr.reason;
-        key.rounds = gr.rounds;
-
-        // Dump final game state
-        std::vector<std::string> dump;
-        dump.reserve(height);
-        const SatelliteView *state = gr.gameState ? gr.gameState.get() : mapView.get();
-        for (size_t y = 0; y < height; ++y) {
-            std::string row;
-            row.reserve(width);
-            for (size_t x = 0; x < width; ++x) row.push_back(state->getObjectAt(x, y));
-            dump.push_back(std::move(row));
-        }
-        key.finalMapDump = std::move(dump);
-
-        std::lock_guard<std::mutex> lk(mtx);
-        results.push_back({gw.name, std::move(key)});
-    };
-
-    if (args.numThreads <= 1) {
-        for (const auto &gm: gms) runOne(gm);
-    } else {
-        ThreadPool pool(static_cast<size_t>(args.numThreads));
-        for (const auto &gm: gms) pool.enqueue([&, gm] { runOne(gm); });
-        pool.waitIdle();
+    // Dump final game state
+    std::vector<std::string> dump;
+    dump.reserve(height);
+    const SatelliteView *state = gr.gameState ? gr.gameState.get() : mapView.get();
+    for (size_t y = 0; y < height; ++y) {
+        std::string row;
+        row.reserve(width);
+        for (size_t x = 0; x < width; ++x) row.push_back(state->getObjectAt(x, y));
+        dump.push_back(std::move(row));
     }
+    key.finalMapDump = std::move(dump);
 
-    if (results.empty()) {
-        std::cerr << "Error: no game managers produced results.\n";
-        // Clean up in correct order
-        return 1;
-    }
+    std::lock_guard lk(mtx);
+    results.push_back({gw.name, std::move(key)});
+}
 
-    // Group identical results
+std::vector<std::pair<std::vector<std::string>, Simulator::ComparativeKey> >
+Simulator::groupResComparative(const std::vector<OneRes> &results) {
     std::unordered_map<ComparativeKey, std::vector<std::string>, ComparativeKeyHash, ComparativeKeyEq> groups;
     for (auto &r: results) groups[r.key].push_back(r.gmName);
 
@@ -731,15 +705,47 @@ int Simulator::runComparative(const Args &args) {
         return a.first.size() > b.first.size();
     });
 
-    // Emit output
+    return grouped;
+}
+
+int Simulator::runComparative(const Args &args) {
+    std::optional<AlgWrap> alg1, alg2;
+    std::vector<GmWrap> gms;
+    std::unique_ptr<SatelliteView> mapView;
+    size_t width, height, maxSteps, numShells;
+    std::string mapName;
+    std::mutex mtx;
+    std::vector<OneRes> results;
+
+    if (loadComparative(args, alg1, alg2, gms, mapView, width, height, maxSteps, numShells, mapName) == 1)
+        return 1;
+
+    if (args.numThreads <= 1) {
+        for (const auto &gm: gms)
+            runOneComparative(gm, args, alg1, alg2, mapView, width, height, maxSteps, numShells,
+                              mapName, mtx, results);
+    } else {
+        ThreadPool pool(static_cast<size_t>(args.numThreads));
+        for (const auto &gm: gms)
+            pool.enqueue([&, gm] {
+                runOneComparative(gm, args, alg1, alg2, mapView, width, height, maxSteps, numShells,
+                                  mapName, mtx, results);
+            });
+        pool.waitIdle();
+    }
+
+    if (results.empty()) {
+        std::cerr << "Error: no game managers produced results.\n";
+        cleanComparative(alg1, alg2, gms);
+        return 1;
+    }
+    auto grouped = groupResComparative(results);
     const auto outPath = joinPath(args.gameManagersFolder, "comparative_results_" + epochTimeId() + ".txt");
     const auto content = formatComparativeOutput(args.gameMapFile, args.algorithm1File, args.algorithm2File, grouped);
-    std::string err;
-    if (!writeTextFile(outPath, content, err)) {
+    if (std::string err; !writeTextFile(outPath, content, err)) {
         std::cerr << "Error: " << err << "\n";
         std::cout << content;
     }
-
     cleanComparative(alg1, alg2, gms);
     return 0;
 }
