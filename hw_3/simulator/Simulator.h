@@ -125,6 +125,20 @@ private:
                                size_t &maxSteps,
                                size_t &numShells, std::string &mapName);
 
+
+    static void cleanCompetition(std::optional<GmWrap> &gmWrap, std::vector<AlgWrap> &algs);
+
+    static int loadCompetition(const Args &args, std::optional<GmWrap> &gmWrap, std::vector<AlgWrap> &algs,
+                               std::vector<std::string> &mapFiles);
+
+    static void runOneCompetition(const Args &args, std::optional<GmWrap> &gmWrap, std::vector<AlgWrap> &algs,
+                                  const std::string &mapPath, size_t ai, size_t aj, std::mutex &mtx,
+                                  std::vector<int> &scores);
+
+    static void
+    buildSortedScoreboard(std::vector<AlgWrap> &algs, std::vector<int> &scores,
+                          std::vector<std::pair<std::string, int> > &out);
+
     // Loads a single game manager .so into GameManagerRegistrar. Returns nullopt on failure.
     static std::optional<GmWrap> loadGameManagerSo(const std::string &soPath);
 
