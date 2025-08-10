@@ -104,6 +104,15 @@ public:
         return algorithms.end();
     }
 
+    const AlgorithmAndPlayerFactories *find(const std::string &name) const {
+        for (const auto &algorithm: algorithms) {
+            if (algorithm.name() == name) {
+                return &algorithm;
+            }
+        }
+        return nullptr;
+    }
+
     std::size_t count() const { return algorithms.size(); }
     void clear() { algorithms.clear(); }
 };

@@ -113,7 +113,7 @@ void *Simulator::dlopenOrNull(const std::string &path) {
 void Simulator::closeAlgWrap(AlgWrap &wrap) {
     wrap.playerFactory = nullptr;
     wrap.tankFactory = nullptr;
-    dlclose(wrap.dl);
+    if (wrap.has_dl) dlclose(wrap.dl);
 }
 
 void Simulator::closeAlgWrap(std::optional<AlgWrap> &wrap) {
@@ -122,7 +122,7 @@ void Simulator::closeAlgWrap(std::optional<AlgWrap> &wrap) {
 
 void Simulator::closeGmWrap(GmWrap &wrap) {
     wrap.makeGameManager = nullptr;
-    dlclose(wrap.dl);
+    if (wrap.has_dl) dlclose(wrap.dl);
 }
 
 void Simulator::closeGmWrap(std::optional<GmWrap> &wrap) {
@@ -130,7 +130,9 @@ void Simulator::closeGmWrap(std::optional<GmWrap> &wrap) {
 }
 
 void Simulator::closeAlgWrap(std::vector<AlgWrap> &handles) {
-    for (AlgWrap &wrap: handles) closeAlgWrap(wrap);
+    for (int i = handles.size() - 1; i >= 0; i--) {
+        closeAlgWrap(handles[i]);
+    }
     handles.clear();
 }
 
@@ -418,32 +420,37 @@ std::optional<Simulator::AlgWrap> Simulator::loadAlgorithmSo(const std::string &
     auto &reg = AlgorithmRegistrar::getAlgorithmRegistrar();
     const std::string name = basenameNoExt(soPath);
 
-    reg.createAlgorithmFactoryEntry(name);
-    void *h = dlopenOrNull(soPath);
-    if (!h) {
-        reg.removeLast();
-        return std::nullopt;
-    }
-
-    try {
-        reg.validateLastRegistration();
-    } catch (const AlgorithmRegistrar::BadRegistrationException &e) {
-        std::cerr << "Algorithm registration failed for '" << name << "':"
-                << " hasName=" << e.hasName
-                << " hasPlayerFactory=" << e.hasPlayerFactory
-                << " hasTankAlgorithmFactory=" << e.hasTankAlgorithmFactory
-                << "\n";
-        reg.removeLast();
-        dlclose(h);
-        return std::nullopt;
-    }
-
-    // Build a stable wrapper capturing the registrar index (not a reference)
     AlgWrap wrap;
     wrap.name = name;
-    wrap.dl = h;
-    wrap.playerFactory = reg.lastReg()->getPlayerFactory();
-    wrap.tankFactory = reg.lastReg()->getTankAlgorithmFactory();
+    wrap.dl = nullptr;
+    wrap.has_dl = false;
+
+    if (!reg.find(name)) {
+        reg.createAlgorithmFactoryEntry(name);
+        void *h = dlopenOrNull(soPath);
+        if (!h) {
+            reg.removeLast();
+            return std::nullopt;
+        }
+        wrap.dl = h;
+        wrap.has_dl = true;
+
+        try {
+            reg.validateLastRegistration();
+        } catch (const AlgorithmRegistrar::BadRegistrationException &e) {
+            std::cerr << "Algorithm registration failed for '" << name << "':"
+                    << " hasName=" << e.hasName
+                    << " hasPlayerFactory=" << e.hasPlayerFactory
+                    << " hasTankAlgorithmFactory=" << e.hasTankAlgorithmFactory
+                    << "\n";
+            reg.removeLast();
+            dlclose(h);
+            return std::nullopt;
+        }
+    }
+
+    wrap.playerFactory = reg.find(name)->getPlayerFactory();
+    wrap.tankFactory = reg.find(name)->getTankAlgorithmFactory();
 
     return wrap;
 }
@@ -461,27 +468,32 @@ std::vector<Simulator::AlgWrap> Simulator::loadAlgorithmFolder(const std::string
 std::optional<Simulator::GmWrap> Simulator::loadGameManagerSo(const std::string &soPath) {
     auto &reg = GameManagerRegistrar::getGameManagerRegistrar();
     const std::string name = basenameNoExt(soPath);
-
-    reg.createGameManagerFactoryEntry(name);
-    void *h = dlopenOrNull(soPath);
-    if (!h) {
-        reg.removeLast();
-        return std::nullopt;
-    }
-
-    try {
-        reg.validateLastRegistration();
-    } catch (const GameManagerRegistrar::BadRegistrationException &) {
-        std::cerr << "GameManager registration failed for '" << name << "'.\n";
-        reg.removeLast();
-        dlclose(h);
-        return std::nullopt;
-    }
-
     GmWrap wrap;
-    wrap.dl = h;
     wrap.name = name;
-    wrap.makeGameManager = reg.lastReg()->getGameManagerFactory();
+    wrap.dl = nullptr;
+    wrap.has_dl = false;
+
+    if (!reg.find(name)) {
+        reg.createGameManagerFactoryEntry(name);
+        void *h = dlopenOrNull(soPath);
+        if (!h) {
+            reg.removeLast();
+            return std::nullopt;
+        }
+        wrap.dl = h;
+        wrap.has_dl = true;
+
+        try {
+            reg.validateLastRegistration();
+        } catch (const GameManagerRegistrar::BadRegistrationException &) {
+            std::cerr << "GameManager registration failed for '" << name << "'.\n";
+            reg.removeLast();
+            dlclose(h);
+            return std::nullopt;
+        }
+    }
+
+    wrap.makeGameManager = reg.find(name)->getGameManagerFactory();
 
     return wrap;
 }

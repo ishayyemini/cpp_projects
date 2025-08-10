@@ -88,6 +88,7 @@ private:
     // Registrar-based loading
     struct AlgWrap {
         void *dl;
+        bool has_dl;
         std::string name;
         PlayerFactory playerFactory;
         TankAlgorithmFactory tankFactory;
@@ -107,6 +108,7 @@ private:
 
     struct GmWrap {
         void *dl;
+        bool has_dl = false;
         std::string name;
         GameManagerFactory makeGameManager;
     };

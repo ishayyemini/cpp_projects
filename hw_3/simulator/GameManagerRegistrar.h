@@ -81,6 +81,15 @@ public:
         return game_managers.end();
     }
 
+    const GameManagerFactories *find(const std::string &name) const {
+        for (const auto &gm: game_managers) {
+            if (gm.name() == name) {
+                return &gm;
+            }
+        }
+        return nullptr;
+    }
+
     std::size_t count() const { return game_managers.size(); }
     void clear() { game_managers.clear(); }
 };
