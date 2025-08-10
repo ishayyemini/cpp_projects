@@ -145,7 +145,7 @@ private:
     static std::optional<GmWrap> loadGameManagerSo(const std::string &soPath);
 
     // Loads many GMs from a folder
-    static std::vector<Simulator::GmWrap> loadGameManagersFolder(
+    static std::vector<GmWrap> loadGameManagersFolder(
         const std::string &folder);
 
     // Thread pool (created only when numThreads >= 2; workers = numThreads; main waits)
@@ -158,6 +158,8 @@ private:
         void enqueue(std::function<void()> task);
 
         void waitIdle();
+
+        // TODO rule of 5
 
     private:
         struct Impl;

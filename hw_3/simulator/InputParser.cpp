@@ -6,8 +6,6 @@
 #include "Logger.h"
 #include "StringUtils.h"
 
-using namespace UserCommon_322868852_340849710;
-
 void InputParser::addErrorMessage(const std::string &message) {
     error_messages.push_back(message);
 }

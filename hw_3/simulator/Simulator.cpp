@@ -16,8 +16,6 @@
 
 #include <dlfcn.h>
 
-using namespace UserCommon_322868852_340849710;
-
 namespace fs = std::filesystem;
 
 // Guard all Logger usage and any code paths that might write via Logger
@@ -644,7 +642,6 @@ int Simulator::loadComparative(const Args &args, std::optional<AlgWrap> &alg1, s
     }
 
     // Parse map using project InputParser (initializes Logger as needed)
-    Logger::getInstance().init(args.gameMapFile);
     InputParser parser;
     parser.parseInputFile(args.gameMapFile);
     mapView = parser.getSatelliteView();
@@ -816,7 +813,6 @@ void Simulator::runOneCompetition(const Args &args, std::optional<GmWrap> &gmWra
 
     try {
         std::lock_guard glk(g_logger_mutex);
-        Logger::getInstance().init(mapPath);
         InputParser parser;
         parser.parseInputFile(mapPath);
         std::unique_ptr<SatelliteView> mapView = parser.getSatelliteView();
