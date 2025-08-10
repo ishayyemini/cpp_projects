@@ -7,7 +7,7 @@ add_library(Algorithm_322868852_340849710 SHARED ${ALGORITHM_SOURCES})
 # Include directories
 target_include_directories(Algorithm_322868852_340849710 PRIVATE
         ../common
-        ../userCommon
+        ../UserCommon
 )
 
 # Set library properties

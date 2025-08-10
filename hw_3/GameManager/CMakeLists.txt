@@ -7,8 +7,8 @@ add_library(GameManager_322868852_340849710 SHARED ${GAMEMANAGER_SOURCES})
 # Include directories
 target_include_directories(GameManager_322868852_340849710 PRIVATE
         ../common
-        ../userCommon
-        ../simulator
+        ../UserCommon
+        ../Simulator
 )
 
 # Set library properties

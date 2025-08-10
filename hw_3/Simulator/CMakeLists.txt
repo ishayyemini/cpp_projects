@@ -7,7 +7,7 @@ add_executable(simulator_322868852_340849710 ${SIMULATOR_SOURCES})
 # Include directories
 target_include_directories(simulator_322868852_340849710 PRIVATE
         ../common
-        ../userCommon
+        ../UserCommon
 )
 
 # Link libraries

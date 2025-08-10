@@ -3,15 +3,15 @@
 all: algorithm gameManager simulator
 
 algorithm:
-	$(MAKE) -C algorithm
+	$(MAKE) -C Algorithm
 
 gameManager:
-	$(MAKE) -C gameManager
+	$(MAKE) -C GameManager
 
 simulator: algorithm
-	$(MAKE) -C simulator
+	$(MAKE) -C Simulator
 
 clean:
-	$(MAKE) -C algorithm clean
-	$(MAKE) -C gameManager clean
-	$(MAKE) -C simulator clean
+	$(MAKE) -C Algorithm clean
+	$(MAKE) -C GameManager clean
+	$(MAKE) -C Simulator clean

@@ -1,11 +1,11 @@
 ID = 322868852_340849710
-TARGET = GameManager_$(ID).so
+TARGET = Algorithm_$(ID).so
 
 SRC = $(wildcard *.cpp)
 OBJ = $(SRC:.cpp=.o)
 
 CXX = g++
-CXXFLAGS = -Wall -Wextra -Werror -pedantic -std=c++20 -fPIC -I../common -I../userCommon
+CXXFLAGS = -Wall -Wextra -Werror -pedantic -std=c++20 -fPIC -I../common -I../UserCommon
 LDFLAGS = -shared
 
 .PHONY: all clean

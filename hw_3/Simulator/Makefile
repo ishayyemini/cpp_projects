@@ -1,19 +1,18 @@
 ID = 322868852_340849710
-TARGET = Algorithm_$(ID).so
+TARGET = simulator_$(ID)
 
 SRC = $(wildcard *.cpp)
 OBJ = $(SRC:.cpp=.o)
 
 CXX = g++
-CXXFLAGS = -Wall -Wextra -Werror -pedantic -std=c++20 -fPIC -I../common -I../userCommon
-LDFLAGS = -shared
+CXXFLAGS = -Wall -Wextra -Werror -pedantic -std=c++20 -fPIC -I../common -I../UserCommon
 
 .PHONY: all clean
 
 all: $(TARGET)
 
 $(TARGET): $(OBJ)
-	$(CXX) $(LDFLAGS) $^ -o $@
+	$(CXX) $(CXXFLAGS) $(OBJ) -o $(TARGET) -ldl -rdynamic -pthread
 
 %.o: %.cpp
 	@echo "Compiling $<..."
