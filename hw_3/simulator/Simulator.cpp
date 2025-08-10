@@ -214,6 +214,167 @@ std::string Simulator::usageCompetition() {
             "Usage: ./simulator_<ids> -competition game_maps_folder=<folder> game_manager=<file> algorithms_folder=<folder> [num_threads=<num>] [-verbose]\n";
 }
 
+std::optional<Args> Simulator::handleUnknownArgs(const std::vector<std::string> &unknown, std::string &usageOrError) {
+    std::ostringstream oss;
+    oss << "Error: Unsupported arguments: ";
+    for (size_t i = 0; i < unknown.size(); ++i) {
+        if (i) oss << ", ";
+        oss << "'" << unknown[i] << "'";
+    }
+    oss << "\n" << usageComparative() << usageCompetition();
+    usageOrError = oss.str();
+    return std::nullopt;
+}
+
+bool Simulator::checkComparativeArgsErrors(const Args &args, std::string &usageOrError) {
+    std::vector<std::string> missing;
+    if (args.gameMapFile.empty()) missing.push_back("game_map");
+    if (args.gameManagersFolder.empty()) missing.push_back("game_managers_folder");
+    if (args.algorithm1File.empty()) missing.push_back("algorithm1");
+    if (args.algorithm2File.empty()) missing.push_back("algorithm2");
+    if (!missing.empty()) {
+        std::ostringstream oss;
+        oss << "Error: Missing required arguments: ";
+        for (size_t i = 0; i < missing.size(); ++i) {
+            if (i) oss << ", ";
+            oss << missing[i];
+        }
+        oss << "\n" << usageComparative();
+        usageOrError = oss.str();
+        return true;
+    }
+    if (!fileExistsReadable(args.gameMapFile)) {
+        usageOrError = "Error: game_map file cannot be opened: " + args.gameMapFile + "\n" + usageComparative();
+        return true;
+    }
+    if (!dirExistsListable(args.gameManagersFolder)) {
+        usageOrError = "Error: game_managers_folder cannot be traversed: " + args.gameManagersFolder + "\n" +
+                       usageComparative();
+        return true;
+    }
+    if (!fileExistsReadable(args.algorithm1File)) {
+        usageOrError = "Error: algorithm1 file cannot be opened: " + args.algorithm1File + "\n" +
+                       usageComparative();
+        return true;
+    }
+    if (!fileExistsReadable(args.algorithm2File)) {
+        usageOrError = "Error: algorithm2 file cannot be opened: " + args.algorithm2File + "\n" +
+                       usageComparative();
+        return true;
+    }
+    return false;
+}
+
+bool Simulator::checkCompetitionArgsErrors(const Args &args, std::string &usageOrError) {
+    std::vector<std::string> missing;
+    if (args.gameMapsFolder.empty()) missing.push_back("game_maps_folder");
+    if (args.gameManagerFile.empty()) missing.push_back("game_manager");
+    if (args.algorithmsFolder.empty()) missing.push_back("algorithms_folder");
+    if (!missing.empty()) {
+        std::ostringstream oss;
+        oss << "Error: Missing required arguments: ";
+        for (size_t i = 0; i < missing.size(); ++i) {
+            if (i) oss << ", ";
+            oss << missing[i];
+        }
+        oss << "\n" << usageCompetition();
+        usageOrError = oss.str();
+        return true;
+    }
+    if (!dirExistsListable(args.gameMapsFolder)) {
+        usageOrError = "Error: game_maps_folder cannot be traversed: " + args.gameMapsFolder + "\n" +
+                       usageCompetition();
+        return true;
+    }
+    if (!fileExistsReadable(args.gameManagerFile)) {
+        usageOrError = "Error: game_manager file cannot be opened: " + args.gameManagerFile + "\n" +
+                       usageCompetition();
+        return true;
+    }
+    if (!dirExistsListable(args.algorithmsFolder)) {
+        usageOrError = "Error: algorithms_folder cannot be traversed: " + args.algorithmsFolder + "\n" +
+                       usageCompetition();
+        return true;
+    }
+    return false;
+}
+
+bool Simulator::checkModeErrors(const Args &args, std::string &usageOrError) {
+    if (args.mode == Args::Mode::Comparative) {
+        if (checkComparativeArgsErrors(args, usageOrError)) {
+            return true;
+        }
+        auto gms = listFilesWithExtension(args.gameManagersFolder, ".so");
+        if (gms.empty()) {
+            usageOrError = "Error: game_managers_folder has no .so files: " + args.gameManagersFolder + "\n" +
+                           usageComparative();
+            return true;
+        }
+    } else {
+        // Competition
+        if (checkCompetitionArgsErrors(args, usageOrError)) {
+            return true;
+        }
+        auto maps = listRegularFiles(args.gameMapsFolder);
+        if (maps.empty()) {
+            usageOrError = "Error: game_maps_folder has no map files\n" + usageCompetition();
+            return true;
+        }
+        auto algs = listFilesWithExtension(args.algorithmsFolder, ".so");
+        if (algs.size() < 2) {
+            usageOrError = "Error: algorithms_folder has fewer than 2 algorithms (.so files)\n" + usageCompetition();
+            return true;
+        }
+    }
+
+    return false;
+}
+
+std::optional<Args::Mode> Simulator::sortArg(const std::string &a, const bool modeSet, Args &args,
+                                             std::string &usageOrError, std::vector<std::string> &unknown,
+                                             const std::unordered_set<std::string> &supported) {
+    if (a == "-comparative") {
+        if (modeSet && args.mode != Args::Mode::Comparative) {
+            usageOrError = "Error: Both -comparative and -competition provided.\n" + usageComparative() +
+                           usageCompetition();
+            return std::nullopt;
+        }
+        return Args::Mode::Comparative;
+    }
+    if (a == "-competition") {
+        if (modeSet && args.mode != Args::Mode::Competition) {
+            usageOrError = "Error: Both -comparative and -competition provided.\n" + usageComparative() +
+                           usageCompetition();
+            return std::nullopt;
+        }
+        return Args::Mode::Competition;
+    }
+    if (a == "-verbose") {
+        args.verbose = true;
+        return std::nullopt;
+    }
+    std::string k, v;
+    if (!parseKV(a, k, v)) {
+        unknown.push_back(a);
+        return std::nullopt;
+    }
+    if (!supported.count(k)) {
+        unknown.push_back(a);
+        return std::nullopt;
+    }
+    if (k == "game_map") args.gameMapFile = v;
+    else if (k == "game_managers_folder") args.gameManagersFolder = v;
+    else if (k == "algorithm1") args.algorithm1File = v;
+    else if (k == "algorithm2") args.algorithm2File = v;
+    else if (k == "game_maps_folder") args.gameMapsFolder = v;
+    else if (k == "game_manager") args.gameManagerFile = v;
+    else if (k == "algorithms_folder") args.algorithmsFolder = v;
+    else if (k == "num_threads") {
+        try { args.numThreads = std::max(1, std::stoi(v)); } catch (...) { args.numThreads = 1; }
+    }
+    return std::nullopt;
+}
+
 std::optional<Args> Simulator::parseArgs(int argc, char **argv, std::string &usageOrError) {
     if (argc < 2) {
         usageOrError = usageComparative() + usageCompetition();
@@ -232,57 +393,15 @@ std::optional<Args> Simulator::parseArgs(int argc, char **argv, std::string &usa
 
     for (int i = 1; i < argc; i++) {
         std::string a = argv[i];
-        if (a == "-comparative") {
-            if (modeSet && args.mode != Args::Mode::Comparative) {
-                usageOrError = "Error: Both -comparative and -competition provided.\n" + usageComparative() +
-                               usageCompetition();
-                return std::nullopt;
-            }
-            args.mode = Args::Mode::Comparative;
+        std::optional<Args::Mode> mode = sortArg(a, modeSet, args, usageOrError, unknown, supported);
+        if (mode.has_value()) {
+            args.mode = mode.value();
             modeSet = true;
-        } else if (a == "-competition") {
-            if (modeSet && args.mode != Args::Mode::Competition) {
-                usageOrError = "Error: Both -comparative and -competition provided.\n" + usageComparative() +
-                               usageCompetition();
-                return std::nullopt;
-            }
-            args.mode = Args::Mode::Competition;
-            modeSet = true;
-        } else if (a == "-verbose") {
-            args.verbose = true;
-        } else {
-            std::string k, v;
-            if (!parseKV(a, k, v)) {
-                unknown.push_back(a);
-                continue;
-            }
-            if (!supported.count(k)) {
-                unknown.push_back(a);
-                continue;
-            }
-            if (k == "game_map") args.gameMapFile = v;
-            else if (k == "game_managers_folder") args.gameManagersFolder = v;
-            else if (k == "algorithm1") args.algorithm1File = v;
-            else if (k == "algorithm2") args.algorithm2File = v;
-            else if (k == "game_maps_folder") args.gameMapsFolder = v;
-            else if (k == "game_manager") args.gameManagerFile = v;
-            else if (k == "algorithms_folder") args.algorithmsFolder = v;
-            else if (k == "num_threads") {
-                try { args.numThreads = std::max(1, std::stoi(v)); } catch (...) { args.numThreads = 1; }
-            }
         }
     }
 
     if (!unknown.empty()) {
-        std::ostringstream oss;
-        oss << "Error: Unsupported arguments: ";
-        for (size_t i = 0; i < unknown.size(); ++i) {
-            if (i) oss << ", ";
-            oss << "'" << unknown[i] << "'";
-        }
-        oss << "\n" << usageComparative() << usageCompetition();
-        usageOrError = oss.str();
-        return std::nullopt;
+        return handleUnknownArgs(unknown, usageOrError);
     }
 
     if (!modeSet) {
@@ -290,92 +409,7 @@ std::optional<Args> Simulator::parseArgs(int argc, char **argv, std::string &usa
         return std::nullopt;
     }
 
-    if (args.mode == Args::Mode::Comparative) {
-        std::vector<std::string> missing;
-        if (args.gameMapFile.empty()) missing.push_back("game_map");
-        if (args.gameManagersFolder.empty()) missing.push_back("game_managers_folder");
-        if (args.algorithm1File.empty()) missing.push_back("algorithm1");
-        if (args.algorithm2File.empty()) missing.push_back("algorithm2");
-        if (!missing.empty()) {
-            std::ostringstream oss;
-            oss << "Error: Missing required arguments: ";
-            for (size_t i = 0; i < missing.size(); ++i) {
-                if (i) oss << ", ";
-                oss << missing[i];
-            }
-            oss << "\n" << usageComparative();
-            usageOrError = oss.str();
-            return std::nullopt;
-        }
-        if (!fileExistsReadable(args.gameMapFile)) {
-            usageOrError = "Error: game_map file cannot be opened: " + args.gameMapFile + "\n" + usageComparative();
-            return std::nullopt;
-        }
-        if (!dirExistsListable(args.gameManagersFolder)) {
-            usageOrError = "Error: game_managers_folder cannot be traversed: " + args.gameManagersFolder + "\n" +
-                           usageComparative();
-            return std::nullopt;
-        }
-        if (!fileExistsReadable(args.algorithm1File)) {
-            usageOrError = "Error: algorithm1 file cannot be opened: " + args.algorithm1File + "\n" +
-                           usageComparative();
-            return std::nullopt;
-        }
-        if (!fileExistsReadable(args.algorithm2File)) {
-            usageOrError = "Error: algorithm2 file cannot be opened: " + args.algorithm2File + "\n" +
-                           usageComparative();
-            return std::nullopt;
-        }
-        auto gms = listFilesWithExtension(args.gameManagersFolder, ".so");
-        if (gms.empty()) {
-            usageOrError = "Error: game_managers_folder has no .so files: " + args.gameManagersFolder + "\n" +
-                           usageComparative();
-            return std::nullopt;
-        }
-    } else {
-        // Competition
-        std::vector<std::string> missing;
-        if (args.gameMapsFolder.empty()) missing.push_back("game_maps_folder");
-        if (args.gameManagerFile.empty()) missing.push_back("game_manager");
-        if (args.algorithmsFolder.empty()) missing.push_back("algorithms_folder");
-        if (!missing.empty()) {
-            std::ostringstream oss;
-            oss << "Error: Missing required arguments: ";
-            for (size_t i = 0; i < missing.size(); ++i) {
-                if (i) oss << ", ";
-                oss << missing[i];
-            }
-            oss << "\n" << usageCompetition();
-            usageOrError = oss.str();
-            return std::nullopt;
-        }
-        if (!dirExistsListable(args.gameMapsFolder)) {
-            usageOrError = "Error: game_maps_folder cannot be traversed: " + args.gameMapsFolder + "\n" +
-                           usageCompetition();
-            return std::nullopt;
-        }
-        if (!fileExistsReadable(args.gameManagerFile)) {
-            usageOrError = "Error: game_manager file cannot be opened: " + args.gameManagerFile + "\n" +
-                           usageCompetition();
-            return std::nullopt;
-        }
-        if (!dirExistsListable(args.algorithmsFolder)) {
-            usageOrError = "Error: algorithms_folder cannot be traversed: " + args.algorithmsFolder + "\n" +
-                           usageCompetition();
-            return std::nullopt;
-        }
-        auto maps = listRegularFiles(args.gameMapsFolder);
-        if (maps.empty()) {
-            usageOrError = "Error: game_maps_folder has no map files\n" + usageCompetition();
-            return std::nullopt;
-        }
-        auto algs = listFilesWithExtension(args.algorithmsFolder, ".so");
-        if (algs.size() < 2) {
-            usageOrError = "Error: algorithms_folder has fewer than 2 algorithms (.so files)\n" + usageCompetition();
-            return std::nullopt;
-        }
-    }
-
+    if (checkModeErrors(args, usageOrError)) return std::nullopt;
     return args;
 }
 
@@ -565,6 +599,7 @@ int Simulator::run(const Args &args) {
     }
 }
 
+// TODO too long
 int Simulator::runComparative(const Args &args) {
     // Fresh registrars
     AlgorithmRegistrar::getAlgorithmRegistrar().clear();
@@ -707,6 +742,7 @@ int Simulator::runComparative(const Args &args) {
     return 0;
 }
 
+// TODO too long
 int Simulator::runCompetition(const Args &args) {
     // Fresh registrars
     AlgorithmRegistrar::getAlgorithmRegistrar().clear();

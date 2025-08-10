@@ -53,6 +53,18 @@ public:
 
     static std::string usageCompetition();
 
+    static std::optional<Args> handleUnknownArgs(const std::vector<std::string> &unknown, std::string &usageOrError);
+
+    static bool checkComparativeArgsErrors(const Args &args, std::string &usageOrError);
+
+    static bool checkCompetitionArgsErrors(const Args &args, std::string &usageOrError);
+
+    static bool checkModeErrors(const Args &args, std::string &usageOrError);
+
+    static std::optional<Args::Mode> sortArg(const std::string &a, bool modeSet, Args &args, std::string &usageOrError,
+                                             std::vector<std::string> &unknown,
+                                             const std::unordered_set<std::string> &supported);
+
 private:
     // Core runners
     int runComparative(const Args &args);
