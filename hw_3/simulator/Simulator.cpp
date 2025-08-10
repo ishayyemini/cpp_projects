@@ -599,32 +599,35 @@ int Simulator::run(const Args &args) {
     }
 }
 
-// TODO too long
-int Simulator::runComparative(const Args &args) {
+void Simulator::cleanComparative(std::optional<AlgWrap> &alg1, std::optional<AlgWrap> &alg2, std::vector<GmWrap> &gms) {
+    AlgorithmRegistrar::getAlgorithmRegistrar().clear();
+    GameManagerRegistrar::getGameManagerRegistrar().clear();
+    if (alg1.has_value()) closeAlgWrap(alg1);
+    if (alg2.has_value()) closeAlgWrap(alg2);
+    closeGmWrap(gms);
+}
+
+int Simulator::loadComparative(const Args &args, std::optional<AlgWrap> &alg1, std::optional<AlgWrap> &alg2,
+                               std::vector<GmWrap> &gms, std::unique_ptr<SatelliteView> &mapView, size_t &width,
+                               size_t &height, size_t &maxSteps, size_t &numShells, std::string &mapName) {
     // Fresh registrars
     AlgorithmRegistrar::getAlgorithmRegistrar().clear();
     GameManagerRegistrar::getGameManagerRegistrar().clear();
 
     // Load algorithms (single dlopen each)
-    std::optional<AlgWrap> alg1 = loadAlgorithmSo(args.algorithm1File);
-    std::optional<AlgWrap> alg2 = loadAlgorithmSo(args.algorithm2File);
+    alg1 = loadAlgorithmSo(args.algorithm1File);
+    alg2 = loadAlgorithmSo(args.algorithm2File);
+    // Load game managers
+    gms = loadGameManagersFolder(args.gameManagersFolder);
+
     if (!alg1 || !alg2) {
         std::cerr << "Error: failed to load algorithm(s).\n" << usageComparative();
-        AlgorithmRegistrar::getAlgorithmRegistrar().clear();
-        closeAlgWrap(alg1);
-        closeAlgWrap(alg2);
+        cleanComparative(alg1, alg2, gms);
         return 1;
     }
-
-    // Load game managers
-    auto gms = loadGameManagersFolder(args.gameManagersFolder);
     if (gms.empty()) {
         std::cerr << "Error: game_managers_folder has no valid .so game managers.\n" << usageComparative();
-        AlgorithmRegistrar::getAlgorithmRegistrar().clear();
-        GameManagerRegistrar::getGameManagerRegistrar().clear();
-        closeAlgWrap(alg1);
-        closeAlgWrap(alg2);
-        closeGmWrap(gms);
+        cleanComparative(alg1, alg2, gms);
         return 1;
     }
 
@@ -632,22 +635,31 @@ int Simulator::runComparative(const Args &args) {
     Logger::getInstance().init(args.gameMapFile);
     InputParser parser;
     parser.parseInputFile(args.gameMapFile);
-    SatelliteView *mapView = parser.getSatelliteView();
+    mapView = parser.getSatelliteView();
     if (!mapView) {
         std::cerr << "Error: failed to parse game map: " << args.gameMapFile << "\n" << usageComparative();
-        AlgorithmRegistrar::getAlgorithmRegistrar().clear();
-        GameManagerRegistrar::getGameManagerRegistrar().clear();
-        closeAlgWrap(alg1);
-        closeAlgWrap(alg2);
-        closeGmWrap(gms);
+        cleanComparative(alg1, alg2, gms);
         return 1;
     }
 
-    const size_t width = parser.getWidth();
-    const size_t height = parser.getHeight();
-    const size_t maxSteps = parser.getMaxSteps();
-    const size_t numShells = parser.getNumShells();
-    const std::string mapName = parser.getBoardDescription();
+    width = parser.getWidth();
+    height = parser.getHeight();
+    maxSteps = parser.getMaxSteps();
+    numShells = parser.getNumShells();
+    mapName = parser.getBoardDescription();
+
+    return 0;
+}
+
+// TODO too long
+int Simulator::runComparative(const Args &args) {
+    std::optional<AlgWrap> alg1, alg2;
+    std::vector<GmWrap> gms;
+    std::unique_ptr<SatelliteView> mapView;
+    size_t width, height, maxSteps, numShells;
+    std::string mapName;
+
+    loadComparative(args, alg1, alg2, gms, mapView, width, height, maxSteps, numShells, mapName);
 
     struct OneRes {
         std::string gmName;
@@ -675,7 +687,7 @@ int Simulator::runComparative(const Args &args) {
         // Dump final game state
         std::vector<std::string> dump;
         dump.reserve(height);
-        SatelliteView *state = gr.gameState ? gr.gameState.get() : mapView;
+        const SatelliteView *state = gr.gameState ? gr.gameState.get() : mapView.get();
         for (size_t y = 0; y < height; ++y) {
             std::string row;
             row.reserve(width);
@@ -699,11 +711,6 @@ int Simulator::runComparative(const Args &args) {
     if (results.empty()) {
         std::cerr << "Error: no game managers produced results.\n";
         // Clean up in correct order
-        AlgorithmRegistrar::getAlgorithmRegistrar().clear();
-        GameManagerRegistrar::getGameManagerRegistrar().clear();
-        closeAlgWrap(alg1);
-        closeAlgWrap(alg2);
-        closeGmWrap(gms);
         return 1;
     }
 
@@ -733,12 +740,7 @@ int Simulator::runComparative(const Args &args) {
         std::cout << content;
     }
 
-    AlgorithmRegistrar::getAlgorithmRegistrar().clear();
-    GameManagerRegistrar::getGameManagerRegistrar().clear();
-    closeAlgWrap(alg1);
-    closeAlgWrap(alg2);
-    closeGmWrap(gms);
-
+    cleanComparative(alg1, alg2, gms);
     return 0;
 }
 
@@ -795,7 +797,7 @@ int Simulator::runCompetition(const Args &args) {
             Logger::getInstance().init(mapPath);
             InputParser parser;
             parser.parseInputFile(mapPath);
-            SatelliteView *mapView = parser.getSatelliteView();
+            std::unique_ptr<SatelliteView> mapView = parser.getSatelliteView();
             if (!mapView) return;
 
             const size_t width = parser.getWidth();

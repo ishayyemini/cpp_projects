@@ -117,6 +117,14 @@ private:
 
     static void closeGmWrap(std::vector<GmWrap> &handles);
 
+    static void cleanComparative(std::optional<AlgWrap> &alg1, std::optional<AlgWrap> &alg2, std::vector<GmWrap> &gms);
+
+    static int loadComparative(const Args &args, std::optional<AlgWrap> &alg1, std::optional<AlgWrap> &alg2,
+                               std::vector<GmWrap> &gms, std::unique_ptr<SatelliteView> &mapView, size_t &width,
+                               size_t &height,
+                               size_t &maxSteps,
+                               size_t &numShells, std::string &mapName);
+
     // Loads a single game manager .so into GameManagerRegistrar. Returns nullopt on failure.
     static std::optional<GmWrap> loadGameManagerSo(const std::string &soPath);
 

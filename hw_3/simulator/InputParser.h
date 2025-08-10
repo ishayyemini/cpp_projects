@@ -64,7 +64,7 @@ public:
 
     size_t getNumShells() const { return num_shells; }
 
-    SatelliteView *getSatelliteView() { return satellite_view.get(); }
+    std::unique_ptr<SatelliteView> getSatelliteView();
 
     ~InputParser() = default;
 };

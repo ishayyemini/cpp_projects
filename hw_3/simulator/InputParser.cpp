@@ -128,3 +128,13 @@ void InputParser::parseInputFile(const std::string &file_name) {
 
     addErrorMessagesToLog();
 }
+
+std::unique_ptr<SatelliteView> InputParser::getSatelliteView() {
+    auto sw = std::make_unique<MySatelliteView>(width, height);
+    for (size_t x = 0; x < width; ++x) {
+        for (size_t y = 0; y < height; ++y) {
+            sw->setObjectAt(x, y, satellite_view->getObjectAt(x, y));
+        }
+    }
+    return sw;
+}
