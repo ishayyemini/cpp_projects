@@ -54,7 +54,7 @@ GameResult GameManager_322868852::run(size_t map_width, size_t map_height,
         logger.init(map_name, name1, name2);
     }
 
-    GameResult result;
+    GameResult result{};
 
     checkDeaths(); //check if one of the player doesn't have any tanks
     while (!isGameOver()) {
