@@ -102,7 +102,7 @@ std::vector<std::string> Simulator::listFilesWithExtension(const std::string &di
 void *Simulator::dlopenOrNull(const std::string &path) {
     void *h = dlopen(path.c_str(), RTLD_LAZY | RTLD_GLOBAL);
     if (!h) {
-        std::cerr << "Failed to load library '" << path << "': " << dlerror() << "\n";
+        Logger::getInstance().error("Failed to load library '" + path + "': " + dlerror());
         return nullptr;
     }
     return h;
@@ -223,6 +223,7 @@ std::optional<Args> Simulator::handleUnknownArgs(const std::vector<std::string> 
     }
     oss << "\n" << usageComparative() << usageCompetition();
     usageOrError = oss.str();
+    Logger::getInstance().error(usageOrError);
     return std::nullopt;
 }
 
@@ -302,27 +303,32 @@ bool Simulator::checkCompetitionArgsErrors(const Args &args, std::string &usageO
 bool Simulator::checkModeErrors(const Args &args, std::string &usageOrError) {
     if (args.mode == Args::Mode::Comparative) {
         if (checkComparativeArgsErrors(args, usageOrError)) {
+            Logger::getInstance().error(usageOrError);
             return true;
         }
         auto gms = listFilesWithExtension(args.gameManagersFolder, ".so");
         if (gms.empty()) {
             usageOrError = "Error: game_managers_folder has no .so files: " + args.gameManagersFolder + "\n" +
                            usageComparative();
+            Logger::getInstance().error(usageOrError);
             return true;
         }
     } else {
         // Competition
         if (checkCompetitionArgsErrors(args, usageOrError)) {
+            Logger::getInstance().error(usageOrError);
             return true;
         }
         auto maps = listRegularFiles(args.gameMapsFolder);
         if (maps.empty()) {
             usageOrError = "Error: game_maps_folder has no map files\n" + usageCompetition();
+            Logger::getInstance().error(usageOrError);
             return true;
         }
         auto algs = listFilesWithExtension(args.algorithmsFolder, ".so");
         if (algs.size() < 2) {
             usageOrError = "Error: algorithms_folder has fewer than 2 algorithms (.so files)\n" + usageCompetition();
+            Logger::getInstance().error(usageOrError);
             return true;
         }
     }
@@ -378,6 +384,7 @@ std::optional<Args::Mode> Simulator::sortArg(const std::string &a, const bool mo
 std::optional<Args> Simulator::parseArgs(int argc, char **argv, std::string &usageOrError) {
     if (argc < 2) {
         usageOrError = usageComparative() + usageCompetition();
+        Logger::getInstance().error(usageOrError);
         return std::nullopt;
     }
 
@@ -406,6 +413,7 @@ std::optional<Args> Simulator::parseArgs(int argc, char **argv, std::string &usa
 
     if (!modeSet) {
         usageOrError = "Error: Missing mode (-comparative or -competition)\n" + usageComparative() + usageCompetition();
+        Logger::getInstance().error(usageOrError);
         return std::nullopt;
     }
 
@@ -436,11 +444,10 @@ std::optional<Simulator::AlgWrap> Simulator::loadAlgorithmSo(const std::string &
         try {
             reg.validateLastRegistration();
         } catch (const AlgorithmRegistrar::BadRegistrationException &e) {
-            std::cerr << "Algorithm registration failed for '" << name << "':"
-                    << " hasName=" << e.hasName
-                    << " hasPlayerFactory=" << e.hasPlayerFactory
-                    << " hasTankAlgorithmFactory=" << e.hasTankAlgorithmFactory
-                    << "\n";
+            Logger::getInstance().error("Algorithm registration failed for '" + name + "':"
+                                        + " hasName=" + std::to_string(e.hasName)
+                                        + " hasPlayerFactory=" + std::to_string(e.hasPlayerFactory)
+                                        + " hasTankAlgorithmFactory=" + std::to_string(e.hasTankAlgorithmFactory));
             reg.removeLast();
             dlclose(h);
             return std::nullopt;
@@ -484,7 +491,7 @@ std::optional<Simulator::GmWrap> Simulator::loadGameManagerSo(const std::string 
         try {
             reg.validateLastRegistration();
         } catch (const GameManagerRegistrar::BadRegistrationException &) {
-            std::cerr << "GameManager registration failed for '" << name << "'.\n";
+            Logger::getInstance().error("GameManager registration failed for '" + name + "'.");
             reg.removeLast();
             dlclose(h);
             return std::nullopt;
@@ -618,7 +625,8 @@ int Simulator::run(const Args &args) {
         if (args.mode == Args::Mode::Comparative) return runComparative(args);
         return runCompetition(args);
     } catch (const std::exception &e) {
-        std::cerr << "Fatal error: " << e.what() << "\n";
+        Logger::getInstance().error("Fatal error");
+        std::cerr << e.what() << std::endl;
         return 1;
     }
 }
@@ -645,11 +653,14 @@ int Simulator::loadComparative(const Args &args, std::optional<AlgWrap> &alg1, s
     gms = loadGameManagersFolder(args.gameManagersFolder);
 
     if (!alg1 || !alg2) {
+        Logger::getInstance().error("Error: failed to load algorithm(s).\n" + usageComparative());
         std::cerr << "Error: failed to load algorithm(s).\n" << usageComparative();
         cleanComparative(alg1, alg2, gms);
         return 1;
     }
     if (gms.empty()) {
+        Logger::getInstance().error(
+            "Error: game_managers_folder has no valid .so game managers.\n" + usageComparative());
         std::cerr << "Error: game_managers_folder has no valid .so game managers.\n" << usageComparative();
         cleanComparative(alg1, alg2, gms);
         return 1;
@@ -660,6 +671,7 @@ int Simulator::loadComparative(const Args &args, std::optional<AlgWrap> &alg1, s
     parser.parseInputFile(args.gameMapFile);
     mapView = parser.getSatelliteView();
     if (!mapView) {
+        Logger::getInstance().error("Error: failed to parse game map: " + args.gameMapFile + "\n" + usageComparative());
         std::cerr << "Error: failed to parse game map: " << args.gameMapFile << "\n" << usageComparative();
         cleanComparative(alg1, alg2, gms);
         return 1;
@@ -762,6 +774,7 @@ int Simulator::runComparative(const Args &args) {
     }
 
     if (results.empty()) {
+        Logger::getInstance().error("Error: no game managers produced results.");
         std::cerr << "Error: no game managers produced results.\n";
         cleanComparative(alg1, alg2, gms);
         return 1;
@@ -771,8 +784,8 @@ int Simulator::runComparative(const Args &args) {
     const auto content = formatComparativeOutput(args.gameMapFile, args.algorithm1File, args.algorithm2File, grouped,
                                                  maxSteps);
     if (std::string err; !writeTextFile(outPath, content, err)) {
-        std::cerr << "Error: " << err << "\n";
-        std::cout << content;
+        Logger::getInstance().error("Error: " + err);
+        Logger::getInstance().log(content);
     }
     cleanComparative(alg1, alg2, gms);
     return 0;
@@ -794,6 +807,7 @@ int Simulator::loadCompetition(const Args &args, std::optional<GmWrap> &gmWrap, 
     // Load GM
     gmWrap = loadGameManagerSo(args.gameManagerFile);
     if (!gmWrap) {
+        Logger::getInstance().error("Error: failed to load game_manager.\n" + usageCompetition());
         std::cerr << "Error: failed to load game_manager.\n" << usageCompetition();
         cleanCompetition(gmWrap, algs);
         return 1;
@@ -802,6 +816,8 @@ int Simulator::loadCompetition(const Args &args, std::optional<GmWrap> &gmWrap, 
     // Load algorithms folder
     algs = loadAlgorithmFolder(args.algorithmsFolder);
     if (algs.size() < 2) {
+        Logger::getInstance().
+                error("Error: algorithms_folder has fewer than 2 valid .so files.\n" + usageCompetition());
         std::cerr << "Error: algorithms_folder has fewer than 2 valid .so files.\n" << usageCompetition();
         cleanCompetition(gmWrap, algs);
         return 1;
@@ -811,6 +827,7 @@ int Simulator::loadCompetition(const Args &args, std::optional<GmWrap> &gmWrap, 
     mapFiles = listRegularFiles(args.gameMapsFolder);
     if (mapFiles.empty()) {
         std::cerr << "Error: no map files in game_maps_folder.\n" << usageCompetition();
+        Logger::getInstance().error("Error: no map files in game_maps_folder.\n");
         cleanCompetition(gmWrap, algs);
         return 1;
     }
@@ -902,8 +919,8 @@ int Simulator::runCompetition(const Args &args) {
     const auto outPath = joinPath(args.algorithmsFolder, "competition_" + epochTimeId() + ".txt");
     std::string err;
     if (!writeTextFile(outPath, content, err)) {
-        std::cerr << "Error: " << err << "\n";
-        std::cout << content;
+        Logger::getInstance().error("Error: " + err);
+        Logger::getInstance().log(content);
     }
 
     scores.clear();

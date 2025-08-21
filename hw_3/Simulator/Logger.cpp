@@ -32,42 +32,52 @@ void Logger::close() {
 }
 
 void Logger::log(const std::string &message) {
-    if (!log_file.is_open()) {
+    const std::string out = getTimestamp() + " - " + message;
+
+    if (!log_file_unavailable && !log_file.is_open()) {
         log_file.open("log.txt", std::ios::out);
         if (!log_file.is_open()) {
             std::cerr << "Failed to open log file: log.txt" << std::endl;
-            return;
+            log_file_unavailable = true;
         }
     }
 
-    log_file << getTimestamp() << " - " << message << std::endl;
-    log_file.flush();
+    if (log_file.is_open()) {
+        log_file << out << std::endl;
+        log_file.flush();
+    } else std::cout << out << std::endl;
 }
 
 void Logger::error(const std::string &message) {
-    if (!err_file.is_open()) {
+    const std::string out = getTimestamp() + " - " + message;
+
+    if (!err_file_unavailable && !err_file.is_open()) {
         err_file.open("errors.txt", std::ios::out);
         if (!err_file.is_open()) {
             std::cerr << "Failed to open error file: errors.txt" << std::endl;
-            return;
+            err_file_unavailable = true;
         }
     }
 
-    err_file << getTimestamp() << " - " << message << std::endl;
-    err_file.flush();
+    if (err_file.is_open()) {
+        err_file << out << std::endl;
+        err_file.flush();
+    } else std::cerr << out << std::endl;
 }
 
 void Logger::inputError(const std::string &message) {
-    if (!input_err_file.is_open()) {
+    if (!input_err_file_unavailable && !input_err_file.is_open()) {
         input_err_file.open("input_errors.txt", std::ios::out);
         if (!input_err_file.is_open()) {
             std::cerr << "Failed to open input errors file: input_errors.txt" << std::endl;
-            return;
+            input_err_file_unavailable = true;
         }
     }
 
-    input_err_file << message << std::endl;
-    input_err_file.flush();
+    if (input_err_file.is_open()) {
+        input_err_file << message << std::endl;
+        input_err_file.flush();
+    } else std::cerr << message << std::endl;
 }
 
 std::string Logger::getTimestamp() {

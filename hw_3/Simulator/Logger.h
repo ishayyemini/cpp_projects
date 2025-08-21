@@ -44,6 +44,10 @@ private:
     std::ofstream log_file;
     std::ofstream err_file;
     std::ofstream input_err_file;
+
+    bool log_file_unavailable = false;
+    bool err_file_unavailable = false;
+    bool input_err_file_unavailable = false;
 };
 
 
