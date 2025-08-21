@@ -1,7 +1,6 @@
 #ifndef TANKS_GAME_GAMEMANAGERREGISTRAR_H
 #define TANKS_GAME_GAMEMANAGERREGISTRAR_H
 
-#include <assert.h>
 #include <string>
 
 #include "AbstractGameManager.h"
@@ -16,8 +15,8 @@ class GameManagerRegistrar {
         }
 
         void setGameManagerFactory(GameManagerFactory &&factory) {
-            assert(game_manager_factory == nullptr);
-            game_manager_factory = std::move(factory);
+            if (game_manager_factory == nullptr)
+                game_manager_factory = std::move(factory);
         }
 
         const std::string &name() const { return so_name; }
