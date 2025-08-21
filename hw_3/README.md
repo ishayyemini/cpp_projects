@@ -12,25 +12,11 @@ CMake version 3.10 or higher is required.
 
 C++20 or higher (equivalent to a recent version of the g++ compiler).
 
-## Note
-
-The compiler flags added in CMakeLists.txt are the required flags and are equivalent to:
-
-```bash
-
-g++ -std=c++20 -Wall -Wextra -Werror -pedantic
-```
-
 ## General Instructions
 
 The following instructions are for linux / Unix based systems.
 
-Open a terminal and navigate to the advanced_topics_ex2 directory:
-
-```bash
-
-cd /path/to/advanced_topics_ex2
-```
+Open a terminal and navigate to the root directory.
 
 Build the project for Linux based on the following instructions. Then run the project based on the "Run
 instructions"
@@ -42,33 +28,20 @@ Just run:
 make 
 ```
 
+This will make all three subfolders.
+
 ## Run instructions
 
-Linux:
+For comparative mode:
 
 ```bash
 
-./tanks_game <Map_File_Name>
+./Simulator/simulator_322868852_340849710 -comparative game_map=<file> game_managers_folder=<folder> algorithm1=<file> algorithm2=<file> [num_threads=<num>] [-verbose]
 ```
 
-Optionally, if you want to run a visualization, first install:
+For competition mode:
 
 ```bash
 
-   pip install pygame
+./Simulator/simulator_322868852_340849710 -competition game_maps_folder=<folder> game_manager=<file> algorithms_folder=<folder> [num_threads=<num>] [-verbose]
 ```
-
-And then, after running a game, run:
-
-```bash
-
-python tank_visualizer.py game_state.txt
-```
-
-If you want to test it, run:
-
-```bash
-
-make test
-```
-
