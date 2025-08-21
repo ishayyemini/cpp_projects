@@ -36,7 +36,7 @@ struct Args {
     std::string algorithmsFolder;
 
     // common
-    int numThreads = 1;
+    unsigned numThreads = 1;
     bool verbose = false;
 };
 

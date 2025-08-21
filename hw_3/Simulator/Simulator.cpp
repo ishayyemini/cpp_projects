@@ -406,6 +406,8 @@ std::optional<Args> Simulator::parseArgs(int argc, char **argv, std::string &usa
             modeSet = true;
         }
     }
+    const auto processor_count = std::thread::hardware_concurrency();
+    args.numThreads = std::min(args.numThreads, processor_count);
 
     if (!unknown.empty()) {
         return handleUnknownArgs(unknown, usageOrError);
