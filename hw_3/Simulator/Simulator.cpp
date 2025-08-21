@@ -109,8 +109,8 @@ void *Simulator::dlopenOrNull(const std::string &path) {
 }
 
 void Simulator::closeAlgWrap(AlgWrap &wrap) {
-    wrap.playerFactory = nullptr;
-    wrap.tankFactory = nullptr;
+    wrap.player_factory = nullptr;
+    wrap.tank_factory = nullptr;
     if (wrap.has_dl) dlclose(wrap.dl);
 }
 
@@ -119,7 +119,7 @@ void Simulator::closeAlgWrap(std::optional<AlgWrap> &wrap) {
 }
 
 void Simulator::closeGmWrap(GmWrap &wrap) {
-    wrap.makeGameManager = nullptr;
+    wrap.make_game_manager = nullptr;
     if (wrap.has_dl) dlclose(wrap.dl);
 }
 
@@ -149,9 +149,9 @@ struct Simulator::ThreadPool::Impl {
     size_t active = 0;
 };
 
-Simulator::ThreadPool::ThreadPool(size_t nThreads) : impl_(std::make_unique<Impl>()) {
-    impl_->workers.reserve(nThreads);
-    for (size_t i = 0; i < nThreads; i++) {
+Simulator::ThreadPool::ThreadPool(size_t n_threads) : impl_(std::make_unique<Impl>()) {
+    impl_->workers.reserve(n_threads);
+    for (size_t i = 0; i < n_threads; i++) {
         impl_->workers.emplace_back([this] {
             for (;;) {
                 std::function<void()> task; {
@@ -214,7 +214,7 @@ std::string Simulator::usageCompetition() {
             "Usage: ./simulator_<ids> -competition game_maps_folder=<folder> game_manager=<file> algorithms_folder=<folder> [num_threads=<num>] [-verbose]\n";
 }
 
-std::optional<Args> Simulator::handleUnknownArgs(const std::vector<std::string> &unknown, std::string &usageOrError) {
+std::optional<Args> Simulator::handleUnknownArgs(const std::vector<std::string> &unknown, std::string &usage_or_error) {
     std::ostringstream oss;
     oss << "Error: Unsupported arguments: ";
     for (size_t i = 0; i < unknown.size(); ++i) {
@@ -222,17 +222,17 @@ std::optional<Args> Simulator::handleUnknownArgs(const std::vector<std::string> 
         oss << "'" << unknown[i] << "'";
     }
     oss << "\n" << usageComparative() << usageCompetition();
-    usageOrError = oss.str();
-    Logger::getInstance().error(usageOrError);
+    usage_or_error = oss.str();
+    Logger::getInstance().error(usage_or_error);
     return std::nullopt;
 }
 
-bool Simulator::checkComparativeArgsErrors(const Args &args, std::string &usageOrError) {
+bool Simulator::checkComparativeArgsErrors(const Args &args, std::string &usage_or_error) {
     std::vector<std::string> missing;
-    if (args.gameMapFile.empty()) missing.push_back("game_map");
-    if (args.gameManagersFolder.empty()) missing.push_back("game_managers_folder");
-    if (args.algorithm1File.empty()) missing.push_back("algorithm1");
-    if (args.algorithm2File.empty()) missing.push_back("algorithm2");
+    if (args.game_map_file.empty()) missing.push_back("game_map");
+    if (args.game_managers_folder.empty()) missing.push_back("game_managers_folder");
+    if (args.algorithm1_file.empty()) missing.push_back("algorithm1");
+    if (args.algorithm2_file.empty()) missing.push_back("algorithm2");
     if (!missing.empty()) {
         std::ostringstream oss;
         oss << "Error: Missing required arguments: ";
@@ -241,36 +241,36 @@ bool Simulator::checkComparativeArgsErrors(const Args &args, std::string &usageO
             oss << missing[i];
         }
         oss << "\n" << usageComparative();
-        usageOrError = oss.str();
+        usage_or_error = oss.str();
         return true;
     }
-    if (!fileExistsReadable(args.gameMapFile)) {
-        usageOrError = "Error: game_map file cannot be opened: " + args.gameMapFile + "\n" + usageComparative();
+    if (!fileExistsReadable(args.game_map_file)) {
+        usage_or_error = "Error: game_map file cannot be opened: " + args.game_map_file + "\n" + usageComparative();
         return true;
     }
-    if (!dirExistsListable(args.gameManagersFolder)) {
-        usageOrError = "Error: game_managers_folder cannot be traversed: " + args.gameManagersFolder + "\n" +
+    if (!dirExistsListable(args.game_managers_folder)) {
+        usage_or_error = "Error: game_managers_folder cannot be traversed: " + args.game_managers_folder + "\n" +
                        usageComparative();
         return true;
     }
-    if (!fileExistsReadable(args.algorithm1File)) {
-        usageOrError = "Error: algorithm1 file cannot be opened: " + args.algorithm1File + "\n" +
+    if (!fileExistsReadable(args.algorithm1_file)) {
+        usage_or_error = "Error: algorithm1 file cannot be opened: " + args.algorithm1_file + "\n" +
                        usageComparative();
         return true;
     }
-    if (!fileExistsReadable(args.algorithm2File)) {
-        usageOrError = "Error: algorithm2 file cannot be opened: " + args.algorithm2File + "\n" +
+    if (!fileExistsReadable(args.algorithm2_file)) {
+        usage_or_error = "Error: algorithm2 file cannot be opened: " + args.algorithm2_file + "\n" +
                        usageComparative();
         return true;
     }
     return false;
 }
 
-bool Simulator::checkCompetitionArgsErrors(const Args &args, std::string &usageOrError) {
+bool Simulator::checkCompetitionArgsErrors(const Args &args, std::string &usage_or_error) {
     std::vector<std::string> missing;
-    if (args.gameMapsFolder.empty()) missing.push_back("game_maps_folder");
-    if (args.gameManagerFile.empty()) missing.push_back("game_manager");
-    if (args.algorithmsFolder.empty()) missing.push_back("algorithms_folder");
+    if (args.game_maps_folder.empty()) missing.push_back("game_maps_folder");
+    if (args.game_manager_file.empty()) missing.push_back("game_manager");
+    if (args.algorithms_folder.empty()) missing.push_back("algorithms_folder");
     if (!missing.empty()) {
         std::ostringstream oss;
         oss << "Error: Missing required arguments: ";
@@ -279,56 +279,56 @@ bool Simulator::checkCompetitionArgsErrors(const Args &args, std::string &usageO
             oss << missing[i];
         }
         oss << "\n" << usageCompetition();
-        usageOrError = oss.str();
+        usage_or_error = oss.str();
         return true;
     }
-    if (!dirExistsListable(args.gameMapsFolder)) {
-        usageOrError = "Error: game_maps_folder cannot be traversed: " + args.gameMapsFolder + "\n" +
+    if (!dirExistsListable(args.game_maps_folder)) {
+        usage_or_error = "Error: game_maps_folder cannot be traversed: " + args.game_maps_folder + "\n" +
                        usageCompetition();
         return true;
     }
-    if (!fileExistsReadable(args.gameManagerFile)) {
-        usageOrError = "Error: game_manager file cannot be opened: " + args.gameManagerFile + "\n" +
+    if (!fileExistsReadable(args.game_manager_file)) {
+        usage_or_error = "Error: game_manager file cannot be opened: " + args.game_manager_file + "\n" +
                        usageCompetition();
         return true;
     }
-    if (!dirExistsListable(args.algorithmsFolder)) {
-        usageOrError = "Error: algorithms_folder cannot be traversed: " + args.algorithmsFolder + "\n" +
+    if (!dirExistsListable(args.algorithms_folder)) {
+        usage_or_error = "Error: algorithms_folder cannot be traversed: " + args.algorithms_folder + "\n" +
                        usageCompetition();
         return true;
     }
     return false;
 }
 
-bool Simulator::checkModeErrors(const Args &args, std::string &usageOrError) {
+bool Simulator::checkModeErrors(const Args &args, std::string &usage_or_error) {
     if (args.mode == Args::Mode::Comparative) {
-        if (checkComparativeArgsErrors(args, usageOrError)) {
-            Logger::getInstance().error(usageOrError);
+        if (checkComparativeArgsErrors(args, usage_or_error)) {
+            Logger::getInstance().error(usage_or_error);
             return true;
         }
-        auto gms = listFilesWithExtension(args.gameManagersFolder, ".so");
+        auto gms = listFilesWithExtension(args.game_managers_folder, ".so");
         if (gms.empty()) {
-            usageOrError = "Error: game_managers_folder has no .so files: " + args.gameManagersFolder + "\n" +
+            usage_or_error = "Error: game_managers_folder has no .so files: " + args.game_managers_folder + "\n" +
                            usageComparative();
-            Logger::getInstance().error(usageOrError);
+            Logger::getInstance().error(usage_or_error);
             return true;
         }
     } else {
         // Competition
-        if (checkCompetitionArgsErrors(args, usageOrError)) {
-            Logger::getInstance().error(usageOrError);
+        if (checkCompetitionArgsErrors(args, usage_or_error)) {
+            Logger::getInstance().error(usage_or_error);
             return true;
         }
-        auto maps = listRegularFiles(args.gameMapsFolder);
+        auto maps = listRegularFiles(args.game_maps_folder);
         if (maps.empty()) {
-            usageOrError = "Error: game_maps_folder has no map files\n" + usageCompetition();
-            Logger::getInstance().error(usageOrError);
+            usage_or_error = "Error: game_maps_folder has no map files\n" + usageCompetition();
+            Logger::getInstance().error(usage_or_error);
             return true;
         }
-        auto algs = listFilesWithExtension(args.algorithmsFolder, ".so");
+        auto algs = listFilesWithExtension(args.algorithms_folder, ".so");
         if (algs.size() < 2) {
-            usageOrError = "Error: algorithms_folder has fewer than 2 algorithms (.so files)\n" + usageCompetition();
-            Logger::getInstance().error(usageOrError);
+            usage_or_error = "Error: algorithms_folder has fewer than 2 algorithms (.so files)\n" + usageCompetition();
+            Logger::getInstance().error(usage_or_error);
             return true;
         }
     }
@@ -336,20 +336,20 @@ bool Simulator::checkModeErrors(const Args &args, std::string &usageOrError) {
     return false;
 }
 
-std::optional<Args::Mode> Simulator::sortArg(const std::string &a, const bool modeSet, Args &args,
-                                             std::string &usageOrError, std::vector<std::string> &unknown,
+std::optional<Args::Mode> Simulator::sortArg(const std::string &a, const bool mode_set, Args &args,
+                                             std::string &usage_or_error, std::vector<std::string> &unknown,
                                              const std::unordered_set<std::string> &supported) {
     if (a == "-comparative") {
-        if (modeSet && args.mode != Args::Mode::Comparative) {
-            usageOrError = "Error: Both -comparative and -competition provided.\n" + usageComparative() +
+        if (mode_set && args.mode != Args::Mode::Comparative) {
+            usage_or_error = "Error: Both -comparative and -competition provided.\n" + usageComparative() +
                            usageCompetition();
             return std::nullopt;
         }
         return Args::Mode::Comparative;
     }
     if (a == "-competition") {
-        if (modeSet && args.mode != Args::Mode::Competition) {
-            usageOrError = "Error: Both -comparative and -competition provided.\n" + usageComparative() +
+        if (mode_set && args.mode != Args::Mode::Competition) {
+            usage_or_error = "Error: Both -comparative and -competition provided.\n" + usageComparative() +
                            usageCompetition();
             return std::nullopt;
         }
@@ -368,28 +368,28 @@ std::optional<Args::Mode> Simulator::sortArg(const std::string &a, const bool mo
         unknown.push_back(a);
         return std::nullopt;
     }
-    if (k == "game_map") args.gameMapFile = v;
-    else if (k == "game_managers_folder") args.gameManagersFolder = v;
-    else if (k == "algorithm1") args.algorithm1File = v;
-    else if (k == "algorithm2") args.algorithm2File = v;
-    else if (k == "game_maps_folder") args.gameMapsFolder = v;
-    else if (k == "game_manager") args.gameManagerFile = v;
-    else if (k == "algorithms_folder") args.algorithmsFolder = v;
+    if (k == "game_map") args.game_map_file = v;
+    else if (k == "game_managers_folder") args.game_managers_folder = v;
+    else if (k == "algorithm1") args.algorithm1_file = v;
+    else if (k == "algorithm2") args.algorithm2_file = v;
+    else if (k == "game_maps_folder") args.game_maps_folder = v;
+    else if (k == "game_manager") args.game_manager_file = v;
+    else if (k == "algorithms_folder") args.algorithms_folder = v;
     else if (k == "num_threads") {
-        try { args.numThreads = std::max(1, std::stoi(v)); } catch (...) { args.numThreads = 1; }
+        try { args.num_threads = std::max(1, std::stoi(v)); } catch (...) { args.num_threads = 1; }
     }
     return std::nullopt;
 }
 
-std::optional<Args> Simulator::parseArgs(int argc, char **argv, std::string &usageOrError) {
+std::optional<Args> Simulator::parseArgs(int argc, char **argv, std::string &usage_or_error) {
     if (argc < 2) {
-        usageOrError = usageComparative() + usageCompetition();
-        Logger::getInstance().error(usageOrError);
+        usage_or_error = usageComparative() + usageCompetition();
+        Logger::getInstance().error(usage_or_error);
         return std::nullopt;
     }
 
     Args args{};
-    bool modeSet = false;
+    bool mode_set = false;
     std::unordered_set<std::string> supported = {
         "-comparative", "-competition", "-verbose",
         "game_map", "game_managers_folder", "algorithm1", "algorithm2",
@@ -400,33 +400,33 @@ std::optional<Args> Simulator::parseArgs(int argc, char **argv, std::string &usa
 
     for (int i = 1; i < argc; i++) {
         std::string a = argv[i];
-        std::optional<Args::Mode> mode = sortArg(a, modeSet, args, usageOrError, unknown, supported);
+        std::optional<Args::Mode> mode = sortArg(a, mode_set, args, usage_or_error, unknown, supported);
         if (mode.has_value()) {
             args.mode = mode.value();
-            modeSet = true;
+            mode_set = true;
         }
     }
     const auto processor_count = std::thread::hardware_concurrency();
-    args.numThreads = std::min(args.numThreads, processor_count);
+    args.num_threads = std::min(args.num_threads, processor_count);
 
     if (!unknown.empty()) {
-        return handleUnknownArgs(unknown, usageOrError);
+        return handleUnknownArgs(unknown, usage_or_error);
     }
 
-    if (!modeSet) {
-        usageOrError = "Error: Missing mode (-comparative or -competition)\n" + usageComparative() + usageCompetition();
-        Logger::getInstance().error(usageOrError);
+    if (!mode_set) {
+        usage_or_error = "Error: Missing mode (-comparative or -competition)\n" + usageComparative() + usageCompetition();
+        Logger::getInstance().error(usage_or_error);
         return std::nullopt;
     }
 
-    if (checkModeErrors(args, usageOrError)) return std::nullopt;
+    if (checkModeErrors(args, usage_or_error)) return std::nullopt;
     return args;
 }
 
 // -------------------- Registrar loading --------------------
-std::optional<Simulator::AlgWrap> Simulator::loadAlgorithmSo(const std::string &soPath) {
+std::optional<Simulator::AlgWrap> Simulator::loadAlgorithmSo(const std::string &so_path) {
     auto &reg = AlgorithmRegistrar::getAlgorithmRegistrar();
-    const std::string name = basenameNoExt(soPath);
+    const std::string name = basenameNoExt(so_path);
 
     AlgWrap wrap;
     wrap.name = name;
@@ -435,7 +435,7 @@ std::optional<Simulator::AlgWrap> Simulator::loadAlgorithmSo(const std::string &
 
     if (!reg.find(name)) {
         reg.createAlgorithmFactoryEntry(name);
-        void *h = dlopenOrNull(soPath);
+        void *h = dlopenOrNull(so_path);
         if (!h) {
             reg.removeLast();
             return std::nullopt;
@@ -447,17 +447,17 @@ std::optional<Simulator::AlgWrap> Simulator::loadAlgorithmSo(const std::string &
             reg.validateLastRegistration();
         } catch (const AlgorithmRegistrar::BadRegistrationException &e) {
             Logger::getInstance().error("Algorithm registration failed for '" + name + "':"
-                                        + " hasName=" + std::to_string(e.hasName)
-                                        + " hasPlayerFactory=" + std::to_string(e.hasPlayerFactory)
-                                        + " hasTankAlgorithmFactory=" + std::to_string(e.hasTankAlgorithmFactory));
+                                        + " hasName=" + std::to_string(e.has_name)
+                                        + " hasPlayerFactory=" + std::to_string(e.has_player_factory)
+                                        + " hasTankAlgorithmFactory=" + std::to_string(e.has_tank_algorithm_factory));
             reg.removeLast();
             dlclose(h);
             return std::nullopt;
         }
     }
 
-    wrap.playerFactory = reg.find(name)->getPlayerFactory();
-    wrap.tankFactory = reg.find(name)->getTankAlgorithmFactory();
+    wrap.player_factory = reg.find(name)->getPlayerFactory();
+    wrap.tank_factory = reg.find(name)->getTankAlgorithmFactory();
 
     return wrap;
 }
@@ -472,9 +472,9 @@ std::vector<Simulator::AlgWrap> Simulator::loadAlgorithmFolder(const std::string
     return out;
 }
 
-std::optional<Simulator::GmWrap> Simulator::loadGameManagerSo(const std::string &soPath) {
+std::optional<Simulator::GmWrap> Simulator::loadGameManagerSo(const std::string &so_path) {
     auto &reg = GameManagerRegistrar::getGameManagerRegistrar();
-    const std::string name = basenameNoExt(soPath);
+    const std::string name = basenameNoExt(so_path);
     GmWrap wrap;
     wrap.name = name;
     wrap.dl = nullptr;
@@ -482,7 +482,7 @@ std::optional<Simulator::GmWrap> Simulator::loadGameManagerSo(const std::string 
 
     if (!reg.find(name)) {
         reg.createGameManagerFactoryEntry(name);
-        void *h = dlopenOrNull(soPath);
+        void *h = dlopenOrNull(so_path);
         if (!h) {
             reg.removeLast();
             return std::nullopt;
@@ -500,7 +500,7 @@ std::optional<Simulator::GmWrap> Simulator::loadGameManagerSo(const std::string 
         }
     }
 
-    wrap.makeGameManager = reg.find(name)->getGameManagerFactory();
+    wrap.make_game_manager = reg.find(name)->getGameManagerFactory();
 
     return wrap;
 }
@@ -517,7 +517,7 @@ std::vector<Simulator::GmWrap> Simulator::loadGameManagersFolder(const std::stri
 }
 
 // -------------------- Pairing --------------------
-std::vector<std::pair<size_t, size_t> > Simulator::computePairsForK(size_t N, size_t k, bool dedupUnordered) {
+std::vector<std::pair<size_t, size_t> > Simulator::computePairsForK(size_t N, size_t k, bool dedup_unordered) {
     std::vector<std::pair<size_t, size_t> > pairs;
     pairs.reserve(N);
     std::unordered_set<uint64_t> seen;
@@ -527,7 +527,7 @@ std::vector<std::pair<size_t, size_t> > Simulator::computePairsForK(size_t N, si
     };
     for (size_t i = 0; i < N; i++) {
         size_t j = (i + 1 + (k % (N - 1))) % N;
-        if (dedupUnordered) {
+        if (dedup_unordered) {
             uint64_t kk = key(i, j);
             if (seen.count(kk)) continue;
             seen.insert(kk);
@@ -541,14 +541,14 @@ std::vector<std::pair<size_t, size_t> > Simulator::computePairsForK(size_t N, si
 size_t Simulator::ComparativeKeyHash::operator()(const ComparativeKey &k) const noexcept {
     std::hash<std::string> hs;
     size_t h = std::hash<int>()(k.winner) ^ std::hash<int>()(int(k.reason)) ^ std::hash<size_t>()(k.rounds);
-    for (auto &line: k.finalMapDump) {
+    for (auto &line: k.final_map_dump) {
         h ^= hs(line) + 0x9e3779b97f4a7c15ULL + (h << 6) + (h >> 2);
     }
     return h;
 }
 
 bool Simulator::ComparativeKeyEq::operator()(const ComparativeKey &a, const ComparativeKey &b) const noexcept {
-    return a.winner == b.winner && a.reason == b.reason && a.rounds == b.rounds && a.finalMapDump == b.finalMapDump;
+    return a.winner == b.winner && a.reason == b.reason && a.rounds == b.rounds && a.final_map_dump == b.final_map_dump;
 }
 
 // -------------------- Output formatting --------------------
@@ -580,42 +580,42 @@ std::string Simulator::resultMessage(ComparativeKey key, size_t max_steps) {
 }
 
 std::string Simulator::formatComparativeOutput(
-    const std::string &gameMap,
+    const std::string &game_map,
     const std::string &alg1,
     const std::string &alg2,
     const std::vector<std::pair<std::vector<std::string>, ComparativeKey> > &grouped,
     size_t max_steps
 ) {
     std::ostringstream out;
-    out << "game_map=" << gameMap << "\n";
+    out << "game_map=" << game_map << "\n";
     out << "algorithm1=" << basenameNoExt(alg1) << "\n";
     out << "algorithm2=" << basenameNoExt(alg2) << "\n";
     out << "\n";
-    bool firstGroup = true;
-    for (auto &[gmNames, key]: grouped) {
-        if (!firstGroup) out << "\n";
-        firstGroup = false;
-        for (size_t i = 0; i < gmNames.size(); ++i) {
+    bool first_group = true;
+    for (auto &[gm_names, key]: grouped) {
+        if (!first_group) out << "\n";
+        first_group = false;
+        for (size_t i = 0; i < gm_names.size(); ++i) {
             if (i) out << ", ";
-            out << gmNames[i];
+            out << gm_names[i];
         }
         out << "\n";
         out << resultMessage(key, max_steps) << "\n";
         out << key.rounds << "\n";
-        for (auto &line: key.finalMapDump) out << line << "\n";
+        for (auto &line: key.final_map_dump) out << line << "\n";
     }
     return out.str();
 }
 
 std::string Simulator::formatCompetitionOutput(
-    const std::string &gameMapsFolder,
-    const std::string &gameManagerSo,
-    const std::vector<std::pair<std::string, int> > &scoresSorted) {
+    const std::string &game_maps_folder,
+    const std::string &game_manager_so,
+    const std::vector<std::pair<std::string, int> > &scores_sorted) {
     std::ostringstream out;
-    out << "game_maps_folder=" << gameMapsFolder << "\n";
-    out << "game_manager=" << basenameNoExt(gameManagerSo) << "\n";
+    out << "game_maps_folder=" << game_maps_folder << "\n";
+    out << "game_manager=" << basenameNoExt(game_manager_so) << "\n";
     out << "\n";
-    for (auto &[name, score]: scoresSorted) {
+    for (auto &[name, score]: scores_sorted) {
         out << name << " " << score << "\n";
     }
     return out.str();
@@ -642,17 +642,17 @@ void Simulator::cleanComparative(std::optional<AlgWrap> &alg1, std::optional<Alg
 }
 
 int Simulator::loadComparative(const Args &args, std::optional<AlgWrap> &alg1, std::optional<AlgWrap> &alg2,
-                               std::vector<GmWrap> &gms, std::unique_ptr<SatelliteView> &mapView, size_t &width,
-                               size_t &height, size_t &maxSteps, size_t &numShells, std::string &mapName) {
+                               std::vector<GmWrap> &gms, std::unique_ptr<SatelliteView> &map_view, size_t &width,
+                               size_t &height, size_t &max_steps, size_t &num_shells, std::string &map_name) {
     // Fresh registrars
     AlgorithmRegistrar::getAlgorithmRegistrar().clear();
     GameManagerRegistrar::getGameManagerRegistrar().clear();
 
     // Load algorithms (single dlopen each)
-    alg1 = loadAlgorithmSo(args.algorithm1File);
-    alg2 = loadAlgorithmSo(args.algorithm2File);
+    alg1 = loadAlgorithmSo(args.algorithm1_file);
+    alg2 = loadAlgorithmSo(args.algorithm2_file);
     // Load game managers
-    gms = loadGameManagersFolder(args.gameManagersFolder);
+    gms = loadGameManagersFolder(args.game_managers_folder);
 
     if (!alg1 || !alg2) {
         Logger::getInstance().error("Error: failed to load algorithm(s).\n" + usageComparative());
@@ -670,39 +670,39 @@ int Simulator::loadComparative(const Args &args, std::optional<AlgWrap> &alg1, s
 
     // Parse map using project InputParser (initializes Logger as needed)
     InputParser parser;
-    parser.parseInputFile(args.gameMapFile);
-    mapView = parser.getSatelliteView();
-    if (!mapView) {
-        Logger::getInstance().error("Error: failed to parse game map: " + args.gameMapFile + "\n" + usageComparative());
-        std::cerr << "Error: failed to parse game map: " << args.gameMapFile << "\n" << usageComparative();
+    parser.parseInputFile(args.game_map_file);
+    map_view = parser.getSatelliteView();
+    if (!map_view) {
+        Logger::getInstance().error("Error: failed to parse game map: " + args.game_map_file + "\n" + usageComparative());
+        std::cerr << "Error: failed to parse game map: " << args.game_map_file << "\n" << usageComparative();
         cleanComparative(alg1, alg2, gms);
         return 1;
     }
 
     width = parser.getWidth();
     height = parser.getHeight();
-    maxSteps = parser.getMaxSteps();
-    numShells = parser.getNumShells();
-    mapName = parser.getBoardDescription();
+    max_steps = parser.getMaxSteps();
+    num_shells = parser.getNumShells();
+    map_name = parser.getBoardDescription();
 
     return 0;
 }
 
 void Simulator::runOneComparative(const GmWrap &gw, const Args &args, const std::optional<AlgWrap> &alg1,
-                                  const std::optional<AlgWrap> &alg2, const std::unique_ptr<SatelliteView> &mapView,
-                                  const size_t &width, const size_t &height, const size_t &maxSteps,
-                                  const size_t &numShells, const std::string &mapName, std::mutex &mtx,
+                                  const std::optional<AlgWrap> &alg2, const std::unique_ptr<SatelliteView> &map_view,
+                                  const size_t &width, const size_t &height, const size_t &max_steps,
+                                  const size_t &num_shells, const std::string &map_name, std::mutex &mtx,
                                   std::vector<OneRes> &results) {
     try {
-        auto gm = gw.makeGameManager(args.verbose);
+        auto gm = gw.make_game_manager(args.verbose);
         if (!gm) return;
 
-        auto p1 = alg1->playerFactory(1, width, height, maxSteps, numShells);
-        auto p2 = alg2->playerFactory(2, width, height, maxSteps, numShells);
+        auto p1 = alg1->player_factory(1, width, height, max_steps, num_shells);
+        auto p2 = alg2->player_factory(2, width, height, max_steps, num_shells);
         if (!p1 || !p2) return;
 
-        GameResult gr = gm->run(width, height, *mapView, mapName, maxSteps, numShells,
-                                *p1, alg1->name, *p2, alg2->name, alg1->tankFactory, alg2->tankFactory);
+        GameResult gr = gm->run(width, height, *map_view, map_name, max_steps, num_shells,
+                                *p1, alg1->name, *p2, alg2->name, alg1->tank_factory, alg2->tank_factory);
 
         ComparativeKey key;
         key.winner = gr.winner;
@@ -713,14 +713,14 @@ void Simulator::runOneComparative(const GmWrap &gw, const Args &args, const std:
         // Dump final game state
         std::vector<std::string> dump;
         dump.reserve(height);
-        const SatelliteView *state = gr.gameState ? gr.gameState.get() : mapView.get();
+        const SatelliteView *state = gr.gameState ? gr.gameState.get() : map_view.get();
         for (size_t y = 0; y < height; ++y) {
             std::string row;
             row.reserve(width);
             for (size_t x = 0; x < width; ++x) row.push_back(state->getObjectAt(x, y));
             dump.push_back(std::move(row));
         }
-        key.finalMapDump = std::move(dump);
+        key.final_map_dump = std::move(dump);
 
         std::lock_guard lk(mtx);
         results.push_back({gw.name, std::move(key)});
@@ -731,7 +731,7 @@ void Simulator::runOneComparative(const GmWrap &gw, const Args &args, const std:
 std::vector<std::pair<std::vector<std::string>, Simulator::ComparativeKey> >
 Simulator::groupResComparative(const std::vector<OneRes> &results) {
     std::unordered_map<ComparativeKey, std::vector<std::string>, ComparativeKeyHash, ComparativeKeyEq> groups;
-    for (auto &r: results) groups[r.key].push_back(r.gmName);
+    for (auto &r: results) groups[r.key].push_back(r.gm_name);
 
     std::vector<std::pair<std::vector<std::string>, ComparativeKey> > grouped;
     grouped.reserve(groups.size());
@@ -752,25 +752,25 @@ Simulator::groupResComparative(const std::vector<OneRes> &results) {
 int Simulator::runComparative(const Args &args) {
     std::optional<AlgWrap> alg1, alg2;
     std::vector<GmWrap> gms;
-    std::unique_ptr<SatelliteView> mapView;
-    size_t width, height, maxSteps, numShells;
-    std::string mapName;
+    std::unique_ptr<SatelliteView> map_view;
+    size_t width, height, max_steps, num_shells;
+    std::string map_name;
     std::mutex mtx;
     std::vector<OneRes> results;
 
-    if (loadComparative(args, alg1, alg2, gms, mapView, width, height, maxSteps, numShells, mapName) == 1)
+    if (loadComparative(args, alg1, alg2, gms, map_view, width, height, max_steps, num_shells, map_name) == 1)
         return 1;
 
-    if (args.numThreads <= 1) {
+    if (args.num_threads <= 1) {
         for (const auto &gm: gms)
-            runOneComparative(gm, args, alg1, alg2, mapView, width, height, maxSteps, numShells,
-                              mapName, mtx, results);
+            runOneComparative(gm, args, alg1, alg2, map_view, width, height, max_steps, num_shells,
+                              map_name, mtx, results);
     } else {
-        ThreadPool pool(static_cast<size_t>(args.numThreads));
+        ThreadPool pool(static_cast<size_t>(args.num_threads));
         for (const auto &gm: gms)
             pool.enqueue([&, gm] {
-                runOneComparative(gm, args, alg1, alg2, mapView, width, height, maxSteps, numShells,
-                                  mapName, mtx, results);
+                runOneComparative(gm, args, alg1, alg2, map_view, width, height, max_steps, num_shells,
+                                  map_name, mtx, results);
             });
         pool.waitIdle();
     }
@@ -782,10 +782,10 @@ int Simulator::runComparative(const Args &args) {
         return 1;
     }
     auto grouped = groupResComparative(results);
-    const auto outPath = joinPath(args.gameManagersFolder, "comparative_results_" + epochTimeId() + ".txt");
-    const auto content = formatComparativeOutput(args.gameMapFile, args.algorithm1File, args.algorithm2File, grouped,
-                                                 maxSteps);
-    if (std::string err; !writeTextFile(outPath, content, err)) {
+    const auto out_path = joinPath(args.game_managers_folder, "comparative_results_" + epochTimeId() + ".txt");
+    const auto content = formatComparativeOutput(args.game_map_file, args.algorithm1_file, args.algorithm2_file, grouped,
+                                                 max_steps);
+    if (std::string err; !writeTextFile(out_path, content, err)) {
         Logger::getInstance().error("Error: " + err);
         Logger::getInstance().log(content);
     }
@@ -793,52 +793,52 @@ int Simulator::runComparative(const Args &args) {
     return 0;
 }
 
-void Simulator::cleanCompetition(std::optional<GmWrap> &gmWrap, std::vector<AlgWrap> &algs) {
+void Simulator::cleanCompetition(std::optional<GmWrap> &gm_wrap, std::vector<AlgWrap> &algs) {
     AlgorithmRegistrar::getAlgorithmRegistrar().clear();
     GameManagerRegistrar::getGameManagerRegistrar().clear();
-    if (gmWrap.has_value()) closeGmWrap(gmWrap);
+    if (gm_wrap.has_value()) closeGmWrap(gm_wrap);
     closeAlgWrap(algs);
 }
 
-int Simulator::loadCompetition(const Args &args, std::optional<GmWrap> &gmWrap, std::vector<AlgWrap> &algs,
-                               std::vector<std::string> &mapFiles) {
+int Simulator::loadCompetition(const Args &args, std::optional<GmWrap> &gm_wrap, std::vector<AlgWrap> &algs,
+                               std::vector<std::string> &map_files) {
     // Fresh registrars
     AlgorithmRegistrar::getAlgorithmRegistrar().clear();
     GameManagerRegistrar::getGameManagerRegistrar().clear();
 
     // Load GM
-    gmWrap = loadGameManagerSo(args.gameManagerFile);
-    if (!gmWrap) {
+    gm_wrap = loadGameManagerSo(args.game_manager_file);
+    if (!gm_wrap) {
         Logger::getInstance().error("Error: failed to load game_manager.\n" + usageCompetition());
         std::cerr << "Error: failed to load game_manager.\n" << usageCompetition();
-        cleanCompetition(gmWrap, algs);
+        cleanCompetition(gm_wrap, algs);
         return 1;
     }
 
     // Load algorithms folder
-    algs = loadAlgorithmFolder(args.algorithmsFolder);
+    algs = loadAlgorithmFolder(args.algorithms_folder);
     if (algs.size() < 2) {
         Logger::getInstance().
                 error("Error: algorithms_folder has fewer than 2 valid .so files.\n" + usageCompetition());
         std::cerr << "Error: algorithms_folder has fewer than 2 valid .so files.\n" << usageCompetition();
-        cleanCompetition(gmWrap, algs);
+        cleanCompetition(gm_wrap, algs);
         return 1;
     }
 
     // List maps
-    mapFiles = listRegularFiles(args.gameMapsFolder);
-    if (mapFiles.empty()) {
+    map_files = listRegularFiles(args.game_maps_folder);
+    if (map_files.empty()) {
         std::cerr << "Error: no map files in game_maps_folder.\n" << usageCompetition();
         Logger::getInstance().error("Error: no map files in game_maps_folder.\n");
-        cleanCompetition(gmWrap, algs);
+        cleanCompetition(gm_wrap, algs);
         return 1;
     }
 
     return 0;
 }
 
-void Simulator::runOneCompetition(const Args &args, std::optional<GmWrap> &gmWrap, std::vector<AlgWrap> &algs,
-                                  const std::string &mapPath, size_t ai, size_t aj, std::mutex &mtx,
+void Simulator::runOneCompetition(const Args &args, std::optional<GmWrap> &gm_wrap, std::vector<AlgWrap> &algs,
+                                  const std::string &map_path, size_t ai, size_t aj, std::mutex &mtx,
                                   std::vector<int> &scores) {
     auto addWin = [&](size_t idx) { scores[idx] += 3; };
     auto addTie = [&](size_t a, size_t b) {
@@ -849,26 +849,26 @@ void Simulator::runOneCompetition(const Args &args, std::optional<GmWrap> &gmWra
     try {
         std::lock_guard glk(g_logger_mutex);
         InputParser parser;
-        parser.parseInputFile(mapPath);
-        std::unique_ptr<SatelliteView> mapView = parser.getSatelliteView();
-        if (!mapView) return;
+        parser.parseInputFile(map_path);
+        std::unique_ptr<SatelliteView> map_view = parser.getSatelliteView();
+        if (!map_view) return;
 
         const size_t width = parser.getWidth();
         const size_t height = parser.getHeight();
-        const size_t maxSteps = parser.getMaxSteps();
-        const size_t numShells = parser.getNumShells();
-        const std::string mapName = parser.getBoardDescription();
+        const size_t max_steps = parser.getMaxSteps();
+        const size_t num_shells = parser.getNumShells();
+        const std::string map_name = parser.getBoardDescription();
 
-        auto gm = gmWrap->makeGameManager(args.verbose);
+        auto gm = gm_wrap->make_game_manager(args.verbose);
         if (!gm) return;
 
-        auto p1 = algs[ai].playerFactory(1, width, height, maxSteps, numShells);
-        auto p2 = algs[aj].playerFactory(2, width, height, maxSteps, numShells);
+        auto p1 = algs[ai].player_factory(1, width, height, max_steps, num_shells);
+        auto p2 = algs[aj].player_factory(2, width, height, max_steps, num_shells);
         if (!p1 || !p2) return;
 
-        GameResult gr = gm->run(width, height, *mapView, mapName, maxSteps, numShells,
+        GameResult gr = gm->run(width, height, *map_view, map_name, max_steps, num_shells,
                                 *p1, algs[ai].name, *p2, algs[aj].name,
-                                algs[ai].tankFactory, algs[aj].tankFactory);
+                                algs[ai].tank_factory, algs[aj].tank_factory);
 
         std::lock_guard lk(mtx);
         if (gr.winner == 1) addWin(ai);
@@ -890,44 +890,44 @@ void Simulator::buildSortedScoreboard(
 }
 
 int Simulator::runCompetition(const Args &args) {
-    std::optional<GmWrap> gmWrap;
+    std::optional<GmWrap> gm_wrap;
     std::vector<AlgWrap> algs;
-    std::vector<std::string> mapFiles;
-    if (loadCompetition(args, gmWrap, algs, mapFiles) == 1)
+    std::vector<std::string> map_files;
+    if (loadCompetition(args, gm_wrap, algs, map_files) == 1)
         return 1;
     std::vector scores(algs.size(), 0);
     std::mutex mtx;
 
-    bool usePool = args.numThreads >= 2;
+    bool use_pool = args.num_threads >= 2;
     std::unique_ptr<ThreadPool> pool;
-    if (usePool) pool = std::make_unique<ThreadPool>(static_cast<size_t>(args.numThreads));
+    if (use_pool) pool = std::make_unique<ThreadPool>(static_cast<size_t>(args.num_threads));
     const size_t N = algs.size();
-    for (size_t k = 0; k < mapFiles.size(); ++k) {
+    for (size_t k = 0; k < map_files.size(); ++k) {
         bool dedup = (N % 2 == 0) && (k == (N / 2 - 1));
         auto pairs = computePairsForK(N, k, dedup);
         for (auto [i,j]: pairs) {
-            if (usePool)
+            if (use_pool)
                 pool->enqueue([&, i, j, k] {
-                    runOneCompetition(args, gmWrap, algs, mapFiles[k], i, j, mtx, scores);
+                    runOneCompetition(args, gm_wrap, algs, map_files[k], i, j, mtx, scores);
                 });
-            else runOneCompetition(args, gmWrap, algs, mapFiles[k], i, j, mtx, scores);
+            else runOneCompetition(args, gm_wrap, algs, map_files[k], i, j, mtx, scores);
         }
     }
-    if (usePool) pool->waitIdle();
+    if (use_pool) pool->waitIdle();
 
     std::vector<std::pair<std::string, int> > out;
     buildSortedScoreboard(algs, scores, out);
-    const auto content = formatCompetitionOutput(args.gameMapsFolder, args.gameManagerFile, out);
-    const auto outPath = joinPath(args.algorithmsFolder, "competition_" + epochTimeId() + ".txt");
+    const auto content = formatCompetitionOutput(args.game_maps_folder, args.game_manager_file, out);
+    const auto out_path = joinPath(args.algorithms_folder, "competition_" + epochTimeId() + ".txt");
     std::string err;
-    if (!writeTextFile(outPath, content, err)) {
+    if (!writeTextFile(out_path, content, err)) {
         Logger::getInstance().error("Error: " + err);
         Logger::getInstance().log(content);
     }
 
     scores.clear();
-    mapFiles.clear();
+    map_files.clear();
     if (pool) pool.reset();
-    cleanCompetition(gmWrap, algs);
+    cleanCompetition(gm_wrap, algs);
     return 0;
 }

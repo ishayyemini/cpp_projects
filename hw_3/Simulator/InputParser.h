@@ -17,11 +17,11 @@ class InputParser {
     size_t num_shells{};
     std::vector<std::pair<int, int> > tanks;
     const char default_symbol = ' ';
-    const std::unordered_set<char> validSymbols = {'1', '2', '@', '#', ' '};
+    const std::unordered_set<char> valid_symbols = {'1', '2', '@', '#', ' '};
 
     bool parseBoardConfig(std::ifstream &inFile, size_t &retrieved_data, const std::string &expected_field_name);
 
-    void populateBoard(std::ifstream &inFile);
+    void populateBoard(std::ifstream &in_file);
 
     void addErrorMessage(const std::string &message);
 
@@ -31,7 +31,7 @@ class InputParser {
 
     void validateLineLength(size_t row, const std::string &line);
 
-    bool parseBoardInfo(std::ifstream &inFile);
+    bool parseBoardInfo(std::ifstream &in_file);
 
     void addErrorMessagesToLog();
 

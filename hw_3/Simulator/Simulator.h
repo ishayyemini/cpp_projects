@@ -25,18 +25,18 @@ struct Args {
     Mode mode;
 
     // comparative
-    std::string gameMapFile;
-    std::string gameManagersFolder;
-    std::string algorithm1File;
-    std::string algorithm2File;
+    std::string game_map_file;
+    std::string game_managers_folder;
+    std::string algorithm1_file;
+    std::string algorithm2_file;
 
     // competition
-    std::string gameMapsFolder;
-    std::string gameManagerFile;
-    std::string algorithmsFolder;
+    std::string game_maps_folder;
+    std::string game_manager_file;
+    std::string algorithms_folder;
 
     // common
-    unsigned numThreads = 1;
+    unsigned num_threads = 1;
     bool verbose = false;
 };
 
@@ -58,21 +58,22 @@ public:
     int run(const Args &args);
 
     // CLI parsing and usage
-    static std::optional<Args> parseArgs(int argc, char **argv, std::string &usageOrError);
+    static std::optional<Args> parseArgs(int argc, char **argv, std::string &usage_or_error);
 
     static std::string usageComparative();
 
     static std::string usageCompetition();
 
-    static std::optional<Args> handleUnknownArgs(const std::vector<std::string> &unknown, std::string &usageOrError);
+    static std::optional<Args> handleUnknownArgs(const std::vector<std::string> &unknown, std::string &usage_or_error);
 
-    static bool checkComparativeArgsErrors(const Args &args, std::string &usageOrError);
+    static bool checkComparativeArgsErrors(const Args &args, std::string &usage_or_error);
 
-    static bool checkCompetitionArgsErrors(const Args &args, std::string &usageOrError);
+    static bool checkCompetitionArgsErrors(const Args &args, std::string &usage_or_error);
 
-    static bool checkModeErrors(const Args &args, std::string &usageOrError);
+    static bool checkModeErrors(const Args &args, std::string &usage_or_error);
 
-    static std::optional<Args::Mode> sortArg(const std::string &a, bool modeSet, Args &args, std::string &usageOrError,
+    static std::optional<Args::Mode> sortArg(const std::string &a, bool mode_set, Args &args,
+                                             std::string &usage_or_error,
                                              std::vector<std::string> &unknown,
                                              const std::unordered_set<std::string> &supported);
 
@@ -103,8 +104,8 @@ private:
         void *dl;
         bool has_dl;
         std::string name;
-        PlayerFactory playerFactory;
-        TankAlgorithmFactory tankFactory;
+        PlayerFactory player_factory;
+        TankAlgorithmFactory tank_factory;
     };
 
     static void closeAlgWrap(std::optional<AlgWrap> &wrap);
@@ -114,16 +115,16 @@ private:
     static void closeAlgWrap(std::vector<AlgWrap> &handles);
 
     // Loads a single algorithm .so into AlgorithmRegistrar. Returns nullopt on failure.
-    static std::optional<AlgWrap> loadAlgorithmSo(const std::string &soPath);
+    static std::optional<AlgWrap> loadAlgorithmSo(const std::string &so_path);
 
     // Loads many algorithm .so files, returns loaded algorithms and their dls.
-    static std::vector<Simulator::AlgWrap> loadAlgorithmFolder(const std::string &folder);
+    static std::vector<AlgWrap> loadAlgorithmFolder(const std::string &folder);
 
     struct GmWrap {
         void *dl;
         bool has_dl = false;
         std::string name;
-        GameManagerFactory makeGameManager;
+        GameManagerFactory make_game_manager;
     };
 
     static void closeGmWrap(std::optional<GmWrap> &wrap);
@@ -135,19 +136,19 @@ private:
     static void cleanComparative(std::optional<AlgWrap> &alg1, std::optional<AlgWrap> &alg2, std::vector<GmWrap> &gms);
 
     static int loadComparative(const Args &args, std::optional<AlgWrap> &alg1, std::optional<AlgWrap> &alg2,
-                               std::vector<GmWrap> &gms, std::unique_ptr<SatelliteView> &mapView, size_t &width,
+                               std::vector<GmWrap> &gms, std::unique_ptr<SatelliteView> &map_view, size_t &width,
                                size_t &height,
-                               size_t &maxSteps,
-                               size_t &numShells, std::string &mapName);
+                               size_t &max_steps,
+                               size_t &num_shells, std::string &map_name);
 
 
-    static void cleanCompetition(std::optional<GmWrap> &gmWrap, std::vector<AlgWrap> &algs);
+    static void cleanCompetition(std::optional<GmWrap> &gm_wrap, std::vector<AlgWrap> &algs);
 
-    static int loadCompetition(const Args &args, std::optional<GmWrap> &gmWrap, std::vector<AlgWrap> &algs,
-                               std::vector<std::string> &mapFiles);
+    static int loadCompetition(const Args &args, std::optional<GmWrap> &gm_wrap, std::vector<AlgWrap> &algs,
+                               std::vector<std::string> &map_files);
 
-    static void runOneCompetition(const Args &args, std::optional<GmWrap> &gmWrap, std::vector<AlgWrap> &algs,
-                                  const std::string &mapPath, size_t ai, size_t aj, std::mutex &mtx,
+    static void runOneCompetition(const Args &args, std::optional<GmWrap> &gm_wrap, std::vector<AlgWrap> &algs,
+                                  const std::string &map_path, size_t ai, size_t aj, std::mutex &mtx,
                                   std::vector<int> &scores);
 
     static void
@@ -155,7 +156,7 @@ private:
                           std::vector<std::pair<std::string, int> > &out);
 
     // Loads a single game manager .so into GameManagerRegistrar. Returns nullopt on failure.
-    static std::optional<GmWrap> loadGameManagerSo(const std::string &soPath);
+    static std::optional<GmWrap> loadGameManagerSo(const std::string &so_path);
 
     // Loads many GMs from a folder
     static std::vector<GmWrap> loadGameManagersFolder(
@@ -164,7 +165,7 @@ private:
     // Thread pool (created only when numThreads >= 2; workers = numThreads; main waits)
     class ThreadPool {
     public:
-        explicit ThreadPool(size_t nThreads);
+        explicit ThreadPool(size_t n_threads);
 
         ~ThreadPool();
 
@@ -199,7 +200,7 @@ private:
         std::vector<size_t> remaining_tanks;
         GameResult::Reason reason;
         size_t rounds;
-        std::vector<std::string> finalMapDump; // lines of the final game state
+        std::vector<std::string> final_map_dump; // lines of the final game state
     };
 
     struct ComparativeKeyHash {
@@ -211,25 +212,25 @@ private:
     };
 
     // Pairing for competition (dedup unordered pairs only for the even-N special case)
-    static std::vector<std::pair<size_t, size_t> > computePairsForK(size_t N, size_t k, bool dedupUnordered);
+    static std::vector<std::pair<size_t, size_t> > computePairsForK(size_t N, size_t k, bool dedup_unordered);
 
     struct OneRes {
-        std::string gmName;
+        std::string gm_name;
         ComparativeKey key;
     };
 
     static void runOneComparative(const GmWrap &gw, const Args &args, const std::optional<AlgWrap> &alg1,
-                                  const std::optional<AlgWrap> &alg2, const std::unique_ptr<SatelliteView> &mapView,
-                                  const size_t &width, const size_t &height, const size_t &maxSteps,
-                                  const size_t &numShells,
-                                  const std::string &mapName, std::mutex &mtx, std::vector<OneRes> &results);
+                                  const std::optional<AlgWrap> &alg2, const std::unique_ptr<SatelliteView> &map_view,
+                                  const size_t &width, const size_t &height, const size_t &max_steps,
+                                  const size_t &num_shells,
+                                  const std::string &map_name, std::mutex &mtx, std::vector<OneRes> &results);
 
     static std::vector<std::pair<std::vector<std::string>, ComparativeKey> > groupResComparative(
         const std::vector<OneRes> &results);
 
     // Output
     static std::string formatComparativeOutput(
-        const std::string &gameMap,
+        const std::string &game_map,
         const std::string &alg1,
         const std::string &alg2,
         const std::vector<std::pair<std::vector<std::string>, ComparativeKey> > &grouped, size_t max_steps);
@@ -237,9 +238,9 @@ private:
     static std::string resultMessage(ComparativeKey key, size_t max_steps);
 
     static std::string formatCompetitionOutput(
-        const std::string &gameMapsFolder,
-        const std::string &gameManagerSo,
-        const std::vector<std::pair<std::string, int> > &scoresSorted);
+        const std::string &game_maps_folder,
+        const std::string &game_manager_so,
+        const std::vector<std::pair<std::string, int> > &scores_sorted);
 };
 
 #endif //TANKS_GAME_SIMULATOR_H

@@ -4,10 +4,10 @@
 #include "Simulator.h"
 
 int main(const int argc, char *argv[]) {
-    std::string usageOrError;
-    auto parsed = Simulator::parseArgs(argc, argv, usageOrError);
+    std::string usage_or_error;
+    auto parsed = Simulator::parseArgs(argc, argv, usage_or_error);
     if (!parsed) {
-        std::cerr << usageOrError;
+        std::cerr << usage_or_error;
         return 1;
     }
     Simulator s;

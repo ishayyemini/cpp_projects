@@ -31,17 +31,17 @@ bool InputParser::parseBoardConfig(std::ifstream &inFile,
     return true;
 }
 
-void InputParser::populateBoard(std::ifstream &inFile) {
+void InputParser::populateBoard(std::ifstream &in_file) {
     std::string line;
     for (size_t row = 0; row < height; ++row) {
-        if (!std::getline(inFile, line)) {
+        if (!std::getline(in_file, line)) {
             addErrorMessage("Map is shorter than specified height");
             line = " ";
         }
         processLine(row, line);
         validateLineLength(row, line);
     }
-    if (std::getline(inFile, line)) {
+    if (std::getline(in_file, line)) {
         addErrorMessage("Map is longer than specified height");
     }
 }
@@ -60,7 +60,7 @@ void InputParser::processLine(size_t row, const std::string &line) {
 }
 
 bool InputParser::isValidSymbol(char c) {
-    return validSymbols.contains(c);
+    return valid_symbols.contains(c);
 }
 
 void InputParser::validateLineLength(size_t row, const std::string &line) {
@@ -71,18 +71,18 @@ void InputParser::validateLineLength(size_t row, const std::string &line) {
     }
 }
 
-bool InputParser::parseBoardInfo(std::ifstream &inFile) {
+bool InputParser::parseBoardInfo(std::ifstream &in_file) {
     std::string board_info;
 
-    if (!std::getline(inFile, board_description)) {
+    if (!std::getline(in_file, board_description)) {
         addErrorMessage("Failed to extract board info (board title + board description).");
         return false;
     }
 
     board_info += "Board description: " + board_description;
 
-    auto checkParse = [this, &inFile, &board_info](size_t &field, const std::string &field_name) {
-        if (!parseBoardConfig(inFile, field, field_name)) {
+    auto checkParse = [this, &in_file, &board_info](size_t &field, const std::string &field_name) {
+        if (!parseBoardConfig(in_file, field, field_name)) {
             addErrorMessage("Failed to extract " + field_name + " from file.");
             return false;
         }

@@ -48,17 +48,17 @@ public:
 
     struct BadRegistrationException {
         std::string name;
-        bool hasName, hasGameManagerFactory;
+        bool has_name, has_game_manager_factory;
     };
 
     void validateLastRegistration() {
         const auto &last = game_managers.back();
-        bool hasName = (last.name() != "");
-        if (!hasName || !last.hasGameManagerFactory()) {
+        bool has_name = (last.name() != "");
+        if (!has_name || !last.hasGameManagerFactory()) {
             throw BadRegistrationException{
                 .name = last.name(),
-                .hasName = hasName,
-                .hasGameManagerFactory = last.hasGameManagerFactory()
+                .has_name = has_name,
+                .has_game_manager_factory = last.hasGameManagerFactory()
             };
         }
     }
