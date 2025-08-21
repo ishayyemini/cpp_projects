@@ -543,26 +543,40 @@ bool Simulator::ComparativeKeyEq::operator()(const ComparativeKey &a, const Comp
 }
 
 // -------------------- Output formatting --------------------
-static std::string reasonToString(GameResult::Reason r) {
-    switch (r) {
-        case GameResult::ALL_TANKS_DEAD: return "all tanks dead";
-        case GameResult::MAX_STEPS: return "max steps";
-        case GameResult::ZERO_SHELLS: return "zero shells";
-        default: return "unknown";
-    }
-}
+std::string Simulator::resultMessage(ComparativeKey key, size_t max_steps) {
+    size_t tanks1 = 0, tanks2 = 0;
+    if (key.remaining_tanks.at(0)) tanks1 = key.remaining_tanks.at(0);
+    if (key.remaining_tanks.at(1)) tanks2 = key.remaining_tanks.at(1);
 
-static std::string resultMessage(int winner, GameResult::Reason reason) {
-    if (winner == 1) return "Player 1 wins: " + reasonToString(reason);
-    if (winner == 2) return "Player 2 wins: " + reasonToString(reason);
-    return "Tie: " + reasonToString(reason);
+    switch (key.winner) {
+        case 0:
+            switch (key.reason) {
+                case GameResult::ALL_TANKS_DEAD:
+                    return "Tie, both players have zero tanks";
+                case GameResult::MAX_STEPS:
+                    return "Tie, reached max steps = " + std::to_string(max_steps) + ", player 1 has " +
+                           std::to_string(tanks1) + " tanks, player 2 has " + std::to_string(tanks2) + " tanks";
+                case GameResult::ZERO_SHELLS:
+                    return "Tie, both players have zero shells for " + std::to_string(max_steps_empty_ammo) + " steps";
+                default:
+                    return "Bad result";
+            }
+        case 1:
+            return "Player 1 won with " + std::to_string(tanks1) + " tanks still alive";
+        case 2:
+            return "Player 2 won with " + std::to_string(tanks2) + " tanks still alive";
+        default:
+            return "Bad result";
+    }
 }
 
 std::string Simulator::formatComparativeOutput(
     const std::string &gameMap,
     const std::string &alg1,
     const std::string &alg2,
-    const std::vector<std::pair<std::vector<std::string>, ComparativeKey> > &grouped) {
+    const std::vector<std::pair<std::vector<std::string>, ComparativeKey> > &grouped,
+    size_t max_steps
+) {
     std::ostringstream out;
     out << "game_map=" << gameMap << "\n";
     out << "algorithm1=" << basenameNoExt(alg1) << "\n";
@@ -577,7 +591,7 @@ std::string Simulator::formatComparativeOutput(
             out << gmNames[i];
         }
         out << "\n";
-        out << resultMessage(key.winner, key.reason) << "\n";
+        out << resultMessage(key, max_steps) << "\n";
         out << key.rounds << "\n";
         for (auto &line: key.finalMapDump) out << line << "\n";
     }
@@ -680,6 +694,7 @@ void Simulator::runOneComparative(const GmWrap &gw, const Args &args, const std:
         key.winner = gr.winner;
         key.reason = gr.reason;
         key.rounds = gr.rounds;
+        key.remaining_tanks = gr.remaining_tanks; // index 0 = player 1, etc.
 
         // Dump final game state
         std::vector<std::string> dump;
@@ -753,7 +768,8 @@ int Simulator::runComparative(const Args &args) {
     }
     auto grouped = groupResComparative(results);
     const auto outPath = joinPath(args.gameManagersFolder, "comparative_results_" + epochTimeId() + ".txt");
-    const auto content = formatComparativeOutput(args.gameMapFile, args.algorithm1File, args.algorithm2File, grouped);
+    const auto content = formatComparativeOutput(args.gameMapFile, args.algorithm1File, args.algorithm2File, grouped,
+                                                 maxSteps);
     if (std::string err; !writeTextFile(outPath, content, err)) {
         std::cerr << "Error: " << err << "\n";
         std::cout << content;

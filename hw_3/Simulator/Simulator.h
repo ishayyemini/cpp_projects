@@ -47,11 +47,13 @@ public:
     // Rule of 5
     ~Simulator() = default;
 
-    Simulator(const Simulator& other) = delete;
-    Simulator& operator=(const Simulator& other) = delete;
+    Simulator(const Simulator &other) = delete;
 
-    Simulator(Simulator&& other) noexcept = default;
-    Simulator& operator=(Simulator&& other) noexcept = default;
+    Simulator &operator=(const Simulator &other) = delete;
+
+    Simulator(Simulator &&other) noexcept = default;
+
+    Simulator &operator=(Simulator &&other) noexcept = default;
 
     int run(const Args &args);
 
@@ -75,6 +77,8 @@ public:
                                              const std::unordered_set<std::string> &supported);
 
 private:
+    static constexpr int max_steps_empty_ammo = 40;
+
     // Core runners
     int runComparative(const Args &args);
 
@@ -165,16 +169,17 @@ private:
         ~ThreadPool();
 
         // Rule of 5
-        ThreadPool(const ThreadPool& other) = delete;
-        ThreadPool& operator=(const ThreadPool& other) = delete;
+        ThreadPool(const ThreadPool &other) = delete;
 
-        ThreadPool(ThreadPool&& other) noexcept = default;
-        ThreadPool& operator=(ThreadPool&& other) noexcept = default;
+        ThreadPool &operator=(const ThreadPool &other) = delete;
+
+        ThreadPool(ThreadPool &&other) noexcept = default;
+
+        ThreadPool &operator=(ThreadPool &&other) noexcept = default;
 
         void enqueue(std::function<void()> task);
 
         void waitIdle();
-
 
     private:
         struct Impl;
@@ -191,6 +196,7 @@ private:
     // Comparative result key (group identical results)
     struct ComparativeKey {
         int winner; // 0 tie, 1,2
+        std::vector<size_t> remaining_tanks;
         GameResult::Reason reason;
         size_t rounds;
         std::vector<std::string> finalMapDump; // lines of the final game state
@@ -226,7 +232,9 @@ private:
         const std::string &gameMap,
         const std::string &alg1,
         const std::string &alg2,
-        const std::vector<std::pair<std::vector<std::string>, ComparativeKey> > &grouped);
+        const std::vector<std::pair<std::vector<std::string>, ComparativeKey> > &grouped, size_t max_steps);
+
+    static std::string resultMessage(ComparativeKey key, size_t max_steps);
 
     static std::string formatCompetitionOutput(
         const std::string &gameMapsFolder,
